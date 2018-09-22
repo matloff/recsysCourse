@@ -1,0 +1,42 @@
+\documentclass[10pt]{book}
+
+\include{Includes/Includes}
+
+\begin{document} 
+
+\thispagestyle{empty}
+\input Cover 
+\pagecolor{white}
+
+\frontmatter
+\tableofcontents
+\addcontentsline{toc}{chapter}{Preface}
+\input Preface
+\input ListOfSymbols
+
+\mainmatter
+\input Prologue
+\input LinMod
+\input LinModAssumps
+\input Nonlin
+\input Multiclass
+\input Fit
+\input Factor
+\input Shrink
+\input Dim
+% \input Smooth
+\input Partitions
+\input Bound
+\input BigData
+
+\appendix
+
+\input LinAlg
+
+\bibliographystyle{acm}
+\bibliography{RegressBook}
+
+\include{K25041_Index}
+
+\end{document}
+
