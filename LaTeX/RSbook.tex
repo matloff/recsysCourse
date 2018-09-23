@@ -1,0 +1,24 @@
+\documentclass[11pt]{book}
+
+\include{Includes/Includes}
+
+\begin{document} 
+
+\thispagestyle{empty}
+\input Cover 
+\pagecolor{white}
+
+\frontmatter
+\tableofcontents
+\addcontentsline{toc}{chapter}{Preface}
+% \input Preface
+% \input ListOfSymbols
+
+\mainmatter
+\input Prologue
+
+\bibliographystyle{acm}
+\bibliography{RSbook}
+
+\end{document}
+
