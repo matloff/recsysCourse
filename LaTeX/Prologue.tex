@@ -82,6 +82,35 @@ overview.
 
 \subsection{Latent Factor Approach:  Matrix Factorization}
 
+Let $A$ denote the matrix of ratings described earlier, with $A_{ij}$
+denoting the rating user $i$ gives to item $j$.  Keep in mind, as noted,
+that most of the entries in $A$ are unknown; we'll refer to them as NA,
+the R-language notation for missing values.  Matrix factorization 
+methods then estimate all of $A$ as follows.
+
+Let $r$ and $s$ denote the numbers of rows and colums of $A$,
+respectively.  In the smallest version of the MovieLens data, for
+example, $r = 943$ and $s = 1682$.  Recall that the \textit{rank} of a
+matrix is its maximal number of linearly independent row and colums.
+(It can be shown that the row wank and column rank are the same.)  So
+here the rank of $A$ will be at most 943.  If it is 943, we say the
+matrix is of \textit{full rank}.
+
+The idea is to find a \textit{low-rank approximation} to $A$:  We find
+matrices $W$ and $H$, of dimensions $r \times k$ and $k \times s$, each
+of rank $k$, such that 
+
+\begin{equation}
+A \approx WH
+\end{equation}
+
+Typically $k << \min(r,s)$.  Software libraries typically take 10 as the
+default.
+
+The key is that $W$ and $H$ are \underline{known} matrices, no NA
+values.  Thus we can form the product $WH$, thus obtaining estimates for
+all the missing elements of $A$.
+
 \subsection{Latent Factor Approach: Statistical Models}
 
 As noted, collaborative-filtering RS applications form a special case of
@@ -96,7 +125,45 @@ in statistics and \textit{side information} in machine learning --- may
 enhance our predictive ability, especially if this user has not rated
 many items to date.
 
-\section{Bias, Variance and Overfitting}
+\section{Some Quick Infrastructure}
+
+There are some issues that will come up frequently.  We'll treat them in
+detail later, but give overviews here.
+
+\subsection{Data as a Sample}
+
+In statistics, the data are usually considered to be a sample from a
+population.  For instance, during an election campaign pollsters will
+take a \underline{sample}, typically of 1200 people, from the
+\underline{population} of all voters.  Say they are interested in $p$,
+the population proportion of voters favoring Candidate Jones. They
+calculate Their \underline{estimate} of $p$, denoted
+$\widehat{p}$, to be the proportion of voters in the 
+\underline{sample} who like Jones.
+
+Sometimes the notion of sampling is merely conceptual. Say for instance
+we are studying hypertension, on data involving 1000 patients.  We think
+of them as a sample from the population of all sufferers of
+hypertension, even though we did not go through an actual sampling
+process.
+
+In machine learning circles, it is not customary to think explicitly in
+terms of populations, samples and estimates.  Nevertheless, it's
+implied, as ML people do talk about predicting new data from the model
+fitted on the original data.  For the model to be valid, the new data
+needs to come from the same source as the original --- what
+statisticians call a population.
+
+We will usually think in terms of sample data here.
+
+\subsection{Regression Models} 
+
+Suppose we are predicting a variable $Y$ from a vector $X$ of variables,
+say predicting human weight from the vector (height,age).  The
+\textit{regression function} at $t = (t_1,t_2)$of $Y$ on $X$ is defined
+to be the 
+
+\subsection{Bias, Variance and Overfitting}
 
 \section{Prerequisites}
 

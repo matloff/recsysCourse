@@ -1,0 +1,18 @@
+\BOOKMARK [0][-]{chapter.1}{Setting the Stage}{}% 1
+\BOOKMARK [1][-]{section.1.1}{What Are Recommender Systems?}{chapter.1}% 2
+\BOOKMARK [1][-]{section.1.2}{How Is It Done?}{chapter.1}% 3
+\BOOKMARK [2][-]{subsection.1.2.1}{Nearest-Neighbor Methods}{section.1.2}% 4
+\BOOKMARK [2][-]{subsection.1.2.2}{Latent Factor Approach: Matrix Factorization}{section.1.2}% 5
+\BOOKMARK [2][-]{subsection.1.2.3}{Latent Factor Approach: Statistical Models}{section.1.2}% 6
+\BOOKMARK [1][-]{section.1.3}{Covariates/Side Information}{chapter.1}% 7
+\BOOKMARK [1][-]{section.1.4}{Some Quick Infrastructure}{chapter.1}% 8
+\BOOKMARK [2][-]{subsection.1.4.1}{Data as a Sample}{section.1.4}% 9
+\BOOKMARK [2][-]{subsection.1.4.2}{Regression Models}{section.1.4}% 10
+\BOOKMARK [2][-]{subsection.1.4.3}{Bias, Variance and Overfitting}{section.1.4}% 11
+\BOOKMARK [1][-]{section.1.5}{Prerequisites}{chapter.1}% 12
+\BOOKMARK [1][-]{section.1.6}{What You Should Gain from This Book}{chapter.1}% 13
+\BOOKMARK [0][-]{chapter.2}{Nearest-Neighbor Methods}{}% 14
+\BOOKMARK [0][-]{chapter.3}{Matrix Factorization Methods}{}% 15
+\BOOKMARK [0][-]{chapter.4}{Statistical Models}{}% 16
+\BOOKMARK [0][-]{chapter.5}{Use of Side Information}{}% 17
+\BOOKMARK [0][-]{chapter.6}{Bias, Variance and Overfitting}{}% 18
