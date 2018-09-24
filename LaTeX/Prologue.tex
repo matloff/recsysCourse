@@ -1,7 +1,8 @@
 \chapter{Setting the Stage}  
 \label{chap:prologue} 
 
-Let's first get an overview of the topic and this layout of this book.
+Let's first get an overview of the topic and the nature of this book.
+We'll first describe \textit{collaborative filtering}. 
 
 \section{What Are Recommender Systems?}
 
@@ -18,6 +19,11 @@ In discussing RS systems, we use the terms \textit{users} and
 \textit{items}, with the numerical outcome being
 termed the \textit{rating}.  In the famous MovieLens dataset, which
 we'll use a lot, users provide their ratings of films.
+
+Systems that combine user and item data as above are said to perform
+\textit{collaborative filtering}.  The first part of this book will
+focus on this type of RS.  \textit{Content-based} RS systems work by
+learning a user's tastes, say by text analysis.
 
 Ratings can be on an ordinal scale, e.g.\ 1-5 in the movie case.  Or it
 can be binary, such as a user clicking a Like symbol in Twitter, 1 for a
@@ -74,7 +80,7 @@ prologue, discuss a few of the major methods.
 This is probably the oldest class of RS methodology, still popular
 today.  It can be explained very simply.
 
-Say there is a movie spoofind superheroes called \textit{Batman Goes
+Say there is a movie spoofing superheroes called \textit{Batman Goes
 Batty} (BGB).  Maria hasn't seen it, and wonders whether she would like
 it.  To form a predicted rating for her, we could search in our dataset
 for the $k$ users most similar to Maria in movie ratings and who have
@@ -82,6 +88,11 @@ rated BGB.  We would then average their ratings in order to derive a
 predicted rating of BGB for Maria.  We'll treat the issues of choosing
 the value of $k$ and defining ``similar'' later, but this is the
 overview.
+
+\subsection{Statistical Models}
+
+As noted, collaborative-filtering RS applications form a special case of
+crosse random-effects models, a statistical methodology.
 
 \section{Prerequisites}
 
