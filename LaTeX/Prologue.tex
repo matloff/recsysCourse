@@ -57,15 +57,6 @@ a matrix of ratings, with rows representing users and columns indicating
 items, most of the elements of the matrix will be unknown.  We are
 trying to predict the missing values.
 
-\section{Covariates/Side Information}
-
-In predicting the rating for a given (user,item) pair, we may for
-example have demographic information on the user, such as age and
-gender.  Incorporating such information --- called \textit{covariates}
-in statistics and \textit{side information} in machine learning --- may
-enhance our predictive ability, especially if this user has not rated
-many items to date.
-
 \section{How Is It Done?}
 
 Putting aside possible privacy issues that arise in some of the above RS
@@ -89,10 +80,23 @@ predicted rating of BGB for Maria.  We'll treat the issues of choosing
 the value of $k$ and defining ``similar'' later, but this is the
 overview.
 
-\subsection{Statistical Models}
+\subsection{Latent Factor Approach:  Matrix Factorization}
+
+\subsection{Latent Factor Approach: Statistical Models}
 
 As noted, collaborative-filtering RS applications form a special case of
-crosse random-effects models, a statistical methodology.
+crossed random-effects models, a statistical methodology.
+
+\section{Covariates/Side Information}
+
+In predicting the rating for a given (user,item) pair, we may for
+example have demographic information on the user, such as age and
+gender.  Incorporating such information --- called \textit{covariates}
+in statistics and \textit{side information} in machine learning --- may
+enhance our predictive ability, especially if this user has not rated
+many items to date.
+
+\section{Bias, Variance and Overfitting}
 
 \section{Prerequisites}
 
