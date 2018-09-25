@@ -80,12 +80,16 @@ predicted rating of BGB for Maria.  We'll treat the issues of choosing
 the value of $k$ and defining ``similar'' later, but this is the
 overview.
 
+The above approach is called \textit{user-based}, with a corresponding
+\textit{item-base} method.  In general, these are called k-NN methods,
+for ``k-nearest neighbor.''
+
 \subsection{Latent Factor Approach:  Matrix Factorization}
 
 Let $A$ denote the matrix of ratings described earlier, with $A_{ij}$
 denoting the rating user $i$ gives to item $j$.  Keep in mind, as noted,
 that most of the entries in $A$ are unknown; we'll refer to them as NA,
-the R-language notation for missing values.  Matrix factorization 
+the R-language notation for missing values.  Matrix factorization (MF)
 methods then estimate all of $A$ as follows.
 
 Let $r$ and $s$ denote the numbers of rows and colums of $A$,
@@ -97,14 +101,14 @@ here the rank of $A$ will be at most 943.  If it is 943, we say the
 matrix is of \textit{full rank}.
 
 The idea is to find a \textit{low-rank approximation} to $A$:  We find
-matrices $W$ and $H$, of dimensions $r \times k$ and $k \times s$, each
+matrices $W$ and $H$, of dimensions $r \times m$ and $m \times s$, each
 of rank $k$, such that 
 
 \begin{equation}
 A \approx WH
 \end{equation}
 
-Typically $k << \min(r,s)$.  Software libraries typically take 10 as the
+Typically $m << \min(r,s)$.  Software libraries typically take 10 as the
 default.
 
 The key is that $W$ and $H$ are \underline{known} matrices, no NA
@@ -114,7 +118,49 @@ all the missing elements of $A$.
 \subsection{Latent Factor Approach: Statistical Models}
 
 As noted, collaborative-filtering RS applications form a special case of
-crossed random-effects models, a statistical methodology.
+crossed random-effects models, a statistical methodology.  In that way,
+a useful model for $Y_{ij}$, the rating user $i$ gives item $j$, is
+
+\begin{equation}
+Y_{ij} = \mu + \alpha_i + \beta_j + \epsilon_{ij}
+\end{equation}
+
+a sum of an overall mean, an effect for user $i$, an effect for item
+$j$, and an ``all other effects'' term (often called the ``error term,''
+which is rather misleading).  
+
+In the MovieLens setting, $\mu$ would be the mean rating given to all
+movies (in the ``population'' of all movies, past, present and future),
+$\alpha_i$ would be a measure of the tendency of user $i$ to give
+ratings more liberal or harsher than the average user, and $\beta_j$
+would a measure of the popularity of movie $j$, relative to the average
+movie.
+
+What assumptions are made here?  First, $\mu$ is a fixed but unknown
+constant to be estimated.  As to $\alpha_i$ and $\beta_j$, one could on
+the one hand treat them as fixed constants to be estimated.  On the
+other hand, there are some advantages to treating them as random
+variables, we will be seen in Chapter \ref{chap:mixed}.
+
+\subsubsection{Comparison}
+
+Why so many methods?  There is no perfect solution, and each has
+advantagages and disadvantages.
+
+First, note that in the k-NN and MF methods, the user must choose the
+value of a design parameter.  In k-NN, we must choose $k$, the number of
+nearest neighbors, and while in MF, we must choose $m$, the rank.
+
+Parameters such as $k$ and $m$ are known as \textit{tuning parameters}
+in statistics and \textit{hyperparameters} in machine learning (ML).
+Many ML methods have multiple hyperparameters, sometimes 10 or more.
+This can be quite a drawback, as choosing their values is quite
+difficult.  By contrast, the statistical model described above has no
+tuning parameters.
+
+A problem with both MF and the statistical models is that one is limited
+to prediction only of ratings for users and items that are already in
+our dataset.  With k-NN, there is no such restriction.
 
 \section{Covariates/Side Information}
 
@@ -166,6 +212,21 @@ to be the
 \subsection{Bias, Variance and Overfitting}
 
 \section{Prerequisites}
+
+What is background is needed for this book?
+
+\begin{itemize}
+
+\item A calculus-based probability course.
+
+\item Some facility in programming.  
+
+\item Good mathematical intuition.
+
+\end{itemize} 
+
+We will be using the R programming language.  No prior experience with R
+is assumed.  A Quickstart in R is 
 
 \section{What You Should Gain from This Book}
 
