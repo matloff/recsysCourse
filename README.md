@@ -1,4 +1,4 @@
-# recsysCourse
+# recsysCourse  
 
 Readings and other materials for a course on Recommender Systems.
 
