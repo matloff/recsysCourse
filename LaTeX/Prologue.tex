@@ -163,7 +163,8 @@ tuning parameters.
 
 A problem with both MF and the statistical models is that one is limited
 to prediction only of ratings for users and items that are already in
-our dataset.  With kNN, there is no such restriction.
+our dataset.  We could not predict a new user, for instance, without
+recomputing an updated fit.  With kNN, there is no such restriction.
 
 \section{Covariates/Side Information}
 
@@ -173,47 +174,6 @@ gender.  Incorporating such information --- called \textit{covariates}
 in statistics and \textit{side information} in machine learning --- may
 enhance our predictive ability, especially if this user has not rated
 many items to date.
-
-\section{Some Quick Infrastructure Information}
-
-There are some issues that will come up frequently.  We'll treat them in
-detail later, but give overviews here.
-
-\subsection{Data as a Sample}
-
-In statistics, the data are usually considered to be a sample from a
-population.  For instance, during an election campaign pollsters will
-take a \underline{sample}, typically of 1200 people, from the
-\underline{population} of all voters.  Say they are interested in $p$,
-the population proportion of voters favoring Candidate Jones. They
-calculate Their \underline{estimate} of $p$, denoted
-$\widehat{p}$, to be the proportion of voters in the 
-\underline{sample} who like Jones.
-
-Sometimes the notion of sampling is merely conceptual. Say for instance
-we are studying hypertension, on data involving 1000 patients.  We think
-of them as a sample from the population of all sufferers of
-hypertension, even though we did not go through an actual sampling
-process.
-
-In machine learning circles, it is not customary to think explicitly in
-terms of populations, samples and estimates.  Nevertheless, it's
-implied, as ML people do talk about predicting new data from the model
-fitted on the original data.  For the model to be valid, the new data
-needs to come from the same source as the original --- what
-statisticians call a population.
-
-We will usually think in terms of sample data here.
-
-\subsection{Regression Models} 
-
-Suppose we are predicting a variable $Y$ from a vector $X$ of variables,
-say predicting human weight from the vector (height,age).  The
-\textit{regression function} at $t = (t_1,t_2)$ of $Y$ on $X$ is defined
-to be the mean weight of all people in the subpopulation consisting of
-all people of height $t_1$ and age $t_2$.
-
-\subsection{Bias, Variance and Overfitting}
 
 \section{Prerequisites}
 
@@ -230,7 +190,28 @@ What is background is needed for this book?
 \end{itemize} 
 
 We will be using the R programming language.  No prior experience with R
-is assumed.  A Quickstart in R is 
+is assumed.  A Quickstart in R is available in Appendix
+\ref{chap:rquickstart}.
+
+We will also use some machine learning techniques, but no prior
+background is assumed.
+
+\section{Software}
+
+A number of libraries are available for RS methods.  We will use the R
+package \textbf{rectools}, available in my GitHub repo,
+\textbf{github.com/matloff}.
 
 \section{What You Should Gain from This Book}
+
+\begin{itemize}
+
+\item A solid understanding of RS fundamentals:  You'll be able to build
+simple but effective RS systems, and will be able to read books and
+research on advanced RS methods.
+
+\item Greatly enhanced understanding of the basics of
+probability/statistics, machine learning and linear algebra.
+
+\end{itemize} 
 
