@@ -2,6 +2,9 @@
 \label{chap:prologue} 
 
 Let's first get an overview of the topic and the nature of this book.
+Keep in mind, this is just an overview; many questions should come to
+your mind, hopefully whetting your appetite for the succeeding chapters!
+
 We'll first describe \textit{collaborative filtering}. 
 
 \section{What Are Recommender Systems?}
@@ -160,7 +163,7 @@ tuning parameters.
 
 A problem with both MF and the statistical models is that one is limited
 to prediction only of ratings for users and items that are already in
-our dataset.  With k-NN, there is no such restriction.
+our dataset.  With kNN, there is no such restriction.
 
 \section{Covariates/Side Information}
 
@@ -171,7 +174,7 @@ in statistics and \textit{side information} in machine learning --- may
 enhance our predictive ability, especially if this user has not rated
 many items to date.
 
-\section{Some Quick Infrastructure}
+\section{Some Quick Infrastructure Information}
 
 There are some issues that will come up frequently.  We'll treat them in
 detail later, but give overviews here.
@@ -206,8 +209,9 @@ We will usually think in terms of sample data here.
 
 Suppose we are predicting a variable $Y$ from a vector $X$ of variables,
 say predicting human weight from the vector (height,age).  The
-\textit{regression function} at $t = (t_1,t_2)$of $Y$ on $X$ is defined
-to be the 
+\textit{regression function} at $t = (t_1,t_2)$ of $Y$ on $X$ is defined
+to be the mean weight of all people in the subpopulation consisting of
+all people of height $t_1$ and age $t_2$.
 
 \subsection{Bias, Variance and Overfitting}
 
