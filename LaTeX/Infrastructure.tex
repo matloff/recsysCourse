@@ -127,6 +127,27 @@ parameters $\beta_i$, e.g.
 
 mean weight = $\beta_0$ + $\beta_1$ height + $\beta_2$ age
 
+Make sure to take careful note of the word ``mean''!  Clearly, the
+weight of individual people are not linear functions of their height and
+age.
+
+Our estimates of the $\beta_i$ will be denoted $\widehat{\beta}_i$.
+They are obtained by minimizing a certain sum of squares, to be
+discussed in Section \ref{lmdetails}.
+
+In R, the workhorse regression estimator is the \textbf{lm()} function.
+Let's apply this to the MovieLens data, predicting rating from age and
+gender.  We'll define the latter is 1 for male, 0 for female.  We find
+that our estimated regression function of rating on age and gender is
+
+estimated mean weight = 3.3599 + 0.005311 age - 0.0069 gender
+
+Actually, this shows that age and gender are pretty weak predictors of
+movie rating, which you will recall is on a scale of 1 to 5.  A 10-year
+difference in age raised the predicted rating only by about 0.05!  The
+effect of gender is small too.  Still, it is interesting to see that
+older people tend to give slighly higher ratings, as do women.
+
 \section{Bias, Variance and Overfitting}
 
 By far the most vexing issue in statistics and machine learning is that
@@ -134,3 +155,4 @@ of \textit{overfitting}.
 
 \section{Partitioned Matrices}
 
+\section{Details of Use of lm()}
