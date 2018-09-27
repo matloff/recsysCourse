@@ -1,12 +1,13 @@
 \chapter{Some Infrastructure}
-\label{chap:infra} 
+\label{chap:infra}   
 
-There are some issues that will come up frequently
+There are some issues that will come up frequently.  We'll cover them
+briefly here, more later as the need arises.
 
 \section{Linear Algebra}
 
 RS methods, as with other machine learning (ML) techniques, often make
-use of linear algebra. Here
+use of linear algebra. 
 
 \subsection{Matrix Rank and Vector Linear Independence}
 
@@ -38,19 +39,243 @@ Recall that the \textit{rank} of a matrix is its maximal number of
 linearly independent rows and colums.  (It can be shown that the row
 rank and column rank are the same.)  The rank of $M$ above is 2.
 
-We also say that $r_1$ and $r_2$ form a \textit{basis} for the
-\textit{row space} of $M$, which is the set of all vectors that can be
-formed as linear combinations of $r_1$ and $r_2$.  Note that, for
-instance,  $r_1$ and $r_3$ also form a basis etc.
+Recall too the notion of the \textit{basis} of a vector space
+$\mathcal{V}$.  It is a linearly independent set of vectors whose linear
+combinations form all of $\mathcal{V}$.  Here  $r_1$ and $r_2$ form a
+basis for the \textit{row space} of $M$.  Alternatively, $r_1$ and $r_3$
+also form a basis, as do $r_2$ and $r_3$.
 
-
-
-
-So
-here the rank of $A$ will be at most 943.  If it is 943, we say the
-matrix is of \textit{full rank}.
+The rank of an $r \times s$ m is thus at most $\min(r,s)$.  In the case
+of equality, we say the matrix has \textit{full rank}.  A ratings
+matrix, such as $A$ in Section \ref{mf}, should be of full rank, since
+there presuably are no exact dependencies among users or items.
 
 \subsection{Partitioned Matrices}
+
+It is often helpful to partition a matrix into \textit{blocks} (often
+called {\it tiles} in the parallel computation community).
+
+\subsubsection{How It Works}
+
+\begin{equation}
+A = 
+\left (
+\begin{array}{ccc}
+1 & 5 & 12 \\
+0 & 3 & 6 \\
+4 & 8 & 2
+\end{array}
+\right )
+\end{equation}
+
+and
+
+\begin{equation}
+B = 
+\left (
+\begin{array}{ccc}
+0 & 2 & 5 \\
+0 & 9 & 10 \\
+1 & 1 & 2
+\end{array}
+\right ), 
+\end{equation}
+
+so that
+
+\begin{equation}
+C = AB = 
+\left (
+\begin{array}{ccc}
+12 & 59 & 79 \\
+6 & 33 & 42 \\
+2 & 82 & 104
+\end{array}
+\right ) .
+\end{equation}
+
+We could partition A as
+
+\begin{equation}
+A =
+\left (
+\begin{array}{cc}
+A_{11} & A_{12} \\
+A_{21} & A_{22}
+\end{array}
+\right ) ,
+\end{equation}
+
+where
+
+\begin{equation}
+A_{11} =
+\left (
+\begin{array}{cc}
+1 & 5 \\
+0 & 3
+\end{array}
+\right )  ,
+\end{equation}
+
+\begin{equation}
+A_{12} =
+\left (
+\begin{array}{cc}
+12 \\
+6 
+\end{array}
+\right ),
+\end{equation}
+
+\begin{equation}
+A_{21} =
+\left (
+\begin{array}{cc}
+4 & 8 
+\end{array}
+\right )  
+\end{equation}
+
+and
+
+\begin{equation}
+A_{22} =
+\left (
+\begin{array}{c}
+2
+\end{array}
+\right ).
+\end{equation}
+
+Similarly we would partition B and C into blocks of a compatible size to A,
+
+\begin{equation}
+B =
+\left (
+\begin{array}{cc}
+B_{11} & B_{12} \\
+B_{21} & B_{22}
+\end{array}
+\right )
+\end{equation}
+
+\begin{equation}
+C =
+\left (
+\begin{array}{cc}
+C_{11} & C_{12} \\
+C_{21} & C_{22}
+\end{array}
+\right ) ,
+\end{equation}
+
+so that for example
+
+\begin{equation}
+B_{21} =
+\left (
+\begin{array}{cc}
+1 & 1
+\end{array}
+\right ) .
+\end{equation}
+
+The key point is that multiplication still works if we pretend that
+those submatrices are numbers!  For example, pretending like that would
+give the relation
+
+\begin{equation}
+C_{11} = A_{11} B_{11} + A_{12} B_{21}, 
+\end{equation}
+
+which the reader should verify really is correct as matrices, i.e. the
+computation on the right side really does yield a matrix equal to $C_{11}$.
+
+\subsubsection{Important Special Case}
+
+Recall the relation 
+
+\begin{equation}
+A \approx WH
+\end{equation}
+
+in Section \ref{mf}, where $A$ is $r \times s$, $W$ is $r \times m$ and
+$H$ is $m \times s$.  Partition the first and third  matrices into rows, i.e.\
+write
+
+
+\begin{equation}
+A =
+\left (
+\begin{array}{c}
+a_1 \\
+... \\
+a_r 
+\end{array}
+\right ),
+\end{equation}
+
+and
+
+\begin{equation}
+H =
+\left (
+\begin{array}{c}
+h_1 \\
+... \\
+h_m 
+\end{array}
+\right ),
+\end{equation}
+
+Keep $W$ unpartitiond:
+
+\begin{equation}
+W = 
+\left (
+\begin{array}{ccc}
+w_{11} & ... & w_{1m}\\
+... & ... & ... \\
+w_{r1} & ... & w_{rm}
+\end{array}
+\right ),
+\end{equation}
+
+Using the partitioning idea, write $WH$ as a ``matrix-vector product:
+
+\begin{equation}
+WH =
+\left (
+\begin{array}{ccc}
+w_{11} & ... & w_{1m}\\
+... & ... & ... \\
+w_{r1} & ... & w_{rm}
+\end{array}
+\right )
+\left (
+\begin{array}{cc}
+h_1 \\
+... \\
+h_m 
+\end{array}
+\right )
+=
+\left (
+\begin{array}{cc}
+w_{11}h_1 + ... + w_{1m} h_m \\
+... \\
+w_{r1}h_1 + ... + w_{rm} h_m \\
+\end{array}
+\right )
+\end{equation}
+
+Look at that!  What it says is row $i$ of $WH$, and thus approximately
+row $i$ of $A$, is a linear combination of the rows of $H$.  And with a
+different partitioning, we'd find that each column of $WH$ is a linear
+combination of the columns of $H$.  We'll see in Chapter \ref{chap:svd}
+that this has big implications for the matrix factorization method of
+RS.
 
 \section{Probability/Statistics/Machine Learning}
 
