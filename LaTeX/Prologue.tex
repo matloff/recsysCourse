@@ -97,15 +97,9 @@ methods then estimate all of $A$ as follows.
 
 Let $r$ and $s$ denote the numbers of rows and colums of $A$,
 respectively.  In the smallest version of the MovieLens data, for
-example, $r = 943$ and $s = 1682$.  Recall that the \textit{rank} of a
-matrix is its maximal number of linearly independent row and colums.
-(It can be shown that the row wank and column rank are the same.)  So
-here the rank of $A$ will be at most 943.  If it is 943, we say the
-matrix is of \textit{full rank}.
-
-The idea is to find a \textit{low-rank approximation} to $A$:  We find
-matrices $W$ and $H$, of dimensions $r \times m$ and $m \times s$, each
-of rank $k$, such that 
+example, $r = 943$ and $s = 1682$.  The idea is to find a
+\textit{low-rank approximation} to $A$:  We find matrices $W$ and $H$,
+of dimensions $r \times m$ and $m \times s$, each of rank $m$, such that 
 
 \begin{equation}
 A \approx WH
@@ -114,9 +108,10 @@ A \approx WH
 Typically $m << \min(r,s)$.  Software libraries typically take 10 as the
 default.
 
-The key is that $W$ and $H$ are \underline{known} matrices, no NA
-values.  Thus we can form the product $WH$, thus obtaining estimates for
-all the missing elements of $A$.
+We will review the concept of matrix rank later, but for now the key is
+that $W$ and $H$ are \underline{known} matrices, no NA values.  Thus we
+can form the product $WH$, thus obtaining estimates for all the missing
+elements of $A$.
 
 \subsection{Latent Factor Approach: Statistical Models}
 
