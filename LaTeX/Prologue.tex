@@ -30,7 +30,7 @@ focus on this type of RS.  \textit{Content-based} RS systems work by
 learning a user's tastes, say by text analysis.
 
 Ratings can be on an ordinal scale, e.g.\ 1-5 in the movie case.  Or 
-can be binary, such as a user clicking a Like symbol in Twitter, 1 for a
+they can be binary, such as a user clicking a Like symbol in Twitter, 1 for a
 click, 0 for no click.
 
 But ratings in RSs are much more than just the question, ``How much do
@@ -42,11 +42,11 @@ presciption drugs among patients in a medical organization.  Here the
 user is a patient, the item is a drug, and the rating may be 1 for
 reaction, 0 if not.  
 
-More generally, and setting suitable for what in statistics is called
+More generally, any setting suitable for what in statistics is called
 a \textit{crossed heirachical model} fits into RS.  The word
 \textit{crossed} here means that each user is paired with multiple
 items, and vice versa.  The hierarchy refers to the fact that we can
-group users within items or vice versa.  There wpould be two levels of
+group users within items or vice versa.  There would be two levels of
 hierarchy here, but there could be more.  
 
 Say we are looking at elementary school students rating story books.  We
@@ -59,7 +59,8 @@ especially motivational for their students.
 Note that in RS data, most users have not rated most items.  If we form
 a matrix of ratings, with rows representing users and columns indicating
 items, most of the elements of the matrix will be unknown.  We are
-trying to predict the missing values.
+trying to predict the missing values.  Note carefully that these are not
+the same as 0s.
 
 \section{How Is It Done?}
 
@@ -68,7 +69,7 @@ applications,\footnote{I used to be mildy
 troubled by Amazon's suggestions, but with the general demise of
 browsable bricks-and-mortar bookstores, I now tend to view it as ``a
 feature rather than a bug.''} we ask here, How do they do this?  In this
-prologue, discuss a few of the major methods.
+prologue, we'll discuss a few of the major methods.
 
 \subsection{Nearest-Neighbor Methods}
 
@@ -85,8 +86,8 @@ the value of $k$ and defining ``similar'' later, but this is the
 overview.
 
 The above approach is called \textit{user-based}, with a corresponding
-\textit{item-base} method.  In general, these are called k-NN methods,
-for ``k-nearest neighbor.''
+\textit{item-based} method.  In general, these are called k-NN methods,
+for ``k-nearest neighbor.''  (We'll shorten it to kNN.)
 
 \subsection{Latent Factor Approach:  Matrix Factorization}
 \label{mf}
@@ -147,8 +148,8 @@ variables, we will be seen in Chapter \ref{chap:mixed}.
 Why so many methods?  There is no perfect solution, and each has
 advantagages and disadvantages.
 
-First, note that in the k-NN and MF methods, the user must choose the
-value of a design parameter.  In k-NN, we must choose $k$, the number of
+First, note that in the kNN and MF methods, the user must choose the
+value of a design parameter.  In kNN, we must choose $k$, the number of
 nearest neighbors, and while in MF, we must choose $m$, the rank.
 
 Parameters such as $k$ and $m$ are known as \textit{tuning parameters}
