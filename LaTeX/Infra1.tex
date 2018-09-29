@@ -362,8 +362,6 @@ using only one of them, we are relinquishing some information.  But with
 the need to avoid overfitting, use of the approximation may be a net win
 for us.
 
-\subsubsection{Eigenanalysis}
-
 Well then, how can we determine a set of near-redundant variables, so
 that we can consider omitting them from our analysis?  Let's look at
 those graphs a little more closely.
@@ -415,20 +413,28 @@ Var(Y_1) > Var(Y_2) > ... > Var(Y_p)
 
 Now we have a promising solution to our dimension reduction problem.
 In [(b)] above, we can choose to use just the first few of the $Y_i$,
-omitting the ones with small variance.
+omitting the ones with small variance.  And again, since the $Y_i$ will
+be uncorrelated, we are eliminating a source of possible redundancy
+among them.
 
-That's of central importance.  In attempting dimension reduction, 
+PCA won't be a perfect solution --- there is no such thing --- as can be
+the case of the relations between variables is nonmonotonic.  A common
+example is age, with mean income given age tending to be a quadratic (or
+higher degree) polynomial relation.  But PCA is very common ``go to''
+method for dimension reduction, and may work well even in (mildly)
+nonmonotonic settings.
 
-For reasons to be explained later, we'll start with square matrices, say
-$G$, and in fact impose another condition, that $G$ is
-\textit{symmetric}:
+\subsubsection{Eigenanalysis}
+
+The correlation matrix $C$ of a set of variables is $p \times p$, i.e.\
+square.  Moreover, since $\textrm{corr}(X_i,X_j) = \textrm{corr}(X_j,X_i)$,
+$C$ is \textit{symmetric}:
 
 \begin{equation}
-G' = G
+C' = C
 \end{equation}
 
 where $'$ denotes matrix transpose.  
-
 
 Recall that for any square matrix $L$, if there is a scalar $\lambda$
 and a nonzero vector $x$ such that 
@@ -438,4 +444,49 @@ Lx = \lambda x
 \end{equation}
 
 then we say that $x$ is an \textit{eigenvector} of $L$, with
-\textit{eigenvalue} $\lambda$.
+\textit{eigenvalue} $\lambda$.  (Note that the above implies that $x$ is
+a column vector, $p \times 1$, a convention we will use throughout the
+book.)
+
+It can be shown that any symmetric matrix has real (not complex)
+eigenvalues, and that the corresponding eigenvectors $U_1,...,U_p$
+are orthogonal,
+
+\begin{equation}
+U_i' U_j = 0, ~ i \neq j
+\end{equation}
+
+We always take the $U_i$ to have length 1.
+
+\subsection{PCA}
+
+So, finally, here is PCA:
+
+\begin{quote}
+
+Define $X = (X_1,...,X_p)'$, and let $U$ be the matrix whose i$^{th}$
+column is $U_i$ as above.  Now let
+
+\begin{equation}
+Y = (Y_1,...,Y_p)' = X'U
+\end{equation}
+
+These new variables $Y_i$, arranged in terms of descending variance are
+uncorrelated with each other, and are called the \textit{principal
+components} of the original variables $X_i$.  We choose the first few,
+and perform our analysis using these instead of the original $X_i$
+
+\end{quote}
+
+Note that using the first few $Y_i$ is implemented by taking only the
+first few columns of $U$, say the first $r$.  Call that $U^{(r)}$.
+
+Typically we have many cases in our data, say $n$, arranged in an $n
+\times p$ matrix $P$.  Then our new data matrix $Q$ will be
+
+\begin{equation}
+Q = P U^{(r)}
+\end{equation}
+
+(Make sure you see this.  It is an application of our matrix
+partitioning material above.)
