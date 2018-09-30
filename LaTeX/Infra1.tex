@@ -2,7 +2,7 @@
 \label{chap:linalg}   
 
 There are some issues that will come up frequently.  We'll first cover them
-brieflyhere, more later as the need arises.  This chapter will review
+briefly here, more later as the need arises.  This chapter will review
 linear algebra, while the following one will review/extend the reader's
 knowledge of probability and statistics.
 
@@ -302,17 +302,20 @@ Or better yet, row 3 still seems redundant, Let's formalize that,
 leading to one of the most common techniques in statistics/machine
 learning.
 
+(Warning:  This section will be somewhat long, but quite central to
+RS/ML.)
+
 \subsection{Dimension Reduction}
 
 One of the major themes in computer science is \textit{scale}, as in the
-common question, ``Does it scale?''  This concern is, does an algorithm,
+common question, ``Does it scale?''  The concern is, does an algorithm,
 method or whatever work well in large-scale systems?
 
 In the RS context, just think of, say, Amazon.  The business has
 millions of users and millions of items.  In other words, the ratings
 matrix has millions of rows and millions of columns, and even one
 million rows and columns would mean a total number of $(10^6)^2 =
-10^{12}$ entries.
+10^{12}$ entries, about 8 terabytes of data.
 
 This is a core point in statistics/machine learning, the notion of
 \textit{dimension reduction}.  In complex applications, there is a
@@ -347,7 +350,7 @@ while in the second one, the correlation is 0.8.
 Not surprisingly due to the high correlation in the second graph, the
 ``two-dimensional bell'' is concentrated around a straight line,
 specifically the line $t_2 = - t_1$.  In other words, there is high
-probability that $X_2 \approx -X_1$, so that  
+probability that $X_2 \approx -X_1$, so that:  
 
 \begin{quote}
 
@@ -358,16 +361,16 @@ choices, e.g.\ $X_2$), not two.
 
 Note one more time, though, the approximate nature of the approach we
 are developing.  There really \textit{are} two variables above.  By
-using only one of them, we are relinquishing some information.  But with
+using only one of them, \textbf{we are relinquishing some information.  But with
 the need to avoid overfitting, use of the approximation may be a net win
-for us.
+for us.}
 
 Well then, how can we determine a set of near-redundant variables, so
 that we can consider omitting them from our analysis?  Let's look at
 those graphs a little more closely.
 
 Any \textit{level set} in the above graphs, i.e.\ a curve one
-obtains by slicing the bells parallel to the $(t_1,t_2)$ axis can be
+obtains by slicing the bells parallel to the $(t_1,t_2)$ plane can be
 shown to be an ellipse.  As noted, the major axis of the ellipse will be
 the line $t_1 + t_2 = 0$.  The minor axis will be the line perpendicular
 to that, $t_1 - t_2 = 0$.  In turn, that means that standard probability
@@ -417,16 +420,18 @@ omitting the ones with small variance.  And again, since the $Y_i$ will
 be uncorrelated, we are eliminating a source of possible redundancy
 among them.
 
-PCA won't be a perfect solution --- there is no such thing --- as can be
-the case of the relations between variables is nonmonotonic.  A common
-example is age, with mean income given age tending to be a quadratic (or
-higher degree) polynomial relation.  But PCA is very common ``go to''
-method for dimension reduction, and may work well even in (mildly)
-nonmonotonic settings.
+PCA won't be a perfect solution --- there is no such thing --- as might
+be the case if the relations between variables is nonmonotonic.  A
+common example is age, with mean income given age tending to be a
+quadratic (or higher degree) polynomial relation.  But PCA is a very
+common ``go to'' method for dimension reduction, and may work well even
+in (mildly) nonmonotonic settings.
+
+Now, how do we find these $Y_i$?
 
 \subsubsection{Eigenanalysis}
 
-The correlation matrix $C$ of a set of variables is $p \times p$, i.e.\
+The correlation matrix $C$ of a set of $p$ variables is $p \times p$, i.e.\
 square.  Moreover, since $\textrm{corr}(X_i,X_j) = \textrm{corr}(X_j,X_i)$,
 $C$ is \textit{symmetric}:
 
@@ -460,33 +465,188 @@ We always take the $U_i$ to have length 1.
 
 \subsection{PCA}
 
+Typically we have many cases in our data, say $n$, arranged in an $n
+\times p$ matrix $Q$, with row $i$ representing case $i$ and column $j$
+representing the $j^{th}$ variable.
+
+Say our data is about people, 1000 of them,  And we have data on height,
+weight, age, gender, years of schooling and income.  Then $n = 1000$, $p
+= 6$.
+
 So, finally, here is PCA:
 
-\begin{quote}
+\begin{enumerate}
 
-Define $X = (X_1,...,X_p)'$, and let $U$ be the matrix whose i$^{th}$
-column is $U_i$ as above.  Now let
 
-\begin{equation}
-Y = (Y_1,...,Y_p)' = X'U
-\end{equation}
+\item Find the correlation matrix (or covariance matrix, a similar notion)
+from the data in $Q$.  
 
-These new variables $Y_i$, arranged in terms of descending variance are
-uncorrelated with each other, and are called the \textit{principal
-components} of the original variables $X_i$.  We choose the first few,
-and perform our analysis using these instead of the original $X_i$
+\item Compute its eigenvalues and eigenvectors.  
 
-\end{quote}
+\item After ordering the eigenvalues from largest to smallest, let
+$\lambda_i$ be the $i^{th}$ largest, and let $U_i$ be the corresponding
+eigenvector, scaled to have length 1.  
 
-Note that using the first few $Y_i$ is implemented by taking only the
-first few columns of $U$, say the first $r$.  Call that $U^{(r)}$.
+\item Let $U$ be the matrix whose $i^{th}$ column is $U_i$.  
 
-Typically we have many cases in our data, say $n$, arranged in an $n
-\times p$ matrix $P$.  Then our new data matrix $Q$ will be
+\item Choose the first few eigenvalues, say $s$ of them, using some
+criterion (see below).  Denote the matrix of the first $s$ columns of $U$
+by $U^{(s)}$.
+
+\item Form a new data matrix, 
 
 \begin{equation}
-Q = P U^{(r)}
+R = Q U^{(s)}
 \end{equation}
 
-(Make sure you see this.  It is an application of our matrix
-partitioning material above.)
+Column $j$ of $R$ is called the $j^{th}$ principal component of the
+original data.
+
+Note that the variance of the $j^{th}$ principal component is
+$\lambda_j$.  The sum of all $p$ values is the same as the sum of the
+variances of the original variables.
+
+\end{enumerate} 
+
+So, in $R$, row $i$ is still data on the $i^{th}$ case, e.g. the $i^{th}$ 
+person, but now with $s$ new variables in place of the original $p$.
+Since typically $s << p$, we have achieved considerable dimension
+reduction.
+
+So, how do we choose $s$?  This is the hard part, and there is no 
+universal good method.  Typically $s$ is chosen so that 
+
+\begin{equation}
+\sum_{j=1}^s \lambda_j
+\end{equation}
+
+is ``most'' of total variance (again, that total is the above expression
+with $p$ instead of $s$), but even this is usually done informally.
+
+In ML/RS settings, though, $s$ is typically chosen by a technique called
+\textit{cross validation}, to be discussed in Chapter \ref{chap:infra2}.
+
+\subsection{Software and Example}
+
+The most commonly used R function for PCA is \textbf{prcomp()}.  As with
+many R functions, it has many optional arguments; we'll take the default
+values here.
+
+For our example, let's use the Turkish Teaching Evaluation data,
+available from the UC Irvine Machine Learning Data Repository.  It
+consists of 5820 student evaluations of university instructors.  Each
+student evaluation consists of answers to 28 questions, each calling for
+a rating of 1-5, plus some other variables we won't consider here.
+
+\begin{lstlisting}
+> turk <- read.csv('turkiye-student-evaluation.csv',header=T)
+> head(turk)
+  instr class nb.repeat attendance difficulty Q1 Q2 Q3 Q4
+1     1     2         1          0          4  3  3  3  3
+2     1     2         1          1          3  3  3  3  3
+3     1     2         1          2          4  5  5  5  5
+4     1     2         1          1          3  3  3  3  3
+5     1     2         1          0          1  1  1  1  1
+6     1     2         1          3          3  4  4  4  4
+  Q5 Q6 Q7 Q8 Q9 Q10 Q11 Q12 Q13 Q14 Q15 Q16 Q17 Q18 Q19
+1  3  3  3  3  3   3   3   3   3   3   3   3   3   3   3
+2  3  3  3  3  3   3   3   3   3   3   3   3   3   3   3
+3  5  5  5  5  5   5   5   5   5   5   5   5   5   5   5
+4  3  3  3  3  3   3   3   3   3   3   3   3   3   3   3
+5  1  1  1  1  1   1   1   1   1   1   1   1   1   1   1
+6  4  4  4  4  4   4   4   4   4   4   4   4   4   4   4
+  Q20 Q21 Q22 Q23 Q24 Q25 Q26 Q27 Q28
+1   3   3   3   3   3   3   3   3   3
+2   3   3   3   3   3   3   3   3   3
+3   5   5   5   5   5   5   5   5   5
+4   3   3   3   3   3   3   3   3   3
+5   1   1   1   1   1   1   1   1   1
+6   4   4   4   4   4   4   4   4   4
+> tpca <- prcomp(turk[,-(1:5)]
+\end{lstlisting}
+
+Let's explore the output.  First, the standard deviations of the new
+variables:
+
+\begin{lstlisting}
+> tpca$sdev
+ [1] 6.1294752 1.4366581 0.8169210 0.7663429 0.6881709
+ [6] 0.6528149 0.5776757 0.5460676 0.5270327 0.4827412
+[11] 0.4776421 0.4714887 0.4449105 0.4364215 0.4327540
+[16] 0.4236855 0.4182859 0.4053242 0.3937768 0.3895587
+[21] 0.3707312 0.3674430 0.3618074 0.3527829 0.3379096
+[26] 0.3312691 0.2979928 0.2888057
+> tmp <- cumsum(tpca$sdev^2)
+> tmp / tmp[28]
+ [1] 0.8219815 0.8671382 0.8817389 0.8945877 0.9049489
+ [6] 0.9142727 0.9215737 0.9280977 0.9341747 0.9392732
+[11] 0.9442646 0.9491282 0.9534589 0.9576259 0.9617232
+[16] 0.9656506 0.9694785 0.9730729 0.9764653 0.9797855
+[21] 0.9827925 0.9857464 0.9886104 0.9913333 0.9938314
+[26] 0.9962324 0.9981752 1.0000000
+\end{lstlisting}
+
+This is striking,  The first principal component (PC) already accounts
+for 82\% of the total variance among all 28 questions.  The first five
+PCs cover over 90\%.  This suggests that the designer of the evaluation
+survey could have written a much more concise survey instrument with
+almost the same utility.
+
+Now keep in mind that each PC here is essentially a ``super-question''
+capturing student opinion via a weighted sum of the original 28
+questions.  Let's look at the first two PCs' weights:
+
+\begin{lstlisting}
+> tpca$rotation[,1]
+        Q1         Q2         Q3         Q4         Q5 
+-0.1787291 -0.1869604 -0.1821853 -0.1841701 -0.1902141 
+        Q6         Q7         Q8         Q9        Q10 
+-0.1870812 -0.1878324 -0.1867865 -0.1823915 -0.1923626 
+       Q11        Q12        Q13        Q14        Q15 
+-0.1866948 -0.1862382 -0.1922729 -0.1911814 -0.1902380 
+       Q16        Q17        Q18        Q19        Q20 
+-0.1962885 -0.1808833 -0.1935788 -0.1927359 -0.1931985 
+       Q21        Q22        Q23        Q24        Q25 
+-0.1911060 -0.1908591 -0.1948393 -0.1931334 -0.1888957 
+       Q26        Q27        Q28 
+-0.1908694 -0.1897555 -0.1886699 
+\end{lstlisting}
+
+\begin{lstlisting}
+
+> tpca$rotation[,2]
+         Q1          Q2          Q3          Q4          Q5 
+ 0.35645673  0.23223504  0.11551155  0.24533527  0.20717759 
+         Q6          Q7          Q8          Q9         Q10 
+ 0.20075314  0.24290761  0.24901577  0.12919618  0.18911720 
+        Q11         Q12         Q13         Q14         Q15 
+ 0.11051480  0.21203229 -0.10616030 -0.15629705 -0.15533847 
+        Q16         Q17         Q18         Q19         Q20 
+-0.04865706 -0.26259518 -0.12905840 -0.15363392 -0.19670071 
+        Q21         Q22         Q23         Q24         Q25 
+-0.22007368 -0.22347198 -0.10278122 -0.06210583 -0.20787213 
+        Q26         Q27         Q28 
+-0.12045026 -0.07204024 -0.21401477 
+\end{lstlisting}
+
+The first PC turned out to place approximately equal weights on all 28
+questions.  The second PC, though, placed its heaviest weight on Q1,
+with substantially varying weights on the other questions.
+
+While we are, let's check that the columns of $U$ are orthogonal.
+
+\begin{lstlisting}
+> t(tpca$rotation[,1]) %*% tpca$rotation[,2]
+              [,1]
+[1,] -2.012279e-16
+\end{lstlisting}
+
+Yes, 0 (with roundoff error).  As an exercise in matrix partitioning,
+the reader should run
+
+\begin{lstlisting}
+t(tpca$rotation) %*% tpca$rotation
+\end{lstlisting}
+
+then check that it produces the identity matrix $I$, then ponder why
+this should be the case.
