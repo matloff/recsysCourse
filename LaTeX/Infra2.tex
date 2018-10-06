@@ -9,7 +9,7 @@ and machine learning is \textit{not} assumed.
 
 \section{Data as a Sample}
 
-In statistics, the data are usually considered to be a sample from a
+In statistics, the data are usually considered a sample from a
 population.  For instance, during an election campaign pollsters will
 take a \underline{sample}, typically of 1200 people, from the
 \underline{population} of all voters.  Say they are interested in $p$,
@@ -23,6 +23,11 @@ of them as a sample from the population of all sufferers of
 hypertension, even though we did not go through an actual sampling
 process.
 
+In RS contexts, this means that we treat the users in our dataset as a
+sample from the conceptual population of all potential users.  We may
+even treat the items as a sample from a conceptual population of all
+possible items.
+
 In machine learning circles, it is not customary to think explicitly in
 terms of populations, samples and estimates.  Nevertheless, it's
 implied, as ML people do talk about predicting new data from the model
@@ -31,11 +36,6 @@ needs to come from the same source as the original --- what
 statisticians call a population.
 
 We will usually think in terms of sample data here.
-
-\subsection{The Notion of Approximate Rank:  Principal Components
-Analysis}
-
-
 
 \section{Probability, Expected Value and Variance}
 
@@ -81,7 +81,11 @@ the people in the population, traditionally written as $\mu$.
 
 These models, both \textit{parametric} and \textit{nonparametric},
 \textbf{form the very core of statistics and machine learning (ML)}.  Their
-importance cannot be overemphasized.
+importance cannot be overemphasized.\footnote{For many, the term
+\textit{regression analysis} connotes a linear parametric model.  But
+actually the term is much more general, defined to be the conditional
+mean as discussed below.  Most ML techniques are nonparametric, as
+explained below, but are still regression methods.}
 
 \subsection{Definition}
 
@@ -156,8 +160,15 @@ estimated mean rating = 3.3599 + 0.005311 age - 0.0069 gender
 Actually, this shows that age and gender are pretty weak predictors of
 movie rating, which you will recall is on a scale of 1 to 5.  A 10-year
 difference in age raised the predicted rating only by about 0.05!  The
-effect of gender is small too.  Still, it is interesting to see that
-older people tend to give slighly higher ratings, as do women.
+effect of gender is small too.  And while it is interesting to see that
+older people tend to give slighly higher ratings, as do women, we must
+keep in mind that the magnitude of the effect here is
+small.\footnote{You be familiar with the term \textit{statistically
+significant}.  It is generally recognized today that this term ca be
+quite misleading.  This is beyond the scope of this book, but suffice it
+to say that although age and gender are statistically significant above
+(details in the R output), their practical importance as predictors here
+is essentially nil.}
 
 \subsection{Details of Linear Regression Estimation}
 
@@ -197,7 +208,9 @@ lmout <- lm(rating ~ age+gender,data=u)
 
 \end{lstlisting}
 
-\section{Bias, Variance and Overfitting}
+\subsection{Categorical Variables (Predictor, Response)}
+
+\section{Bias, Variance, Overfitting and p-Hacking}
 
 By far the most vexing issue in statistics and machine learning is that
 of \textit{overfitting}.
