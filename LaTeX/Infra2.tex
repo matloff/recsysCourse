@@ -151,8 +151,8 @@ The basic idea is to assume the regression function is linear in
 for some unknown values of the $\widehat{\beta}_i$.
 
 Make sure to take careful note of the word ``mean''!  Clearly, the
-weight of individual people are not linear functions of their height and
-age.
+weights of \underline{individual} people are not linear functions of
+their height and age.
 
 As noted, the $\beta_i$ are unknown, and need to be estimated
 from our sample data.  The estimates will be denoted
@@ -182,27 +182,7 @@ to say that although age and gender are statistically significant above
 (details in the R output), their practical importance as predictors here
 is essentially nil.}
 
-\subsection{Details of Linear Regression Estimation}
-
-In the weight-height-age example, say, we form 
-
-\begin{equation}
-\sum_{i=1}^n [W_i - (b_0 + b_1 H_i + b_2 A_i)]^2
-\end{equation}
-
-where $W_i$ is the weight of the i$^{th}$ person in our sample data and
-so on. This is the sum of squared prediction errors.  We take derivativs
-with respect to the $b_k$ to minimize, then set $\widehat{\beta}_k$ to
-the minimizing $b_k$.  (There is a matrix formulation of all this,
-including a matrix derivative, but we will not cover that here.)
-
-Of course we need not do this computation on our own; \textbf{lm()} does
-it for us.
-
-\subsection{Details of the Rating/Age/Gender Example}
-\label{lmdetails}
-
-Here id the annotated code:
+Here is the annotated code:
 
 \begin{lstlisting}
 
@@ -219,6 +199,81 @@ u <- u.big[,c(1,3,5,6)]
 lmout <- lm(rating ~ age+gender,data=u) 
 
 \end{lstlisting}
+
+\subsection{Details of Linear Regression Estimation}
+\label{lmdetails}
+
+In the weight-height-age example, say, we form 
+
+\begin{equation}
+\label{rss}
+r =
+\sum_{i=1}^n [W_i - (b_0 + b_1 H_i + b_2 A_i)]^2
+\end{equation}
+
+where $W_i$ is the weight of the i$^{th}$ person in our sample data and
+so on. This is the sum of squared prediction errors.  We take derivatives
+with respect to the $b_k$ to minimize, then set $\widehat{\beta}_k$ to
+the minimizing $b_k$.  
+
+Though R will do the minimizing for us, it is worth having an idea how
+it works.  To get a glimpse of this, we look at a matrix formulation, as
+follows.  Let $A$ denote the matrix of predictor values, with a 1s
+column tacked on at the left.  In the above example, row 12, say, of $A$
+would consist of a 1, followed by the height and age of the 12$^{th}$
+person in our sample.  Let $D$ denote the vector of weights, so that
+$D_{12}$ is the weight of the 12$^{th}$ person in our sample.  Finally,
+let $b$ denote the vector of $b_k$.  Then
+
+\begin{equation}
+\label{}
+r = (D - A b)' (D - Ab)
+\end{equation}
+
+(Write it out to see this.)
+
+Write the \textit{gradient} of $r$ with respect to $b$,
+
+\begin{equation}
+\frac{\partial r}{\partial b} = (
+\frac{\partial r}{\partial b_0},
+\frac{\partial r}{\partial b_1},
+...
+\frac{\partial r}{\partial b_p}
+)'
+\end{equation}
+
+where $p$ is the number of predictor variables.
+
+It can be shown that for a vector $u$,
+
+\begin{equation}
+\frac{\partial u'u}{\partial b} = 2u
+\end{equation}
+
+(analogous to the scalar relations $d (u^2) /du = 2u$; again, this is
+seen by writing the expressions out).
+
+Setting $u = D - Ab$ and applying the Chain Rule (adapted for
+gradients), we get
+
+\begin{equation}
+\frac{\partial r}{\partial b} = 2 (-A') (D - Ab) 
+\end{equation}
+
+The the gradient to 0 and solving for $b$, we have
+
+\begin{equation}
+0 = A'D - A'Ab
+\end{equation}
+
+so that the minimizing $b$ is
+
+\begin{equation}
+b = (A'A)^{-1} A'D
+\end{equation}
+
+This is what \textbf{lm()} computes in finding the $\widehat{\beta}_k$.
 
 \subsection{Categorical Variables (Predictor, Response)}
 
