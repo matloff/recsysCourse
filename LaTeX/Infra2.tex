@@ -133,7 +133,8 @@ sample for whom $(H,A)$ is closest to (70,28), and average their weights
 to produce our estimate of $E(W ~| H=70, A=28)$.  
 
 This kind of approach is common in ML.  The famous \textit{random
-forests} method is basically a more complex form of kNN.
+forests} method is basically a more complex form of kNN, as we will see
+in Chapter \ref{chap:covars}.
 
 Statisticians also use methods like kNN.  In fact, kNN and random
 forests were invented by statisticians.  But more commonly, statistics
@@ -180,7 +181,9 @@ significant}.  It is generally recognized today that this term can be
 quite misleading.  This is beyond the scope of this book, but suffice it
 to say that although age and gender are statistically significant above
 (details in the R output), their practical importance as predictors here
-is essentially nil.}
+is essentially nil.  See R. Wasserstein and N. Lazar, The ASA's
+Statement on p-Values: Context, Process, and Purpose, \textit{The
+American Statistician}, June 2016.}
 
 Here is the annotated code:
 
