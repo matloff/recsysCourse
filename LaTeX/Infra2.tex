@@ -125,6 +125,8 @@ The regression function is an attribute of the population.  Yet all we
 have is sample data.  How do we estimate the regression function from
 our data?
 
+\textit{Nonparametric:}
+
 Intuitively, we could use a nearest-neighbor approach.  To estimate
 $E(W ~| H=70, A=28)$, we could find, say, the 25 people in our
 sample for whom $(H,A)$ is closest to (70,28), and average their weights
@@ -137,25 +139,35 @@ Statisticians also use methods like kNN.  In fact, kNN and random
 forests were invented by statisticians.  But more commonly, statistics
 uses \textit{parametric} methods, as follows.
 
-The basic idea is to assume the regression function is linear in
-parameters $\beta_i$, e.g.
+\textit{Parametric:}
 
-mean weight = $\beta_0$ + $\beta_1$ height + $\beta_2$ age
+The basic idea is to assume the regression function is linear in
+\underline{parameters} $\beta_i$, e.g.
+
+\begin{equation}
+\textrm{mean weight} = \beta_0 + \beta_1 \textrm{height} + \beta_2 \textrm{age}
+\end{equation}
+
+for some unknown values of the $\widehat{\beta}_i$.
 
 Make sure to take careful note of the word ``mean''!  Clearly, the
 weight of individual people are not linear functions of their height and
 age.
 
-Our estimates of the $\beta_i$ will be denoted $\widehat{\beta}_i$.
-They are obtained by minimizing a certain sum of squares, to be
-discussed in Section \ref{lmdetails}.
+As noted, the $\beta_i$ are unknown, and need to be estimated
+from our sample data.  The estimates will be denoted
+$\widehat{\beta}_i$.  They are obtained by minimizing a certain sum of
+squares, to be discussed in Section \ref{lmdetails}.
 
 In R, the workhorse regression estimator is the \textbf{lm()} function.
 Let's apply this to the MovieLens data, predicting rating from age and
 gender.  We'll define the latter as 1 for male, 0 for female.  We find
 that our estimated regression function of rating on age and gender is
 
-estimated mean rating = 3.3599 + 0.005311 age - 0.0069 gender
+\begin{equation}
+\textrm{estimated mean rating} = 3.3599 + 0.005311 \textrm{age} 
+- 0.0069 \textrm{gender}
+\end{equation}
 
 Actually, this shows that age and gender are pretty weak predictors of
 movie rating, which you will recall is on a scale of 1 to 5.  A 10-year
@@ -163,8 +175,8 @@ difference in age raised the predicted rating only by about 0.05!  The
 effect of gender is small too.  And while it is interesting to see that
 older people tend to give slighly higher ratings, as do women, we must
 keep in mind that the magnitude of the effect here is
-small.\footnote{You be familiar with the term \textit{statistically
-significant}.  It is generally recognized today that this term ca be
+small.\footnote{You may be familiar with the term \textit{statistically
+significant}.  It is generally recognized today that this term can be
 quite misleading.  This is beyond the scope of this book, but suffice it
 to say that although age and gender are statistically significant above
 (details in the R output), their practical importance as predictors here
