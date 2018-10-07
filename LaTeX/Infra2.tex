@@ -134,7 +134,9 @@ to produce our estimate of $E(W ~| H=70, A=28)$.
 
 This kind of approach is common in ML.  The famous \textit{random
 forests} method is basically a more complex form of kNN, as we will see
-in Chapter \ref{chap:covars}.
+in Chapter \ref{chap:covars}.  (If the reader is familiar with
+\textit{neural networks}, she may be surprised that this technique is
+parametric.  Again, more in Chapter \ref{chap:covars}.)
 
 Statisticians also use methods like kNN.  In fact, kNN and random
 forests were invented by statisticians.  But more commonly, statistics
@@ -146,7 +148,7 @@ The basic idea is to assume the regression function is linear in
 \underline{parameters} $\beta_i$, e.g.
 
 \begin{equation}
-\textrm{mean weight} = \beta_0 + \beta_1 \textrm{height} + \beta_2 \textrm{age}
+\textrm{mean weight} = \beta_0 + \beta_1 ~ \textrm{height} + \beta_2 ~ \textrm{age}
 \end{equation}
 
 for some unknown values of the $\widehat{\beta}_i$.
@@ -166,8 +168,8 @@ gender.  We'll define the latter as 1 for male, 0 for female.  We find
 that our estimated regression function of rating on age and gender is
 
 \begin{equation}
-\textrm{estimated mean rating} = 3.3599 + 0.005311 \textrm{age} 
-- 0.0069 \textrm{gender}
+\textrm{estimated mean rating} = 3.3599 + 0.005311 ~ \textrm{age} 
+- 0.0069 ~ \textrm{gender}
 \end{equation}
 
 Actually, this shows that age and gender are pretty weak predictors of
@@ -220,7 +222,8 @@ with respect to the $b_k$ to minimize, then set $\widehat{\beta}_k$ to
 the minimizing $b_k$.  
 
 Though R will do the minimizing for us, it is worth having an idea how
-it works.  To get a glimpse of this, we look at a matrix formulation, as
+it works, especially as more practice in following matrix-centric
+derivations.  To get a glimpse of this, we look at a matrix formulation, as
 follows.  Let $A$ denote the matrix of predictor values, with a 1s
 column tacked on at the left.  In the above example, row 12, say, of $A$
 would consist of a 1, followed by the height and age of the 12$^{th}$
@@ -279,6 +282,12 @@ b = (A'A)^{-1} A'D
 This is what \textbf{lm()} computes in finding the $\widehat{\beta}_k$.
 
 \subsection{Categorical Variables (Predictor, Response)}
+
+A \textit{categorical} variable is one that codes categories.  In our RS
+context, for instance, a user's postal code --- ZIP Code, in the US ---
+may be a helpful predictor of a rating.  Yet it cannot be treated in
+\textbf{lm()}, say as a numeric variable.  After all, the ZIP Code
+90024, for example, is not ``twice as good'' as 45002.
 
 \section{Bias, Variance, Overfitting and p-Hacking}
 
