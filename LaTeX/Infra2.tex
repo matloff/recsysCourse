@@ -125,7 +125,7 @@ The regression function is an attribute of the population.  Yet all we
 have is sample data.  How do we estimate the regression function from
 our data?
 
-\textit{Nonparametric:}
+\subsubsection{Nonparametric}
 
 Intuitively, we could use a nearest-neighbor approach.  To estimate
 $E(W ~| H=70, A=28)$, we could find, say, the 25 people in our
@@ -134,24 +134,23 @@ to produce our estimate of $E(W ~| H=70, A=28)$.
 
 This kind of approach is common in ML.  The famous \textit{random
 forests} method is basically a more complex form of kNN, as we will see
-in Chapter \ref{chap:covars}.  (If the reader is familiar with
-\textit{neural networks}, she may be surprised that this technique is
-parametric.  Again, more in Chapter \ref{chap:covars}.)
+in Chapter \ref{chap:covars}.  
 
 Statisticians also use methods like kNN.  In fact, kNN and random
 forests were invented by statisticians.  But more commonly, statistics
 uses \textit{parametric} methods, as follows.
 
-\textit{Parametric:}
+\subsubsection{Parametric}
 
 The basic idea is to assume the regression function is linear in
 \underline{parameters} $\beta_i$, e.g.
 
 \begin{equation}
+\label{wthtage}
 \textrm{mean weight} = \beta_0 + \beta_1 ~ \textrm{height} + \beta_2 ~ \textrm{age}
 \end{equation}
 
-for some unknown values of the $\widehat{\beta}_i$.
+for some unknown values of the $\beta_i$.
 
 Make sure to take careful note of the word ``mean''!  Clearly, the
 weights of \underline{individual} people are not linear functions of
@@ -161,6 +160,48 @@ As noted, the $\beta_i$ are unknown, and need to be estimated
 from our sample data.  The estimates will be denoted
 $\widehat{\beta}_i$.  They are obtained by minimizing a certain sum of
 squares, to be discussed in Section \ref{lmdetails}.
+
+By the way, if the reader is familiar with
+\textit{neural networks}, she may be surprised that this technique is
+also parametric.  Again, more in Chapter \ref{chap:covars}.
+
+\subsubsection{Comparison}
+
+Consider (\ref{wthtage}), our model for the function of $t_1$ and $t_2$
+
+\begin{equation}
+E(\textrm{weight} ~|~ \textrm{height} = t_1, \textrm{age} = t_2)
+\end{equation}
+
+
+With the linear assumption (\ref{wthtage}), we will be estimating three
+quantities, the $\beta_i$.  But with a nonparametric approach, we are
+estimating infinitely many quantities, one for each value of the
+$(t_1,t_2)$ pair.
+
+In other words, \textbf{parametric methods are a form of dimension reduction}.
+On the other hand, this reduction comes at the expense of relying on the
+assumption of linearity in (\ref{wthtage}).  However, this is not so
+restrictive as it may seem, because:
+
+\begin{itemize}
+
+\item There are ways to assess the validity of the assumption.  This is
+covered in almost any book on regression, such as mine
+(N. Matloff, \textit{Statistical Regression and Classification: from
+Linear Models to Machine Learning}, CRC, 2017.
+
+\item One can add polynomial terms, as seen in the next section.
+
+\item Assumptions tend to be less important in prediction contexts than
+in estimation.  In the RS context, for instance, a rough model may be
+fine if we wish to take into account a gender effect on ratings, but
+might be insufficient if we want to estimate the actual magnitude of
+gender effect.
+
+\end{itemize} 
+
+\subsection{The lm() Function in R}
 
 In R, the workhorse regression estimator is the \textbf{lm()} function.
 Let's apply this to the MovieLens data, predicting rating from age and
@@ -199,10 +240,23 @@ demog <- read.table('u.user',sep='|')
 names(demog) <- c('usernum','age','gender','occ','ZIP') 
 # merge (database 'join' op)
 u.big <- merge(ratings,demog,by.x=1,by.y=1) 
-u <- u.big[,c(1,3,5,6)] 
+u <- u.big[,c(1,2,3,5,6)] 
 # fit linear model
 lmout <- lm(rating ~ age+gender,data=u) 
 
+\end{lstlisting}
+
+Here's the output:
+
+\begin{lstlisting}
+> lmout
+
+Call:
+lm(formula = rating ~ age + gender, data = u)
+
+Coefficients:
+(Intercept)          age      genderM  
+   3.359894     0.005311    -0.006904  
 \end{lstlisting}
 
 \subsection{Details of Linear Regression Estimation}
@@ -276,10 +330,30 @@ The the gradient to 0 and solving for $b$, we have
 so that the minimizing $b$ is
 
 \begin{equation}
+\label{famouslm}
 b = (A'A)^{-1} A'D
 \end{equation}
 
 This is what \textbf{lm()} computes in finding the $\widehat{\beta}_k$.
+
+\subsubsection{Polynomial Terms}
+
+People tend to gain weight during middle age, but often they lose weight
+when they become elderly.  So (\ref{wthtage}), which is linear in the
+age variable, may be rather unrealistic; we might believe a quadratic
+model for mean weight as a function of age is better:
+
+\begin{equation}
+\label{wthtage2}
+\textrm{mean weight} = \beta_0 + \beta_1 ~ \textrm{height} + 
+\beta_2 ~ \textrm{age} +
+\beta_3 ~ \textrm{age}^2
+\end{equation}
+
+A key point is that this is still a linear model! When we speak of a
+linear model --- the 'l' in ``lm()'' -- we mean linear in the $\beta_i$.
+If in (\ref{wthtage2}) we, say, multiply all the $\beta_i$ by 3, the
+entire sum grows by a factor of 3.
 
 \subsection{Categorical Variables (Predictor, Response)}
 
@@ -287,7 +361,87 @@ A \textit{categorical} variable is one that codes categories.  In our RS
 context, for instance, a user's postal code --- ZIP Code, in the US ---
 may be a helpful predictor of a rating.  Yet it cannot be treated in
 \textbf{lm()}, say as a numeric variable.  After all, the ZIP Code
-90024, for example, is not ``twice as good'' as 45002.
+90024, for example, is not ``twice as good'' as 45002; they are just ID
+codes.
+
+\subsubsection{Dummy Variables as Predictors}
+
+So, what do we do if we wish to use a categorical variable as a
+predictor?  The answer is that we break the variable into a set of
+\textit{indicator variables}, colloquially known as \textit{dummy
+variables}.  These have the values 1 and 0, with 1
+\underline{indicating} the trait in question, 0 meaning not.
+
+Say for instance in RS we have the categorical variable State for users
+in a US state.  We would define 50 dummy variables, one for each state.
+For instance, the one for California would have the value 1 if the user
+lives in California, 0 otherwise.
+
+Note carefully though that we would only use 49 of the dummies, not 50.
+We could for instance exclude Wyoming.  Why? Because if the other 49
+dummies are all 0, then we know this user must be in Wyoming.  The
+Wyoming dummy would then be redundant. Not only do we want to avoid
+redundancy on dimension reduction grounds, but also that redundancy
+would result in the matrix $A$ in (\ref{famouslm}) being less than full
+rank, so $(A'A)^{-1}$ would not exist.
+
+\textit{Categorical variables in R:}
+
+In R, categorical variables are stored as objects of the class
+\textbf{"factor"}.  In our MovieLens example above, let's take a look at
+the data frame \textbf{demog}:
+
+\begin{lstlisting}
+> for (i in 1:5) 
++    print(class(demog[,i]))
+[1] "integer"
+[1] "integer"
+[1] "factor"
+[1] "factor"
+[1] "factor"
+\end{lstlisting}
+
+The last three columns are factors.\footnote{Even the first two could
+have been stored as factors, but were not coded as so.}  Let's see how
+many occupations there are:
+
+\begin{lstlisting}
+> levels(demog$occ)
+ [1] "administrator" "artist"        "doctor"        "educator"     
+ [5] "engineer"      "entertainment" "executive"     "healthcare"   
+ [9] "homemaker"     "lawyer"        "librarian"     "marketing"    
+[13] "none"          "other"         "programmer"    "retired"      
+[17] "salesman"      "scientist"     "student"       "technician"   
+[21] "writer"       
+\end{lstlisting}
+
+In a regresison application, we'd form 21 dummies, but use only 20 of
+them.
+
+However, the designers of R (and its predecessor S), in their wisdom,
+set things up to save us some time.  We can just specify the factors we
+wish to use, and R will form the dummies for us, being careful to drop
+one of them.
+
+This is what happened, for instance, in our example above in which we
+regressed rating against age and gender, with output
+
+\begin{lstlisting}
+Coefficients:
+(Intercept)          age      genderM  
+   3.359894     0.005311    -0.006904  
+\end{lstlisting}
+
+R noticed that gender was an R factor, with levels M and F.  It created
+dummies for M and F, but just retained the former, as the first case in
+the data had gender as M.
+
+So, the estimated coefficient -0.0076904 meant that the ``maleness''
+impact on mean rating was that value.  So, men give slightly lower
+ratings than women do, for fixed age.
+
+\subsubsection{Dummy Variables as Response Variables}
+
 
 \section{Bias, Variance, Overfitting and p-Hacking}
 
