@@ -5,7 +5,11 @@ Many RS methods are probabilistic in nature, so we will lay out some
 infrastructure.  It is assumed the reader has a background in
 calculus-based probability structures, such as expected value and
 density functions.  Background in statistics (as opposed to probability)
-and machine learning is \textit{not} assumed.
+and machine learning is \textit{not} assumed.\footnote{The reader may
+wish to consult my open source book on probability and statistics, N.
+Matloff, \textit{From Algorithms to Z-Scores: Probabilistic and
+Statistical Modeling in Computer Science},
+\url{http://heather.cs.ucdavis.edu/probstatbook}.}
 
 \section{Data as a Sample}
 
@@ -355,6 +359,7 @@ This is what \textbf{lm()} computes in finding the $\widehat{\beta}_k$.
 $(A')^{-1}$, as $A'$ is nonsquare and thus noninvertible.)
 
 \subsubsection{Polynomial Terms}
+\label{poly}
 
 People tend to gain weight during middle age, but often they lose weight
 when they become elderly.  So (\ref{wthtage}), which is linear in the
@@ -372,6 +377,10 @@ A key point is that this is still a linear model! When we speak of a
 linear model --- the 'l' in ``lm()'' -- we mean linear in the $\beta_i$.
 If in (\ref{wthtage2}) we, say, multiply all the $\beta_i$ by 3, the
 entire sum grows by a factor of 3.
+
+Of course we may wish to add a quadratic term for height as well, and
+for that matter, a product term height $\times$ age.  We do have to
+worry about overfitting though; see Section \ref{overfit}.
 
 \subsection{Categorical Variables (Predictor, Response)}
 
@@ -564,13 +573,96 @@ Recall that we had assigned the output of \textbf{lm()} to
 \textbf{predict()} above was dispatched to \textbf{predict.lm()}.
 
 \section{Bias, Variance, Overfitting and p-Hacking}
+\label{overfit}
 
 By far the most vexing issue in statistics and machine learning is that
-of \textit{overfitting}.
+of \textit{overfitting}.  What is this?
 
-E.G. ZIP CODE EX; CAN WE AFFORD TO HAVE SO MANY DUMMIES? GIVE A POLY EX
-OF OVERFIT      
+Say we are in some RS context in which age and gender are substantial
+factors in predicting rating.  Suppose also that there is an
+\textit{interaction} between age and gender, say with men becoming more
+liberal raters as they age while women becoming more reserved in their
+ratings.  Then if we include age in our model but exclude gender, this
+biases our ratings.
 
-p < sqrt(n)
+On the other hand, we need to worry about sampling variance.  Consider
+the case of opinion polls during an election campaign, in which the goal
+is to estimate $p$, the proportion of voters who will vote for Candidate
+Jones.  If we use too small a sample size, say 50, our results will
+probably be inaccurate.  This is due to instability:  Two pollsters,
+each randomly sampling 50 people, will likely come up with substantially
+different values of $\widehat{p}$, their sample estimates of $p$.  In
+other words, the \underline{variance} of $\widehat{p}$ is too high.
 
+This is the famous \textit{bias/variance tradeoff}:  As we use more and
+more predictors in our regression model, the bias decreases but the
+variance increases.  And if we fit too rich a model, our estimates such
+as the $\widehat{\beta}_i$ will have high variance and \textbf{our
+predictive ability \underline{on new data} will suffer}; we will have
+overfit a model on the original data.
+
+This is particularly a problem when one has many dummy variables. For
+instance, there are more than 42,000 ZIP Codes in the US; to have a
+dummy for each would almost certainly be overfitting.
+
+So, where is the ``happy medium,'' the model that is rich enough to
+capture most of the dynamics of the variables at hand, but simple enough
+to avoid variance issues?  Unfortunately, there is no good answer to
+this question.
+
+One quick rule of thumb is that one should have $p < \sqrt{n}$, where $p$
+is the number of predictors (not to be confused with the quantity in our
+polling example above), and $n$ is the number of cases in our sample.
+This is certainly not a firm rule, though, and one may be able to get
+good prediction with a considerably larger value of $p$, especially if
+\textit{regularization} methods are used (Section \ref{chap:svd}).
+
+The most common approach to dealing with the bias/variance tradeoff is
+\textit{cross validation}.  In the simplest version, one randomly splits
+the data into a \textit{training set} and a \textit{test
+set}.\footnote{The latter is also called a \textit{holdout set} or a
+\textit{validation set}.}  We fit the model to the training set and
+then, pretending we don't know the ``Y'' (i.e. response) values in the
+test set, predict those values from our fitted model and the ``X''
+values in the test set.  We then ``unpretend,'' and check how well those
+predictions worked. 
+
+(Note carefully that after fitting the model via xval, we then use the
+full data for later prediction.  Splitting the data for cross-validation
+was just a temporary device for model selection.)
+
+\textit{Example:}
+
+Let's illustrate this on the dataset \textbf{prgeng}, assembled from the
+2000 US census.  It wage and other information on programmers and
+engineers in Silicon Valley.  This dataset is included in the R
+\textbf{polyreg} package, which fits polynomial models as we saw in
+Section \ref{poly} above.
+
+\begin{lstlisting}
+> getPE()  # produces data frame pe
+> pe1 <- pe[,c(1,2,4,6,7,12:16,3)]  # choose some predictors
+> head(pe1)
+       age sex wkswrkd ms phd occ1 occ2 occ3 occ4 occ5
+1 50.30082   0      52  0   0    0    0    1    0    0
+2 41.10139   1      20  0   0    0    1    0    0    0
+3 24.67374   0      52  0   0    0    0    1    0    0
+4 50.19951   1      52  0   0    1    0    0    0    0
+5 51.18112   0       1  0   0    1    0    0    0    0
+6 57.70413   1       0  0   0    1    0    0    0    0
+  wageinc
+1   75000
+2   12300
+3   15400
+4       0
+5     160
+6       0
+\end{lstlisting}
+
+By the way, note the dummy variables.  We have just two levels for
+education, so anyone with just a bachelor's degree or less, or a
+professional degree, with be ``other,'' coded by \textbf{ms} and
+\textbf{phd} both having the values 0.  Similarly, there are actually
+six occupations, hence five dummies; the sixth occupation is coded by
+having 0s for the five occupation dummies.
 
