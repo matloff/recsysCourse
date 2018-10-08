@@ -637,7 +637,8 @@ Let's illustrate this on the dataset \textbf{prgeng}, assembled from the
 2000 US census.  It wage and other information on programmers and
 engineers in Silicon Valley.  This dataset is included in the R
 \textbf{polyreg} package, which fits polynomial models as we saw in
-Section \ref{poly} above.
+Section \ref{poly} above.\footnote{Available from
+\url{githum.com/matloff}.}
 
 \begin{lstlisting}
 > getPE()  # produces data frame pe
@@ -665,4 +666,70 @@ professional degree, with be ``other,'' coded by \textbf{ms} and
 \textbf{phd} both having the values 0.  Similarly, there are actually
 six occupations, hence five dummies; the sixth occupation is coded by
 having 0s for the five occupation dummies.
+
+Well, then, let's see how well we can predict wage income. First, split
+the data:
+
+\begin{lstlisting}
+> testidxs <- sample(1:nrow(pe1),1000)
+> testset <- pe1[testidxs,]
+> trainset <- pe1[-testidxs,]
+\end{lstlisting}
+
+Then fit the model and predictL
+
+\begin{lstlisting}
+> lmout <- lm(wageinc ~ .,data=pe1)  # predict wage from all others
+> predvals <- predict(lmout,testset[,-11])
+> mean(abs(predvals - testset[,11]))
+[1] 24268.2
+\end{lstlisting}
+
+An average, our prediction is off by more than \$24,000, not so good,
+but not the main point here.
+
+\begin{lstlisting}
+> pfout <- polyFit(pe1,deg=2)
+> mean(abs(predict(pfout,testset[,-11]) - testset[,11]))
+[1] 23668.91
+\end{lstlisting}
+
+Ah, some improvement, with a second-degree model.  Note that this
+includes the squares of all predictors, and their products, e.g.] age
+times weeks worked.  Altogether there are now $p = 46$ predictors, up
+from our original 10:
+
+\begin{lstlisting}
+> dim(pfout$poly.xy)
+[1] 20090    47
+\end{lstlisting}
+
+How about a cubic model?
+
+\begin{lstlisting}
+> pfout <- polyFit(pe1,deg=3)
+> mean(abs(predict(pfout,testset[,-11]) - testset[,11]))
+[1] 23342.19
+\end{lstlisting}
+
+Even better, though it may be largely a difference due to sampling
+variation.  We are now up to $p = 118$.
+
+\begin{lstlisting}
+> pfout <- polyFit(pe1,deg=4)
+getPoly time:  1.12 0.056 1.177 0 0 
+lm() time:  0.88 0.024 0.906 0 0 
+> mean(abs(predict(pfout,testset[,-11]) - testset[,11]))
+[1] 23231.04
+Warning message:
+In predict.lm(object$fit, plm.newdata) :
+  prediction from a rank-deficient fit may be misleading
+\end{lstlisting}
+
+About the same, but with an ominous warning.  R found that the matrix
+$A'A$ in (\ref{famouslm}) was close to nonfull-rank, thus nearly
+singular (noninvertible).  Now $p = 226$.
+
+
+
 
