@@ -113,11 +113,18 @@ each $(t_1,t_2)$ pair.  So it is a \underline{function} of $t_1$ and
 $t_2$.  This is called the \textit{regression function} of $W$ on $H$
 and $A$.
 
+\textit{Terminology:} It is common to refer to $W$ here at the
+\textit{response variable} and $H$ and $A$ as the \textit{predictor
+variables}.  The latter may also be called \textit{explanatory
+variables} (economics etc.) or \textit{features} (ML).
+
 \subsection{Prediction}
 
 Say we have a person whose height and age are 70 and 28, but with
 unknown weight.  It can be shown that the optimal (under a certain
-criterion) predictor of her weight is $E(W ~| H=70, A=28) = 162$.
+criterion) predictor of her weight is the value of the regression
+function at (70,28), $E(W ~|~ H=70, A=28) = 162$.  It is optimal
+in the sense of minimizing expected squared prediction error.
 
 \subsection{Estimation}
 
@@ -226,7 +233,8 @@ to say that although age and gender are statistically significant above
 (details in the R output), their practical importance as predictors here
 is essentially nil.  See R. Wasserstein and N. Lazar, The ASA's
 Statement on p-Values: Context, Process, and Purpose, \textit{The
-American Statistician}, June 2016.}
+American Statistician}, June 2016.}  Of course, the gender effect may be
+large in other RS datasets.
 
 Here is the annotated code:
 
@@ -303,7 +311,11 @@ Write the \textit{gradient} of $r$ with respect to $b$,
 )'
 \end{equation}
 
-where $p$ is the number of predictor variables.
+where $p$ is the number of predictor variables.\footnote{Note the
+representation here of a column vector as the transpose of a row vector.
+We will often do this, in order to save space on the page and make the
+page more readable.  And, any reference to a \textit{vector} will be to
+a column vector unless stated otherwise.}
 
 It can be shown that for a vector $u$,
 
@@ -318,12 +330,15 @@ Setting $u = D - Ab$ and applying the Chain Rule (adapted for
 gradients), we get
 
 \begin{equation}
-\frac{\partial r}{\partial b} = 2 (-A') (D - Ab) 
+\frac{\partial r}{\partial b} = 
+2(D - Ab) ~ \frac{\partial (D - Ab)}{\partial b}=
+2 (-A') (D - Ab) 
 \end{equation}
 
-The the gradient to 0 and solving for $b$, we have
+Setting the gradient to 0 and solving for $b$, we have
 
 \begin{equation}
+\label{adaab}
 0 = A'D - A'Ab
 \end{equation}
 
@@ -335,6 +350,9 @@ b = (A'A)^{-1} A'D
 \end{equation}
 
 This is what \textbf{lm()} computes in finding the $\widehat{\beta}_k$.
+
+(Note that we cannot simply multiply both sides of (\ref{adaab}) by
+$(A')^{-1}$, as $A'$ is nonsquare and thus noninvertible.)
 
 \subsubsection{Polynomial Terms}
 
@@ -442,9 +460,117 @@ ratings than women do, for fixed age.
 
 \subsubsection{Dummy Variables as Response Variables}
 
+In many cases, the response variable may be categorical.  In the RS
+context, for instance, a rating may simply be binary, i.e.\
+like/dislike.  Or even click/not click --- does a user click on a Web page
+location?  Let's use this as our example.
+
+We are generally interested in the probability of a click.  That
+actually fits a regression context, as follows.  Code a click as 1 and
+nonclick as 0.  Since the expected value of a variable of this type is
+the probability of a 1, and since a regression function by definition
+is an expected value.
+
+So, if our predictors were age and gender, say, we might entertain
+formulatng our regression model as
+
+\begin{equation}
+\label{clickagegen}
+\textrm{probability of click} = \beta_0 + \beta_1 ~ \textrm{age} +
+\beta_2 ~ \textrm{gender}
+\end{equation}
+
+One problem, though, is that a probability should be in [0,1] yet the
+right-hand side of (\ref{clickagegen}) can conceivably be anywhere in
+$(-\infty,\infty)$.  For this and other reasons the usual parametric
+model for a binary response $Y$ is the \textit{logistic}:  For $p$
+predictors $X_i$, 
+
+\begin{equation}
+P(Y  = 1 ~|~ X_1=t_1,...,X_p=t_p) =
+\frac{1}{1+\exp{-(\beta_0+\beta_1 t_1+...+\beta_p t_p})}
+\end{equation}
+
+This is called a \textit{generalized linear model}, as it has the linear
+form $\exp{-(\beta_0+\beta_1 t_1+...+\beta_p t_p})$ embedded inside
+another function, in this case the logistic function $g(s) =
+1/(1+e^{-s})$.
+
+The $\beta_i$ are estimated by an R function $glm()$, similar to $lm()$.
+Let's model a user giving a movie a rating of 4 or 5:
+
+\begin{lstlisting}
+> r45 <- as.integer(u$rating >= 4)
+> u$r45 <- r45
+> glmout <- glm(r45 ~ age+gender,data=u,family=binomial)
+> glmout
+
+Call:  glm(formula = r45 ~ age + gender, data = u)
+
+Coefficients:
+(Intercept)          age      genderM  
+  -0.002510     0.006886    -0.011189  
+...
+\end{lstlisting}
+
+What if our response variable is categorical but with more than two
+levels?  In the click/nonclick setting, suppose the user has a choice of
+five things to click, and must choose one.  Then the response is
+categorical with five levels.  A common parametric approach would be to
+run five logistic models, one for each possible outcome (all using the
+same set of predictor variables), then in prediction, predict the one
+with the highest conditional probability.
+
+\subsection{R's predict(), a Generic Function}
+
+A key aspect to R's object orientation is \textit{generic} functions.
+Take \textbf{plot()}, for instance.  Its action will depend on the class
+of object it is applied to.  If we call the function on a vector, we get
+a histogram.  But if we call it on a two-column matrix, we get a scatter
+diagram.
+
+What happens is that when \textbf{plot()} is called, R will check what
+class of object the caller supplied as an argument.  If the object is of
+class \textbf{"x"}, then the original call will be \textit{dispatched}
+to \textbf{plot.x()}, a plotting function tailored to that class.  (Of
+course, that means one needs to have been written and available.)
+
+R's \textbf{predict()} is another example of a generic function, used to
+predict new cases.  In the MovieLens example above, say we want to
+predict the rating given by a 30-year-old man.  We could simply plug
+30 and 1 into the estimated regression function, say using
+\textbf{coef()} to get the $\widehat{\beta}_i$:
+
+\begin{lstlisting}
+> coef(lmout)
+ (Intercept)          age      genderM 
+ 3.359894442  0.005310673 -0.006903502 
+> coef(lmout) %*% c(1,30,1)
+         [,1]
+[1,] 3.512311
+\end{lstlisting}
+
+Alternatively (and in many settings, more conveniently):
+
+\begin{lstlisting}
+> newdata <- data.frame(age=30,gender='M')
+> predict(lmout,newdata)
+       1 
+3.512311 
+\end{lstlisting}
+
+Recall that we had assigned the output of \textbf{lm()} to
+\textbf{lmout}, which will have class \textbf{'lm'}.  So, the call to
+\textbf{predict()} above was dispatched to \textbf{predict.lm()}.
 
 \section{Bias, Variance, Overfitting and p-Hacking}
 
 By far the most vexing issue in statistics and machine learning is that
 of \textit{overfitting}.
+
+E.G. ZIP CODE EX; CAN WE AFFORD TO HAVE SO MANY DUMMIES? GIVE A POLY EX
+OF OVERFIT      
+
+p < sqrt(n)
+
 
