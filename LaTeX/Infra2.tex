@@ -1,4 +1,5 @@
-\chapter{Some Infrastructure: Probability and Statistics}
+\crhapter{Some Infrastructure: 
+Probability and Statistics}
 \label{chap:infra2}   
 
 Many RS methods are probabilistic in nature, so we will lay out some
@@ -268,7 +269,7 @@ lm(formula = rating ~ age + gender, data = u)
 
 Coefficients:
 (Intercept)          age      genderM  
-   3.359894     0.005311    -0.006904  
+3.359894     0.005311    -0.006904  
 \end{lstlisting}
 
 \subsection{Details of Linear Regression Estimation}
@@ -434,9 +435,9 @@ many occupations there are:
 
 \begin{lstlisting}
 > levels(demog$occ)
- [1] "administrator" "artist"        "doctor"        "educator"     
- [5] "engineer"      "entertainment" "executive"     "healthcare"   
- [9] "homemaker"     "lawyer"        "librarian"     "marketing"    
+[1] "administrator" "artist"        "doctor"        "educator"     
+[5] "engineer"      "entertainment" "executive"     "healthcare"   
+[9] "homemaker"     "lawyer"        "librarian"     "marketing"    
 [13] "none"          "other"         "programmer"    "retired"      
 [17] "salesman"      "scientist"     "student"       "technician"   
 [21] "writer"       
@@ -456,7 +457,7 @@ regressed rating against age and gender, with output
 \begin{lstlisting}
 Coefficients:
 (Intercept)          age      genderM  
-   3.359894     0.005311    -0.006904  
+3.359894     0.005311    -0.006904  
 \end{lstlisting}
 
 R noticed that gender was an R factor, with levels M and F.  It created
@@ -481,7 +482,7 @@ the probability of a 1, and since a regression function by definition
 is an expected value.
 
 So, if our predictors were age and gender, say, we might entertain
-formulatng our regression model as
+formulating our regression model as
 
 \begin{equation}
 \label{clickagegen}
@@ -518,7 +519,7 @@ Call:  glm(formula = r45 ~ age + gender, data = u)
 
 Coefficients:
 (Intercept)          age      genderM  
-  -0.002510     0.006886    -0.011189  
+-0.002510     0.006886    -0.011189  
 ...
 \end{lstlisting}
 
@@ -552,10 +553,10 @@ predict the rating given by a 30-year-old man.  We could simply plug
 
 \begin{lstlisting}
 > coef(lmout)
- (Intercept)          age      genderM 
- 3.359894442  0.005310673 -0.006903502 
+(Intercept)          age      genderM 
+3.359894442  0.005310673 -0.006903502 
 > coef(lmout) %*% c(1,30,1)
-         [,1]
+      [,1]
 [1,] 3.512311
 \end{lstlisting}
 
@@ -564,7 +565,7 @@ Alternatively (and in many settings, more conveniently):
 \begin{lstlisting}
 > newdata <- data.frame(age=30,gender='M')
 > predict(lmout,newdata)
-       1 
+    1 
 3.512311 
 \end{lstlisting}
 
@@ -592,7 +593,11 @@ Jones.  If we use too small a sample size, say 50, our results will
 probably be inaccurate.  This is due to instability:  Two pollsters,
 each randomly sampling 50 people, will likely come up with substantially
 different values of $\widehat{p}$, their sample estimates of $p$.  In
-other words, the \underline{variance} of $\widehat{p}$ is too high.
+other words, the \underline{variance} of $\widehat{p}$ is too
+high.\footnote{The repeatable experiment here is randomly choosing 50
+people.  Each time we perform this experiment, we get a different set of
+50 people, thus a different value of $\widehat{(p}$.  The latter is a
+random variable, and thus has a variance.}
 
 This is the famous \textit{bias/variance tradeoff}:  As we use more and
 more predictors in our regression model, the bias decreases but the
@@ -644,14 +649,14 @@ Section \ref{poly} above.\footnote{Available from
 > getPE()  # produces data frame pe
 > pe1 <- pe[,c(1,2,4,6,7,12:16,3)]  # choose some predictors
 > head(pe1)
-       age sex wkswrkd ms phd occ1 occ2 occ3 occ4 occ5
+    age sex wkswrkd ms phd occ1 occ2 occ3 occ4 occ5
 1 50.30082   0      52  0   0    0    0    1    0    0
 2 41.10139   1      20  0   0    0    1    0    0    0
 3 24.67374   0      52  0   0    0    0    1    0    0
 4 50.19951   1      52  0   0    1    0    0    0    0
 5 51.18112   0       1  0   0    1    0    0    0    0
 6 57.70413   1       0  0   0    1    0    0    0    0
-  wageinc
+wageinc
 1   75000
 2   12300
 3   15400
@@ -669,8 +674,9 @@ having 0s for the five occupation dummies.
 
 Well, then, let's see how well we can predict wage income. First, split
 the data:
-
+e
 \begin{lstlisting}
+> set.seed(9999)
 > testidxs <- sample(1:nrow(pe1),1000)
 > testset <- pe1[testidxs,]
 > trainset <- pe1[-testidxs,]
