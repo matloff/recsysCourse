@@ -1,4 +1,4 @@
-\crhapter{Some Infrastructure: 
+\chapter{Some Infrastructure: 
 Probability and Statistics}
 \label{chap:infra2}   
 
@@ -11,6 +11,10 @@ wish to consult my open source book on probability and statistics, N.
 Matloff, \textit{From Algorithms to Z-Scores: Probabilistic and
 Statistical Modeling in Computer Science},
 \url{http://heather.cs.ucdavis.edu/probstatbook}.}
+
+Other than laying some groundwork, e.g. introducing the term
+\textit{dummy variables}, the primary goal of this chapter will be to
+discuss the issue of \textit{overfitting}.
 
 \section{Data as a Sample}
 
@@ -84,7 +88,7 @@ the people in the population, traditionally written as $\mu$.
 
 \section{Regression Models} 
 
-These models, both \textit{parametric} and \textit{nonparametric},
+Regression models, both \textit{parametric} and \textit{nonparametric},
 \textbf{form the very core of statistics and machine learning (ML)}.  Their
 importance cannot be overemphasized.\footnote{For many, the term
 \textit{regression analysis} connotes a linear parametric model.  But
@@ -115,13 +119,14 @@ people in the subpopulation consisting of 28-year-olds of height 70 is
 
 Note that in (\ref{regdef}), the expression has a different value for
 each $(t_1,t_2)$ pair.  So it is a \underline{function} of $t_1$ and
-$t_2$.  This is called the \textit{regression function} of $W$ on $H$
+$t_2$.  This is why it is called the \textit{regression function} of $W$ on $H$
 and $A$.
 
 \textit{Terminology:} It is common to refer to $W$ here at the
 \textit{response variable} and $H$ and $A$ as the \textit{predictor
 variables}.  The latter may also be called \textit{explanatory
-variables} (economics etc.) or \textit{features} (ML).
+variables} (in economics and other social sciences) or \textit{features}
+(in ML).
 
 \subsection{Prediction}
 
@@ -173,7 +178,7 @@ from our sample data.  The estimates will be denoted
 $\widehat{\beta}_i$.  They are obtained by minimizing a certain sum of
 squares, to be discussed in Section \ref{lmdetails}.
 
-By the way, if the reader is familiar with
+By the way, if the reader is familiar with the ML methodology known as
 \textit{neural networks}, she may be surprised that this technique is
 also parametric.  Again, more in Chapter \ref{chap:covars}.
 
@@ -201,13 +206,13 @@ restrictive as it may seem, because:
 \item There are ways to assess the validity of the assumption.  This is
 covered in almost any book on regression, such as mine
 (N. Matloff, \textit{Statistical Regression and Classification: from
-Linear Models to Machine Learning}, CRC, 2017.
+Linear Models to Machine Learning}, CRC, 2017).
 
 \item One can add polynomial terms, as seen in the next section.
 
 \item Assumptions tend to be less important in prediction contexts than
 in estimation.  In the RS context, for instance, a rough model may be
-fine if we wish to take into account a gender effect on ratings, but
+fine if we wish to take into account gender in predicting ratings, but
 might be insufficient if we want to estimate the actual magnitude of
 gender effect.
 
@@ -225,9 +230,12 @@ that our estimated regression function of rating on age and gender is
 - 0.0069 ~ \textrm{gender}
 \end{equation}
 
+(Note the word \textit{estimated}! These are not the true unknown
+population values, just estimates based on sample data.)
+
 Actually, this shows that age and gender are pretty weak predictors of
 movie rating, which you will recall is on a scale of 1 to 5.  A 10-year
-difference in age raised the predicted rating only by about 0.05!  The
+difference in age raises the predicted rating only by about 0.05!  The
 effect of gender is small too.  And while it is interesting to see that
 older people tend to give slighly higher ratings, as do women, we must
 keep in mind that the magnitude of the effect here is
@@ -235,11 +243,12 @@ small.\footnote{You may be familiar with the term \textit{statistically
 significant}.  It is generally recognized today that this term can be
 quite misleading.  This is beyond the scope of this book, but suffice it
 to say that although age and gender are statistically significant above
-(details in the R output), their practical importance as predictors here
-is essentially nil.  See R. Wasserstein and N. Lazar, The ASA's
-Statement on p-Values: Context, Process, and Purpose, \textit{The
-American Statistician}, June 2016.}  Of course, the gender effect may be
-large in other RS datasets.
+(details available via adding the call \textbf{summary(lmout)} to the
+code below), their practical importance as predictors here is
+essentially nil.  See R. Wasserstein and N. Lazar, The ASA's Statement
+on p-Values: Context, Process, and Purpose, \textit{The American
+Statistician}, June 2016.}  Of course, the gender effect may be large in
+other RS datasets.
 
 Here is the annotated code:
 
@@ -296,7 +305,7 @@ column tacked on at the left.  In the above example, row 12, say, of $A$
 would consist of a 1, followed by the height and age of the 12$^{th}$
 person in our sample.  Let $D$ denote the vector of weights, so that
 $D_{12}$ is the weight of the 12$^{th}$ person in our sample.  Finally,
-let $b$ denote the vector of $b_k$.  Then
+let $b$ denote the vector of the $b_k$.  Then
 
 \begin{equation}
 \label{}
@@ -311,21 +320,21 @@ Write the \textit{gradient} of $r$ with respect to $b$,
 \frac{\partial r}{\partial b} = (
 \frac{\partial r}{\partial b_0},
 \frac{\partial r}{\partial b_1},
-...
+...,
 \frac{\partial r}{\partial b_p}
 )'
 \end{equation}
 
-where $p$ is the number of predictor variables.\footnote{Note the
+where $p+1$ is the number of predictor variables.\footnote{Note the
 representation here of a column vector as the transpose of a row vector.
-We will often do this, in order to save space on the page and make the
-page more readable.  And, any reference to a \textit{vector} will be to
-a column vector unless stated otherwise.}
+We will often do this, in order to save space on the page.  And, any
+reference to a \textit{vector} will be to a column vector unless stated
+otherwise.}
 
-It can be shown that for a vector $u$,
+It can be shown that for a vector $u$, 
 
 \begin{equation}
-\frac{\partial u'u}{\partial b} = 2u
+\frac{\partial u'u}{\partial u} = 2u
 \end{equation}
 
 (analogous to the scalar relations $d (u^2) /du = 2u$; again, this is
@@ -354,7 +363,8 @@ so that the minimizing $b$ is
 b = (A'A)^{-1} A'D
 \end{equation}
 
-This is what \textbf{lm()} computes in finding the $\widehat{\beta}_k$.
+This famous formula is what \textbf{lm()} computes in finding the
+$\widehat{\beta}_k$.
 
 (Note that we cannot simply multiply both sides of (\ref{adaab}) by
 $(A')^{-1}$, as $A'$ is nonsquare and thus noninvertible.)
@@ -377,11 +387,15 @@ model for mean weight as a function of age is better:
 A key point is that this is still a linear model! When we speak of a
 linear model --- the 'l' in ``lm()'' -- we mean linear in the $\beta_i$.
 If in (\ref{wthtage2}) we, say, multiply all the $\beta_i$ by 3, the
-entire sum grows by a factor of 3.
+entire sum grows by a factor of 3, hence the linearity in the $\beta_i$.
 
 Of course we may wish to add a quadratic term for height as well, and
-for that matter, a product term height $\times$ age.  We do have to
-worry about overfitting though; see Section \ref{overfit}.
+for that matter, a product term height $\times$ age.  And since any
+model is merely an approximation, we might consider using higher and
+higher order polynomials.  We do have to worry about overfitting though;
+see Section \ref{overfit}.
+
+We'll have a long example in Section \ref{prgengex}.
 
 \subsection{Categorical Variables (Predictor, Response)}
 
@@ -447,9 +461,9 @@ In a regresison application, we'd form 21 dummies, but use only 20 of
 them.
 
 However, the designers of R (and its predecessor S), in their wisdom,
-set things up to save us some time.  We can just specify the factors we
-wish to use, and R will form the dummies for us, being careful to drop
-one of them.
+set things up to save us some time and trouble.  We can just specify the
+factors we wish to use, and R will form the dummies for us, being
+careful to drop one of them.
 
 This is what happened, for instance, in our example above in which we
 regressed rating against age and gender, with output
@@ -464,8 +478,8 @@ R noticed that gender was an R factor, with levels M and F.  It created
 dummies for M and F, but just retained the former, as the first case in
 the data had gender as M.
 
-So, the estimated coefficient -0.0076904 meant that the ``maleness''
-impact on mean rating was that value.  So, men give slightly lower
+So, the estimated coefficient -0.006904 meant that the ``maleness''
+impact on mean rating has that value.  Men give slightly lower
 ratings than women do, for fixed age.
 
 \subsubsection{Dummy Variables as Response Variables}
@@ -479,7 +493,8 @@ We are generally interested in the probability of a click.  That
 actually fits a regression context, as follows.  Code a click as 1 and
 nonclick as 0.  Since the expected value of a variable of this type is
 the probability of a 1, and since a regression function by definition
-is an expected value.
+is an expected value, taking Click as our response variables does
+involve a regression function.
 
 So, if our predictors were age and gender, say, we might entertain
 formulating our regression model as
@@ -494,7 +509,7 @@ One problem, though, is that a probability should be in [0,1] yet the
 right-hand side of (\ref{clickagegen}) can conceivably be anywhere in
 $(-\infty,\infty)$.  For this and other reasons the usual parametric
 model for a binary response $Y$ is the \textit{logistic}:  For $p$
-predictors $X_i$, 
+predictors $X_i$, our model is
 
 \begin{equation}
 P(Y  = 1 ~|~ X_1=t_1,...,X_p=t_p) =
@@ -502,15 +517,15 @@ P(Y  = 1 ~|~ X_1=t_1,...,X_p=t_p) =
 \end{equation}
 
 This is called a \textit{generalized linear model}, as it has the linear
-form $\exp{-(\beta_0+\beta_1 t_1+...+\beta_p t_p})$ embedded inside
+form $\beta_0+\beta_1 t_1+...+\beta_p t_p$ embedded inside
 another function, in this case the logistic function $g(s) =
 1/(1+e^{-s})$.
 
-The $\beta_i$ are estimated by an R function $glm()$, similar to $lm()$.
-Let's model a user giving a movie a rating of 4 or 5:
+The $\beta_i$ are estimated by an R function \textbf{glm()}, similar to
+\textbf{lm()}.  Let's model a user giving a movie a rating of 4 or 5:
 
 \begin{lstlisting}
-> r45 <- as.integer(u$rating >= 4)
+> r45 <- as.integer(u$rating >= 4)  # a binary value, 1 or 0
 > u$r45 <- r45
 > glmout <- glm(r45 ~ age+gender,data=u,family=binomial)
 > glmout
@@ -522,6 +537,9 @@ Coefficients:
 -0.002510     0.006886    -0.011189  
 ...
 \end{lstlisting}
+
+(The argument \textbf{family = binomial} tells R that we want the
+logistic model, not some other generalized linear model.)
 
 What if our response variable is categorical but with more than two
 levels?  In the click/nonclick setting, suppose the user has a choice of
@@ -555,7 +573,7 @@ predict the rating given by a 30-year-old man.  We could simply plug
 > coef(lmout)
 (Intercept)          age      genderM 
 3.359894442  0.005310673 -0.006903502 
-> coef(lmout) %*% c(1,30,1)
+> coef(lmout) %*% c(1,30,1)  # linear algebra-style matrix multiply
       [,1]
 [1,] 3.512311
 \end{lstlisting}
@@ -596,7 +614,7 @@ different values of $\widehat{p}$, their sample estimates of $p$.  In
 other words, the \underline{variance} of $\widehat{p}$ is too
 high.\footnote{The repeatable experiment here is randomly choosing 50
 people.  Each time we perform this experiment, we get a different set of
-50 people, thus a different value of $\widehat{(p}$.  The latter is a
+50 people, thus a different value of $\widehat{p}$.  The latter is a
 random variable, and thus has a variance.}
 
 This is the famous \textit{bias/variance tradeoff}:  As we use more and
@@ -615,12 +633,14 @@ capture most of the dynamics of the variables at hand, but simple enough
 to avoid variance issues?  Unfortunately, there is no good answer to
 this question.
 
-One quick rule of thumb is that one should have $p < \sqrt{n}$, where $p$
-is the number of predictors (not to be confused with the quantity in our
-polling example above), and $n$ is the number of cases in our sample.
-This is certainly not a firm rule, though, and one may be able to get
-good prediction with a considerably larger value of $p$, especially if
-\textit{regularization} methods are used (Section \ref{chap:svd}).
+One quick rule of thumb is that one should have $p < \sqrt{n}$, where
+$p$ is the number of predictors (not to be confused with the quantity of
+the same name in our polling example above), and $n$ is the number of
+cases in our sample.  But this is certainly not a firm rule by any
+means.  One may be able to get good prediction with a considerably
+larger value of $p$, especially if \textit{regularization} methods are
+used (Section \ref{chap:svd}), but even without it, as will be seen
+below.
 
 The most common approach to dealing with the bias/variance tradeoff is
 \textit{cross validation}.  In the simplest version, one randomly splits
@@ -632,18 +652,48 @@ test set, predict those values from our fitted model and the ``X''
 values in the test set.  We then ``unpretend,'' and check how well those
 predictions worked. 
 
-(Note carefully that after fitting the model via xval, we then use the
-full data for later prediction.  Splitting the data for cross-validation
-was just a temporary device for model selection.)
+(Note carefully that after fitting the model via cross-validation, we
+then use the full data for later prediction.  Splitting the data for
+cross-validation was just a temporary device for model selection.)
 
-\textit{Example:}
+\textit{The problem of p-hacking:}
+
+The (rather recent) term \textit{p-hacking} refers to the following
+abuse of statistics.  Let's say we have a large study of some disease,
+and are looking for genetic factors related to the disease.  Remember,
+these patients in the study are a sample from the population of all
+sufferers of this disease.  We might look at thousans of genes.  The
+point is that even if NO gene is related to the disease, sampling
+variation would likely lead us to (falsely) conclude that some gene is
+connected to the disease, just by accident.\footnote{For those with
+background in statistics, the reason this is called ``p-hacking'' is
+that the researcher may form a significance test for each gene,
+computing a p-value for each test.  Since under the null hypothesis we
+have a 5\% chance of getting a ``significant'' p-value for any given
+gene, the probability of having at least one significant result out of
+the thousands of tests is quite high, even if the null hypothesis is
+true in all cases.}
+
+Though the above is not about prediction, it has big implications for
+the prediction realm.  In ML there are a number of datasets on which
+analysts engage in contests, vying for the honor of developing the model
+for the highest prediction accuracy, say for classification of images.
+Then even if all the analysts have models of equal accuracy, it is
+likely that one is substantially higher than the others, just due to an
+accident of sampling variation.  This is true in spite of the fact that
+they all are using the same sample; it may be that the ``winning''
+analyst' model may not be so good on another sample from the same
+population.
+
+\section{Extended Example}
+\label{prgengex}
 
 Let's illustrate this on the dataset \textbf{prgeng}, assembled from the
-2000 US census.  It wage and other information on programmers and
+2000 US census.  It consists of wage and other information on programmers and
 engineers in Silicon Valley.  This dataset is included in the R
 \textbf{polyreg} package, which fits polynomial models as we saw in
 Section \ref{poly} above.\footnote{Available from
-\url{githum.com/matloff}.}
+\url{github.com/matloff}.}
 
 \begin{lstlisting}
 > getPE()  # produces data frame pe
@@ -674,7 +724,7 @@ having 0s for the five occupation dummies.
 
 Well, then, let's see how well we can predict wage income. First, split
 the data:
-e
+
 \begin{lstlisting}
 > set.seed(9999)
 > testidxs <- sample(1:nrow(pe1),1000)
@@ -682,26 +732,29 @@ e
 > trainset <- pe1[-testidxs,]
 \end{lstlisting}
 
-Then fit the model and predictL
+Then fit the model and predict:
 
 \begin{lstlisting}
 > lmout <- lm(wageinc ~ .,data=pe1)  # predict wage from all others
 > predvals <- predict(lmout,testset[,-11])
 > mean(abs(predvals - testset[,11]))
-[1] 24268.2
+[1] 26494.62
 \end{lstlisting}
 
-An average, our prediction is off by more than \$24,000, not so good,
+An average, our prediction is off by more than \$26,000, not so good,
 but not the main point here.
+
+Let's try a quadratic model.  Again, we could form the squared terms
+ourselves, but \textbf{polyreg} makes it convenient.
 
 \begin{lstlisting}
 > pfout <- polyFit(pe1,deg=2)
 > mean(abs(predict(pfout,testset[,-11]) - testset[,11]))
-[1] 23668.91
+[1] 25885.43
 \end{lstlisting}
 
 Ah, some improvement, with a second-degree model.  Note that this
-includes the squares of all predictors, and their products, e.g.] age
+includes the squares of all predictors, and their products, e.g.\ age
 times weeks worked.  Altogether there are now $p = 46$ predictors, up
 from our original 10:
 
@@ -710,12 +763,12 @@ from our original 10:
 [1] 20090    47
 \end{lstlisting}
 
-How about a cubic model?
+How about a cubic model? 
 
 \begin{lstlisting}
 > pfout <- polyFit(pe1,deg=3)
 > mean(abs(predict(pfout,testset[,-11]) - testset[,11]))
-[1] 23342.19
+[1] 25410.9
 \end{lstlisting}
 
 Even better, though it may be largely a difference due to sampling
@@ -726,7 +779,7 @@ variation.  We are now up to $p = 118$.
 getPoly time:  1.12 0.056 1.177 0 0 
 lm() time:  0.88 0.024 0.906 0 0 
 > mean(abs(predict(pfout,testset[,-11]) - testset[,11]))
-[1] 23231.04
+[1] 25380.65
 Warning message:
 In predict.lm(object$fit, plm.newdata) :
   prediction from a rank-deficient fit may be misleading
@@ -736,6 +789,27 @@ About the same, but with an ominous warning.  R found that the matrix
 $A'A$ in (\ref{famouslm}) was close to nonfull-rank, thus nearly
 singular (noninvertible).  Now $p = 226$.
 
+Remarkably, this improvement continued:
 
+\bigskip
 
+\begin{tabular}{|r|r|}
+\hline
+deg & MAPE \\
+\hline
+6 & 25245.83 \\
+\hline
+10 & 24679.86 \\
+\hline
+15 & 24123.59 \\
+\hline
+\end{tabular}
+
+And at degree 15, $p$ was a whopping 3791.  By the way, in that last
+computation, it took more than 2 minutes to simply generate the
+polynomials --- those 3791 columns --- and almost 20 minutes to process
+the call to \textbf{lm()}.
+
+Yet, even with this large model, we have not yet reached the point of
+overfitting.  Eventually, though, MAPE will begin to rise.
 
