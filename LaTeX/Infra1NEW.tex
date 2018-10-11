@@ -471,7 +471,7 @@ Typically we have many cases in our data, say $n$, arranged in an $n
 \times p$ matrix $Q$, with row $i$ representing case $i$ and column $j$
 representing the $j^{th}$ variable.
 
-Say our data is about people, 1000 of them,  And we have data on height,
+Say our data is about people, 1000 of them, and we have data on height,
 weight, age, gender, years of schooling and income.  Then $n = 1000$, $p
 = 6$.
 
@@ -635,7 +635,7 @@ The first PC turned out to place approximately equal weights on all 28
 questions.  The second PC, though, placed its heaviest weight on Q1,
 with substantially varying weights on the other questions.
 
-While we are, let's check that the columns of $U$ are orthogonal.
+While we are here, let's check that the columns of $U$ are orthogonal.
 
 \begin{lstlisting}
 > t(tpca$rotation[,1]) %*% tpca$rotation[,2]
