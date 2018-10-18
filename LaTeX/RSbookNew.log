@@ -1,9 +1,9 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.5.22)  18 OCT 2018 15:45
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.5.22)  18 OCT 2018 15:47
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**RSbook.tex
-(./RSbook.tex
+**RSbookNEW.tex
+(./RSbookNEW.tex
 LaTeX2e <2016/03/31>
 Babel <3.9r> and hyphenation patterns for 83 language(s) loaded.
 (/usr/local/texlive/2016/texmf-dist/tex/latex/base/book.cls
@@ -285,8 +285,8 @@ File: lstlang2.sty 2015/06/04 1.6 listings language file
 (/usr/local/texlive/2016/texmf-dist/tex/latex/listings/lstlang3.sty
 File: lstlang3.sty 2015/06/04 1.6 listings language file
 ))
-(./RSbook.aux)
-\openout1 = `RSbook.aux'.
+(./RSbookNEW.aux)
+\openout1 = `RSbookNEW.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 5.
 LaTeX Font Info:    ... okay on input line 5.
@@ -317,9 +317,9 @@ LaTeX Info: Redefining \ref on input line 5.
 LaTeX Info: Redefining \pageref on input line 5.
 LaTeX Info: Redefining \nameref on input line 5.
 
-(./RSbook.out) (./RSbook.out)
+(./RSbookNEW.out) (./RSbookNEW.out)
 \@outlinefile=\write4
-\openout4 = `RSbook.out'.
+\openout4 = `RSbookNEW.out'.
 
 
 (/usr/local/texlive/2016/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
@@ -375,24 +375,24 @@ lection _ online / collection _ object _ details /
 
 ] [2
 
-] (./RSbook.toc
+] (./RSbookNEW.toc
 Underfull \vbox (badness 4144) has occurred while \output is active []
 
 pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has 
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.20 ...}Eigenanalysis}{17}{subsubsection.2.3.2.1}
+l.20 ...}Eigenanalysis}{15}{subsubsection.2.3.2.1}
                                                    [1
 
 ]pdfTeX warning (ext4): destination with the same identifier (name{page.2}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.44 ...line {6}Statistical Models}{43}{chapter.6}
+l.44 ...line {6}Statistical Models}{41}{chapter.6}
                                                    [2] [3])
 \tf@toc=\write5
-\openout5 = `RSbook.toc'.
+\openout5 = `RSbookNEW.toc'.
 
  (./Prologue.tex
 [4]
@@ -412,35 +412,32 @@ File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10.95> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 182.
  [8])
-(./Infra1.tex [9] [10
+(./Infra1NEW.tex [9] [10
 
 ]
 Chapter 2.
-[11] [12] [13] [14] <Images/Rho2.pdf, id=479, 433.62pt x 433.62pt>
+[11] [12] [13] [14] <Images/Rho2.pdf, id=480, 433.62pt x 433.62pt>
 File: Images/Rho2.pdf Graphic file (type pdf)
 
 <use Images/Rho2.pdf>
-Package pdftex.def Info: Images/Rho2.pdf used on input line 338.
+Package pdftex.def Info: Images/Rho2.pdf used on input line 340.
 (pdftex.def)             Requested size: 234.87749pt x 234.87912pt.
- <Images/Rho8.pdf, id=480, 433.62pt x 433.62pt>
+ <Images/Rho8.pdf, id=481, 433.62pt x 433.62pt>
 File: Images/Rho8.pdf Graphic file (type pdf)
 
 <use Images/Rho8.pdf>
-Package pdftex.def Info: Images/Rho8.pdf used on input line 342.
+Package pdftex.def Info: Images/Rho8.pdf used on input line 344.
 (pdftex.def)             Requested size: 234.87749pt x 234.87912pt.
 
-Overfull \hbox (145.78743pt too wide) in paragraph at lines 337--344
+Overfull \hbox (145.78743pt too wide) in paragraph at lines 339--346
 [][]   [] 
  []
 
-
-Underfull \vbox (badness 1430) has occurred while \output is active []
-
- [15]
-[16 <./Images/Rho2.pdf> <./Images/Rho8.pdf>] [17] [18]
+[15] [16 <./Images/Rho2.pdf> <./Images/Rho8.pdf>] [17] [18]
 LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <10.95> not available
-(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 542.
- [19] [20]) (./Infra2.tex [21] [22
+(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 544.
+ [19] [20])
+(./Infra2.tex [21] [22
 
 ]
 Chapter 3.
@@ -628,25 +625,29 @@ cmr/m/it/10.95 http://heather.cs.ucdavis.edu/debugR.html\OT1/cmr/m/n/10.95 .
  []
 
 [67])
-No file RSbook.bbl.
+No file RSbookNEW.bbl.
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 34.
 [68]
 Package atveryend Info: Empty hook `AfterLastShipout' on input line 34.
- (./RSbook.aux)
+ (./RSbookNEW.aux)
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 34.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 34.
-Package rerunfilecheck Info: File `RSbook.out' has not changed.
+Package rerunfilecheck Info: File `RSbookNEW.out' has not changed.
 (rerunfilecheck)             Checksum: E4BBF3735CCA78C537AF66EC3DF53B86;5019.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 34.
  ) 
 Here is how much of TeX's memory you used:
- 9426 strings out of 493014
- 133877 string characters out of 6133351
+ 9427 strings out of 493014
+ 133936 string characters out of 6133351
  291661 words of memory out of 5000000
- 11953 multiletter control sequences out of 15000+600000
+ 11954 multiletter control sequences out of 15000+600000
  13469 words of font info for 49 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 33i,8n,42p,259b,2342s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 33i,8n,42p,262b,2342s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
 ></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb>
 </usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></
@@ -669,10 +670,10 @@ e/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsl10.pfb></usr/local/texlive
 texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/local/texlive/2016/t
 exmf-dist/fonts/type1/public/amsfonts/cm/cmtt8.pfb></usr/local/texlive/2016/tex
 mf-dist/fonts/type1/public/amsfonts/cm/cmtt9.pfb>
-Output written on RSbook.pdf (72 pages, 864973 bytes).
+Output written on RSbookNEW.pdf (72 pages, 865109 bytes).
 PDF statistics:
- 1758 PDF objects out of 2073 (max. 8388607)
- 1642 compressed objects within 17 object streams
+ 1759 PDF objects out of 2073 (max. 8388607)
+ 1643 compressed objects within 17 object streams
  896 named destinations out of 1000 (max. 500000)
  576 words of extra memory for PDF output out of 10000 (max. 10000000)
 
