@@ -401,7 +401,7 @@ among them, which of course is what we are hoping to avoid.
 
 With that in mind, now suppose we have $p$ variables, $X_1,
 X_2,...,X_p$, not just two.  We can no longer visualize in higher
-dimensions, but one can show that the level sets will be 
+dimensions, but one can show that the level sets will be be
 $p$-dimensional ellipsoids.  These now have $p$ axes rather than just
 two, and we can define $p$ new variables, $Y_1,Y_2,...,Y_p$ from the
 $X_i$, such that:
