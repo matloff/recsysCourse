@@ -1,5 +1,5 @@
 \chapter{Some Infrastructure: Linear Algebra} 
-\label{chap:linalg}   
+\label{chap:linalg}  
 
 There are some issues that will come up frequently.  We'll first cover them
 briefly here, more later as the need arises.  This chapter will review
@@ -52,6 +52,7 @@ ratings matrix, such as $A$ in Section \ref{mf}, should be of full rank,
 since there presumably are no exact dependencies among users or items.
 
 \section{Partitioned Matrices}
+\label{partmat}
 
 It is often helpful to partition a matrix into \textit{blocks} (often
 called {\it tiles} in the parallel computation community).
@@ -481,7 +482,8 @@ So, finally, here is PCA:
 
 
 \item Find the correlation matrix (or covariance matrix, a similar notion)
-from the data in $Q$.  
+from the data in $Q$.  Note that since there are $p$, the correlation
+matrix will be $p \times p$.
 
 \item Compute its eigenvalues and eigenvectors.  
 
@@ -489,31 +491,84 @@ from the data in $Q$.
 $\lambda_i$ be the $i^{th}$ largest, and let $U_i$ be the corresponding
 eigenvector, scaled to have length 1.  
 
-\item Let $U$ be the matrix whose $i^{th}$ column is $U_i$.  
+\item Let $U$ be the matrix whose $i^{th}$ column is $U_i$.  Its size
+will be $p \times s$.
 
 \item Choose the first few eigenvalues, say $s$ of them, using some
 criterion (see below).  Denote the matrix of the first $s$ columns of $U$
-by $U^{(s)}$.
+by $U^{(s)}$.  Note that $U$ is 
 
 \item Form a new data matrix, 
 
 \begin{equation}
+\label{rqu}
 R = Q U^{(s)}
 \end{equation}
 
-Column $j$ of $R$ is called the $j^{th}$ principal component of the
-original data.
+$R$ will be of size $n \times s$.  Column $j$ of $R$ is called the
+$j^{th}$ principal component of the original data.  
 
-Note that the variance of the $j^{th}$ principal component is
+One can show that the variance of the $j^{th}$ principal component is
 $\lambda_j$.  The sum of all $p$ values is the same as the sum of the
-variances of the original variables.
+variances of the original variables, an important point.
 
 \end{enumerate} 
 
-So, in $R$, row $i$ is still data on the $i^{th}$ case, e.g. the $i^{th}$ 
-person, but now with $s$ new variables in place of the original $p$.
-Since typically $s << p$, we have achieved considerable dimension
+From this point onward, any data analysis we do will be with $R$, not
+$Q$.  In $R$, row $i$ is still data on the $i^{th}$ case, e.g. the
+$i^{th}$ person, but now with $s$ new variables in place of the original
+$p$.  Since typically $s << p$, we have achieved considerable dimension
 reduction.
+
+\subsubsection{Matrix View}
+
+Using the approach of Section \ref{partmat}, write
+$R$, $Q$ and $U^{(s)}$ in terms of their rows, rows and columns,
+respectively:
+
+\begin{equation}
+R = 
+\left (
+\begin{array}{r}
+r_1 \\
+... \\
+r_n \\
+\end{array}
+\right )
+\end{equation}
+
+\begin{equation}
+Q = 
+% (q_1,...,q_p)
+\left (
+\begin{array}{r}
+q_1 \\
+... \\
+q_n \\
+\end{array}
+\right )
+\end{equation}
+
+\begin{equation}
+U^{(s)} = 
+\left (
+\begin{array}{r}
+u_1 \\
+... \\
+u_p \\
+\end{array}
+\right )
+\end{equation}
+
+In tnis view
+
+Then (\ref{rqu}) says
+
+\begin{equation}
+R = \sum_{j=1}^p q_j u_j
+\end{equation}
+
+\subsubsection{Choosing the Number of Principal Components}
 
 So, how do we choose $s$?  This is the hard part, and there is no 
 universal good method.  Typically $s$ is chosen so that 
