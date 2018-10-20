@@ -281,6 +281,27 @@ Coefficients:
 3.359894     0.005311    -0.006904  
 \end{lstlisting}
 
+Let's take a closer look at that \textbf{genderM}
+coefficient.\footnote{The gender variable had been coded in the data as
+'M' and 'F', and R chose the first one that showed up in the data, 'M',
+as its base.}  Take for instance 28-year-old men and women; what are
+their mean ratings, according to this model?
+
+\begin{lstlisting}
+> lmout$coef %*% c(1,28,1)
+        [,1]
+[1,] 3.50169
+> lmout$coef %*% c(1,28,0)
+         [,1]
+[1,] 3.508593
+\end{lstlisting}
+
+(Note that the first '1' is needed to pick up the 3.359894.)
+
+So, on average, 28-year-old women give ratings 3.508593 - 3.50169 =
+0.006903 higher than men of that age.  And except for roundoff error,
+that is the -0.006904 value was see in the output above.  
+
 \subsection{Details of Linear Regression Estimation}
 \label{lmdetails}
 
@@ -305,14 +326,22 @@ column tacked on at the left.  In the above example, row 12, say, of $A$
 would consist of a 1, followed by the height and age of the 12$^{th}$
 person in our sample.  Let $D$ denote the vector of weights, so that
 $D_{12}$ is the weight of the 12$^{th}$ person in our sample.  Finally,
-let $b$ denote the vector of the $b_k$.  Then
+let $b$ denote the vector of the $b_k$.  Say we have data on 100 people.
+Then $A$ will have 100 rows, and $D$ will have length 100.
+
+Use the above as a concrete guide to your thinking, but keep in mind the
+general case:  If we have $p$ predictors and $n$ data points, then $A$
+and $D$ will have sizes $n \times (p+1)$ and $n$
+
+Then
 
 \begin{equation}
 \label{}
 r = (D - A b)' (D - Ab)
 \end{equation}
 
-(Write it out to see this.)
+(Write it out to see this.  Doing so will be crucial to understanding
+the material below and many points in the rest of the book.)
 
 Write the \textit{gradient} of $r$ with respect to $b$,
 
@@ -345,6 +374,8 @@ gradients), we get
 
 \begin{equation}
 \frac{\partial r}{\partial b} = 
+\frac{\partial r}{\partial u} 
+\frac{\partial u}{\partial b} =
 2(D - Ab) ~ \frac{\partial (D - Ab)}{\partial b}=
 2 (-A') (D - Ab) 
 \end{equation}
@@ -366,8 +397,35 @@ b = (A'A)^{-1} A'D
 This famous formula is what \textbf{lm()} computes in finding the
 $\widehat{\beta}_k$.
 
-(Note that we cannot simply multiply both sides of (\ref{adaab}) by
-$(A')^{-1}$, as $A'$ is nonsquare and thus noninvertible.)
+Note that we cannot simply multiply both sides of (\ref{adaab}) by
+$(A')^{-1}$, as $A'$ is nonsquare and thus noninvertible.
+
+Note too that in our age/gender MovieLens example above, we should not
+have variables for both male and female.  If we did, we have
+
+\begin{equation}
+A =
+\left(
+\begin{array}{rrrr}
+1 & A_1 & M_1 & F_1 \\
+1 & A_2 & M_2 & F_2 \\
+... \\
+1 & A_{100000} & M_{100000} & F_{100000} \\
+\end{array}
+\right )
+\end{equation}
+
+where $A_i$ is the age of the $i^{th}$ person in our data, and one of
+$M_{i}$ and $F_{i}$ is 1 and the other 0, according to the
+gender of this person.  (Recall that there are 100000 data points in tis
+dataset.)  The problem is this:  The third and fourth columns of $A$
+would then sum to a vector of all 1s, the same as in the first column.
+So the columns of $A$ will be linearly dependent, and the rank will be 3
+instead of 4.  The same will then be true for $A'A$, so that $(A'A)^{-1}$
+will not exist in (\ref{famouslm}).
+
+In other words, not only would the F column be unnecessary, it would be
+prolematic.
 
 \subsubsection{Polynomial Terms}
 \label{poly}
