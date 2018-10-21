@@ -1,4 +1,4 @@
-\chapter{Some Infrastructure: 
+\chapter{Some Infrastructure:  
 Probability and Statistics}
 \label{chap:infra2}   
 
@@ -278,7 +278,7 @@ lm(formula = rating ~ age + gender, data = u)
 
 Coefficients:
 (Intercept)          age      genderM  
-3.359894     0.005311    -0.006904  
+3.359894        0.005311    -0.006904  
 \end{lstlisting}
 
 Let's take a closer look at that \textbf{genderM}
@@ -385,9 +385,9 @@ Setting the gradient to 0 and solving for $b$, we have
 \begin{equation}
 \label{adaab}
 0 = A'D - A'Ab
-\end{equation}
+\end{equation}  
 
-so that the minimizing $b$ is
+so that the minimizing $b$, giving us $\widehat{\beta}$, is
 
 \begin{equation}
 \label{famouslm}
@@ -515,7 +515,7 @@ many occupations there are:
 [21] "writer"       
 \end{lstlisting}
 
-In a regresison application, we'd form 21 dummies, but use only 20 of
+In a regression application, we'd form 21 dummies, but use only 20 of
 them.
 
 However, the designers of R (and its predecessor S), in their wisdom,
@@ -529,7 +529,7 @@ regressed rating against age and gender, with output
 \begin{lstlisting}
 Coefficients:
 (Intercept)          age      genderM  
-3.359894     0.005311    -0.006904  
+3.359894        0.005311    -0.006904  
 \end{lstlisting}
 
 R noticed that gender was an R factor, with levels M and F.  It created
@@ -579,8 +579,21 @@ form $\beta_0+\beta_1 t_1+...+\beta_p t_p$ embedded inside
 another function, in this case the logistic function $g(s) =
 1/(1+e^{-s})$.
 
+Note that the latter function, often called \textit{logit} for short,
+has values only in [0,1], as desired, and is increasing in $s$, thus
+retaining the monotonic notion of linear models.\footnote{These
+properties form the intuitive motivation for using logit models.
+Another motivation is this: Let $X$ denote the vector of predictor
+variables, and let $Y$ be the response variable, with the two classes 0
+and 1.  If within each class, $X$ has a multivariate normal
+distribution, with the same covariance matrix in each class.}
+
 The $\beta_i$ are estimated by an R function \textbf{glm()}, similar to
-\textbf{lm()}.  Let's model a user giving a movie a rating of 4 or 5:
+\textbf{lm()}.\footnote{The class of the return value is \textbf{'glm'},
+which is a subclass of \textbf{'lm'.}
+}
+Let's model a user giving a movie a rating of 4 or
+higher:
 
 \begin{lstlisting}
 > r45 <- as.integer(u$rating >= 4)  # a binary value, 1 or 0
@@ -592,12 +605,16 @@ Call:  glm(formula = r45 ~ age + gender, data = u)
 
 Coefficients:
 (Intercept)          age      genderM  
--0.002510     0.006886    -0.011189  
+-0.002510       0.006886    -0.011189  
 ...
 \end{lstlisting}
 
-(The argument \textbf{family = binomial} tells R that we want the
-logistic model, not some other generalized linear model.)
+The argument \textbf{family = binomial} tells R that we want the
+logistic model, not some other generalized linear model, such a model
+known as \textit{Poisson regression}.\footnote{By the way, the argument
+\textbf{family} must be an object of class \textbf{'function'}.  Inside
+\textbf{glm()}, there will be a call \textbf{family()}.  R has a
+built-in function \textbf{binomial()}, which is called here.}
 
 What if our response variable is categorical but with more than two
 levels?  In the click/nonclick setting, suppose the user has a choice of
@@ -648,6 +665,12 @@ Alternatively (and in many settings, more conveniently):
 Recall that we had assigned the output of \textbf{lm()} to
 \textbf{lmout}, which will have class \textbf{'lm'}.  So, the call to
 \textbf{predict()} above was dispatched to \textbf{predict.lm()}.
+
+What about \textbf{glm()}?  There is a function \textbf{predict.glm()},
+which normally should be called with the argument \textbf{type =
+response}.  The latter means we want the return values to be the
+estimated values of the regression function, i.e.\ the conditional
+probabilistic of response 1, given the values of the predictors.
 
 \section{Bias, Variance, Overfitting and p-Hacking}
 \label{overfit}
