@@ -488,7 +488,29 @@ rank, so $(A'A)^{-1}$ would not exist.
 \textit{Categorical variables in R:}
 
 In R, categorical variables are stored as objects of the class
-\textbf{"factor"}.  In our MovieLens example above, let's take a look at
+\textbf{'factor'}.  The latter is a class designed specifically for
+representing categorical data.  It consists of integer codes for the
+categories, with character-string names.  The various categories are
+called \textit{levels}.  
+
+For example, say we are dealing with eye color, and that the only colors
+are brown, blue and green, and have data on four people:
+
+\begin{lstlisting}
+> s <- c('brown','blue','green','blue')
+> class(s)
+[1] "character"
+> sf <- as.factor(s)
+> levels(sf)
+[1] "blue"  "brown" "green"
+> sf[2]
+[1] blue
+Levels: blue brown green
+> as.numeric(sf)
+[1] 2 1 3 1
+\end{lstlisting}
+
+In our MovieLens example above, let's take a look at
 the data frame \textbf{demog}:
 
 \begin{lstlisting}
@@ -516,7 +538,7 @@ many occupations there are:
 \end{lstlisting}
 
 In a regression application, we'd form 21 dummies, but use only 20 of
-them.
+them (any 20).
 
 However, the designers of R (and its predecessor S), in their wisdom,
 set things up to save us some time and trouble.  We can just specify the
@@ -539,6 +561,10 @@ the data had gender as M.
 So, the estimated coefficient -0.006904 meant that the ``maleness''
 impact on mean rating has that value.  Men give slightly lower
 ratings than women do, for fixed age.
+
+In this manner, the estimated regression coefficient of a dummy variable
+is the effect, all other predictors fixed, of this trait
+\textit{relative to the excluded trai}, say femaleness above.
 
 \subsubsection{Dummy Variables as Response Variables}
 
