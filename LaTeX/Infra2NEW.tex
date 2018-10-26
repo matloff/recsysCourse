@@ -8,7 +8,7 @@ calculus-based probability structures, such as expected value and
 density functions.  Background in statistics (as opposed to probability)
 and machine learning is \textit{not} assumed.\footnote{The reader may
 wish to consult my open source book on probability and statistics, N.
-Matloff, \textit{From Algorithms to Z-Scores: Probabilistic and
+Matloff, \textit{From Algorithms to Z-Scores: Probability and
 Statistical Modeling in Computer Science},
 \url{http://heather.cs.ucdavis.edu/probstatbook}.}
 
@@ -642,14 +642,6 @@ known as \textit{Poisson regression}.\footnote{By the way, the argument
 \textbf{glm()}, there will be a call \textbf{family()}.  R has a
 built-in function \textbf{binomial()}, which is called here.}
 
-What if our response variable is categorical but with more than two
-levels?  In the click/nonclick setting, suppose the user has a choice of
-five things to click, and must choose one.  Then the response is
-categorical with five levels.  A common parametric approach would be to
-run five logistic models, one for each possible outcome (all using the
-same set of predictor variables), then in prediction, predict the one
-with the highest conditional probability.
-
 \subsection{R's predict(), a Generic Function}
 
 A key aspect to R's object orientation is \textit{generic} functions.
@@ -694,9 +686,70 @@ Recall that we had assigned the output of \textbf{lm()} to
 
 What about \textbf{glm()}?  There is a function \textbf{predict.glm()},
 which normally should be called with the argument \textbf{type =
-response}.  The latter means we want the return values to be the
+'response'}.  The latter means we want the return values to be the
 estimated values of the regression function, i.e.\ the conditional
-probabilistic of response 1, given the values of the predictors.
+probabilities of response 1, given the values of the predictors.
+
+\subsection{More Than Two Levels in Categorical Response}
+
+What if our response variable is categorical but with more than two
+levels?  In the click/nonclick setting, suppose the user has a choice of
+five things to click, and must choose one.  Then the response is
+categorical with five levels.  
+
+There are two major approaches.  To explain, we'll use the following
+very simple example. Say there are dogs, cats and foxes on a field, and
+they sometimes step on a sensor, so we know their weights but do not see
+them.  Say we have data on 10000 data points, in which we do know the
+species.  Say our data frame, \textbf{df}, has 10000 rows and 4
+columns.  In the latter, say the names are 'Weight', 'Dog', 'Cat' and
+'Fox'.  Say we have 5000 dogs, 2000 cats and 3000 foxes.  Then for
+instance 2000 of the rows in \textbf{df} would be cats.
+
+\textit{One-vs.All (OVA) Method}
+
+Here one would run run three logistic models:
+
+\begin{lstlisting}
+gdog <- glm(Dog ~ .,data=df[,1:2])  # dog vs. all else
+gcat <- glm(Cat ~ .,data=df[,1:3])  # cat vs. all else
+gdog <- glm(Fox ~ .,data=df[,1:4])  # fox vs. all else
+\end{lstlisting}
+
+Then for each new animal we encounter of unknown species, we call
+\textbf{predict()} three times, yielding three estimated conditional
+probabilities.  If the one for cat, say, is largest, we guess cat.
+
+(Of course, we could skip running the third model, as it would give 1.0 minus
+the others, but to simplify the discussion let's ignore that here.)
+
+\textit{All vs. All (AVA) Method}
+
+Here again we'd run multiple logit models, in pairs as follows:
+
+\begin{lstlisting}
+gdogcat <- 
+   glm(Dog ~ .,data=df[df$dog+df$cat==1,1:2])  # dog vs. cat
+gdogfox <- 
+   glm(Dog ~ .,data=df[df$dog+df$fox==1,1:2])  # dog vs. fox
+gcatfox <- 
+   glm(Cat ~ .,data=df[df$cat+df$fox==1,1:3])  # cat vs. fox
+\end{lstlisting}
+
+Then for each new animal we encounter of unknown species, we call
+\textbf{predict()} three times, again yielding three estimated
+conditional probabilities.  Say in the first one, Cat ``wins,'' i.e.\
+the conditional probability is less than 0.5.  Say Dog wins in the
+second, and Cat wins in the third.  Since Cat had the most wins, we
+predict Cat.
+
+\textit{Comparison}
+
+At first, OVA seems much better than AVA.  If we have $m$ levels, that
+means running $C(m,2) = O(m^2)$ parwise logit models, rather than $m$
+for OVA.  However, that is somewhat compensated by the fact that each
+pairwise model will be based on less data, and some analysts contend
+that AVA can have better accuracy.  It remains a bit of a controversy.
 
 \section{Bias, Variance, Overfitting and p-Hacking}
 \label{overfit}
