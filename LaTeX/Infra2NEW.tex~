@@ -720,6 +720,9 @@ Then for each new animal we encounter of unknown species, we call
 \textbf{predict()} three times, yielding three estimated conditional
 probabilities.  If the one for cat, say, is largest, we guess cat.
 
+(Of course, we could skip running the third model, as it would give 1.0 minus
+the others, but to simplify the discussion let's ignore that here.)
+
 \textit{All vs. All (AVA) Method}
 
 Here again we'd run multiple logit models, in pairs as follows:
