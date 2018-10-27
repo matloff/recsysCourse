@@ -38,37 +38,41 @@
 \contentsline {subsubsection}{\numberline {3.3.5.1}Polynomial Terms}{32}{subsubsection.3.3.5.1}
 \contentsline {subsection}{\numberline {3.3.6}Categorical Variables (Predictor, Response)}{33}{subsection.3.3.6}
 \contentsline {subsubsection}{\numberline {3.3.6.1}Dummy Variables as Predictors}{33}{subsubsection.3.3.6.1}
-\contentsline {subsubsection}{\numberline {3.3.6.2}Dummy Variables as Response Variables}{35}{subsubsection.3.3.6.2}
-\contentsline {subsection}{\numberline {3.3.7}R's predict(), a Generic Function}{36}{subsection.3.3.7}
-\contentsline {subsection}{\numberline {3.3.8}More Than Two Levels in Categorical Response}{37}{subsection.3.3.8}
-\contentsline {section}{\numberline {3.4}Bias, Variance, Overfitting and p-Hacking}{38}{section.3.4}
-\contentsline {section}{\numberline {3.5}Extended Example}{40}{section.3.5}
-\contentsline {chapter}{\numberline {4}Nearest-Neighbor Methods}{43}{chapter.4}
-\contentsline {chapter}{\numberline {5}Matrix Factorization Methods}{45}{chapter.5}
-\contentsline {chapter}{\numberline {6}Statistical Models}{47}{chapter.6}
-\contentsline {chapter}{\numberline {7}Use of Side Information}{49}{chapter.7}
-\contentsline {chapter}{\numberline {8}Bias, Variance and Overfitting}{51}{chapter.8}
-\contentsline {chapter}{\numberline {A}R Quick Start}{53}{appendix.A}
-\contentsline {section}{\numberline {A.1}Correspondences}{53}{section.A.1}
-\contentsline {section}{\numberline {A.2}Starting R}{54}{section.A.2}
-\contentsline {section}{\numberline {A.3}First Sample Programming Session}{54}{section.A.3}
-\contentsline {section}{\numberline {A.4}Vectorization}{57}{section.A.4}
-\contentsline {section}{\numberline {A.5}Second Sample Programming Session}{57}{section.A.5}
-\contentsline {section}{\numberline {A.6}Recycling}{58}{section.A.6}
-\contentsline {section}{\numberline {A.7}More on Vectorization}{59}{section.A.7}
-\contentsline {section}{\numberline {A.8}Third Sample Programming Session}{59}{section.A.8}
-\contentsline {section}{\numberline {A.9}Default Argument Values}{60}{section.A.9}
-\contentsline {section}{\numberline {A.10}The R List Type}{61}{section.A.10}
-\contentsline {subsection}{\numberline {A.10.1}The Basics}{61}{subsection.A.10.1}
-\contentsline {subsection}{\numberline {A.10.2}The Reduce() Function}{62}{subsection.A.10.2}
-\contentsline {subsection}{\numberline {A.10.3}S3 Classes}{63}{subsection.A.10.3}
-\contentsline {section}{\numberline {A.11}Some Workhorse Functions}{64}{section.A.11}
-\contentsline {section}{\numberline {A.12}Handy Utilities}{66}{section.A.12}
-\contentsline {section}{\numberline {A.13}Data Frames}{67}{section.A.13}
-\contentsline {section}{\numberline {A.14}Graphics}{69}{section.A.14}
-\contentsline {section}{\numberline {A.15}Packages}{69}{section.A.15}
-\contentsline {section}{\numberline {A.16}Other Sources for Learning R}{70}{section.A.16}
-\contentsline {section}{\numberline {A.17}Online Help}{71}{section.A.17}
-\contentsline {section}{\numberline {A.18}Debugging in R}{71}{section.A.18}
-\contentsline {section}{\numberline {A.19}Complex Numbers}{71}{section.A.19}
-\contentsline {section}{\numberline {A.20}Further Reading}{72}{section.A.20}
+\contentsline {subsubsection}{\numberline {3.3.6.2}Interaction Terms}{35}{subsubsection.3.3.6.2}
+\contentsline {subsubsection}{\numberline {3.3.6.3}Dummy Variables as Response Variables}{36}{subsubsection.3.3.6.3}
+\contentsline {subsection}{\numberline {3.3.7}R's predict(), a Generic Function}{37}{subsection.3.3.7}
+\contentsline {subsection}{\numberline {3.3.8}More Than Two Levels in Categorical Response}{38}{subsection.3.3.8}
+\contentsline {section}{\numberline {3.4}Bias, Variance, Overfitting and p-Hacking}{39}{section.3.4}
+\contentsline {subsection}{\numberline {3.4.1}What Is Overfitting?}{39}{subsection.3.4.1}
+\contentsline {subsection}{\numberline {3.4.2}Can Anything Be Done about It?}{40}{subsection.3.4.2}
+\contentsline {subsection}{\numberline {3.4.3}The Problem of P-hacking}{40}{subsection.3.4.3}
+\contentsline {section}{\numberline {3.5}Extended Example}{41}{section.3.5}
+\contentsline {chapter}{\numberline {4}Nearest-Neighbor Methods}{45}{chapter.4}
+\contentsline {chapter}{\numberline {5}Matrix Factorization Methods}{47}{chapter.5}
+\contentsline {chapter}{\numberline {6}Statistical Models}{49}{chapter.6}
+\contentsline {chapter}{\numberline {7}Use of Side Information}{51}{chapter.7}
+\contentsline {chapter}{\numberline {8}Bias, Variance and Overfitting}{53}{chapter.8}
+\contentsline {chapter}{\numberline {A}R Quick Start}{55}{appendix.A}
+\contentsline {section}{\numberline {A.1}Correspondences}{55}{section.A.1}
+\contentsline {section}{\numberline {A.2}Starting R}{56}{section.A.2}
+\contentsline {section}{\numberline {A.3}First Sample Programming Session}{56}{section.A.3}
+\contentsline {section}{\numberline {A.4}Vectorization}{59}{section.A.4}
+\contentsline {section}{\numberline {A.5}Second Sample Programming Session}{59}{section.A.5}
+\contentsline {section}{\numberline {A.6}Recycling}{60}{section.A.6}
+\contentsline {section}{\numberline {A.7}More on Vectorization}{61}{section.A.7}
+\contentsline {section}{\numberline {A.8}Third Sample Programming Session}{61}{section.A.8}
+\contentsline {section}{\numberline {A.9}Default Argument Values}{62}{section.A.9}
+\contentsline {section}{\numberline {A.10}The R List Type}{63}{section.A.10}
+\contentsline {subsection}{\numberline {A.10.1}The Basics}{63}{subsection.A.10.1}
+\contentsline {subsection}{\numberline {A.10.2}The Reduce() Function}{64}{subsection.A.10.2}
+\contentsline {subsection}{\numberline {A.10.3}S3 Classes}{65}{subsection.A.10.3}
+\contentsline {section}{\numberline {A.11}Some Workhorse Functions}{66}{section.A.11}
+\contentsline {section}{\numberline {A.12}Handy Utilities}{68}{section.A.12}
+\contentsline {section}{\numberline {A.13}Data Frames}{69}{section.A.13}
+\contentsline {section}{\numberline {A.14}Graphics}{71}{section.A.14}
+\contentsline {section}{\numberline {A.15}Packages}{71}{section.A.15}
+\contentsline {section}{\numberline {A.16}Other Sources for Learning R}{72}{section.A.16}
+\contentsline {section}{\numberline {A.17}Online Help}{73}{section.A.17}
+\contentsline {section}{\numberline {A.18}Debugging in R}{73}{section.A.18}
+\contentsline {section}{\numberline {A.19}Complex Numbers}{73}{section.A.19}
+\contentsline {section}{\numberline {A.20}Further Reading}{74}{section.A.20}

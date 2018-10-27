@@ -566,6 +566,44 @@ In this manner, the estimated regression coefficient of a dummy variable
 is the effect, all other predictors fixed, of this trait
 \textit{relative to the excluded trai}, say femaleness above.
 
+\subsubsection{Interaction Terms}
+
+Say we are in some RS context in which age and gender are substantial
+factors in predicting rating.  Suppose also that we suspect men become
+more liberal raters as they age while women become more reserved in
+their ratings.  Then a model like this might work well:
+
+\begin{equation}
+\label{mfinteraction}
+\textrm{mean rating} = \beta_0 + \beta_1 ~ \textrm{age} + 
+\beta_2 ~ \textrm{male} +
+\beta_3 ~ \textrm{age} \times \textrm{male}
+\end{equation}
+
+where \textit{male} is a dummy variable.  To see why this might be
+appropriate, consider what the above equation reduces to for men and
+women:
+
+\textit{men:}
+
+\begin{equation}
+\textrm{mean rating} 
+= (\beta_0+\beta_2) + (\beta_1+\beta_3) ~ \textrm{age} 
+\end{equation}
+
+\textit{women:}
+
+\begin{equation}
+\textrm{mean rating} = \beta_0 + \beta_1 ~ \textrm{age} 
+\end{equation}
+
+So the male and female lines have different slopes (and different
+intercepts), allowing for the differential age effect we surmise.
+
+The term $\textrm{age} \times \textrm{male}$ is called an
+\textit{interaction term}.
+
+
 \subsubsection{Dummy Variables as Response Variables}
 
 In many cases, the response variable may be categorical.  In the RS
@@ -752,38 +790,51 @@ that AVA can have better accuracy.  It remains a bit of a controversy.
 \label{overfit}
 
 By far the most vexing issue in statistics and machine learning is that
-of \textit{overfitting}.  What is this?
+of \textit{overfitting}.  
 
-Say we are in some RS context in which age and gender are substantial
-factors in predicting rating.  Suppose also that there is an
-\textit{interaction} between age and gender, say with men becoming more
-liberal raters as they age while women becoming more reserved in their
-ratings.  Then if we include age in our model but exclude gender, this
-biases our ratings.
+\subsection{What Is Overfitting?}
+
+Say we are in some RS context in which (\ref{mfinteraction}) is a good
+model for the setting described in that section, i.e.\ men becoming more
+liberal raters as they age but women becoming more conservative.
+If we omit the interaction term, than we will underpredict older
+men and overpredict older women.  This biases our ratings.
 
 On the other hand, we need to worry about sampling variance.  Consider
 the case of opinion polls during an election campaign, in which the goal
 is to estimate $p$, the proportion of voters who will vote for Candidate
 Jones.  If we use too small a sample size, say 50, our results will
 probably be inaccurate.  This is due to instability:  Two pollsters,
-each randomly sampling 50 people, will likely come up with substantially
-different values of $\widehat{p}$, their sample estimates of $p$.  In
-other words, the \underline{variance} of $\widehat{p}$ is too
-high.\footnote{The repeatable experiment here is randomly choosing 50
-people.  Each time we perform this experiment, we get a different set of
-50 people, thus a different value of $\widehat{p}$.  The latter is a
-random variable, and thus has a variance.}
+each randomly sampling 50 people, will sample different sets of people,
+thus each having different values of $\widehat{p}$, their sample
+estimates of $p$.  For a sample of size 50, it is likely that their two
+values of $\widehat{p}$ will be substantially different from each other,
+whereas if the sample size were 5000, the two estimates would likely be
+close to each other.  In other words, the \underline{variance} of
+$\widehat{p}$ is too high if the sample size is just 50.\footnote{The
+repeatable experiment here is randomly choosing 50 people.  Each time we
+perform this experiment, we get a different set of 50 people, thus a
+different value of $\widehat{p}$.  The latter is a random variable, and
+thus has a variance.}
 
-This is the famous \textit{bias/variance tradeoff}:  As we use more and
-more predictors in our regression model, the bias decreases but the
-variance increases.  And if we fit too rich a model, our estimates such
-as the $\widehat{\beta}_i$ will have high variance and \textbf{our
-predictive ability \underline{on new data} will suffer}; we will have
-overfit a model on the original data.
+In a parametric regression setting, increasing the number of terms
+roughly means that the sampling variance of the $\widehat{\beta}_i$ will
+increase.
+
+So we have the famous \textit{bias/variance tradeoff}:  As we use more and
+more terms in our regression model (predictors, polynomials, interaction
+terms), the bias decreases but the variance increases.  This ``tug of
+war'' between these decreasing and increasing quantities typically
+implies a U-shaped curve:  As we increase the number of terms from 1,
+mean absolute prediction error will at first decrease but eventually
+will increase.  Once we get to the point at which it increases, we are
+\textit{overfitting}.
 
 This is particularly a problem when one has many dummy variables. For
 instance, there are more than 42,000 ZIP Codes in the US; to have a
 dummy for each would almost certainly be overfitting.
+
+\subsection{Can Anything Be Done about It?}
 
 So, where is the ``happy medium,'' the model that is rich enough to
 capture most of the dynamics of the variables at hand, but simple enough
@@ -791,13 +842,13 @@ to avoid variance issues?  Unfortunately, there is no good answer to
 this question.
 
 One quick rule of thumb is that one should have $p < \sqrt{n}$, where
-$p$ is the number of predictors (not to be confused with the quantity of
-the same name in our polling example above), and $n$ is the number of
-cases in our sample.  But this is certainly not a firm rule by any
-means.  One may be able to get good prediction with a considerably
-larger value of $p$, especially if \textit{regularization} methods are
-used (Section \ref{chap:svd}), but even without it, as will be seen
-below.
+$p$ is the number of predictors, including polynomial and interaction
+terms (not to be confused with the quantity of the same name in our
+polling example above), and $n$ is the number of cases in our sample.
+But this is certainly not a firm rule by any means.  One may be able to
+get good prediction with a considerably larger value of $p$, especially
+if \textit{regularization} methods are used (Section \ref{chap:svd}),
+but even without it, as will be seen below.
 
 The most common approach to dealing with the bias/variance tradeoff is
 \textit{cross validation}.  In the simplest version, one randomly splits
@@ -813,18 +864,31 @@ predictions worked.
 then use the full data for later prediction.  Splitting the data for
 cross-validation was just a temporary device for model selection.)
 
-\textit{The problem of p-hacking:}
+\subsection{The Problem of P-hacking}
 
 The (rather recent) term \textit{p-hacking} refers to the following
-abuse of statistics.  Let's say we have a large study of some disease,
-and are looking for genetic factors related to the disease.  Remember,
-these patients in the study are a sample from the population of all
-sufferers of this disease.  We might look at thousans of genes.  The
-point is that even if NO gene is related to the disease, sampling
-variation would likely lead us to (falsely) conclude that some gene is
-connected to the disease, just by accident.\footnote{For those with
-background in statistics, the reason this is called ``p-hacking'' is
-that the researcher may form a significance test for each gene,
+abuse of statistics.  
+
+Say we have 250 pennies, and We wish to determine whether any are
+unbalanced, i.e.\ have probability of heads different from 0.5.  We do
+so by tossing each coin 100 times.  If we get fewer than 40 heads or
+more than 60, we decide this coin is unbalanced.\footnote{For those who
+know statistics:  This gives us a Type I error rate of about 0.05.}  The
+problem is that, even if all the coins are perfectly balanced, we
+eventually will have one that has fewer than 40 or greater than 60
+heads, just by accident.  \textbf{We will then \underline{falsely}
+declare this coin to be unbalanced.}
+
+Or, to give a somewhat frivolous example that still will make the point,
+say we are investigating whether there is any genetic component to a
+person's sense of humor.  Is there a Humor gene?
+
+There are many, many genes to consider.  Testing each one for relation
+to sense of humor is like checking each penny for being unbalanced: Even
+if there is no Humor gene, then eventually, just by accident, we'll
+stumble upon one that seems to be related to humor.\footnote{For those
+with background in statistics, the reason this is called ``p-hacking''
+is that the researcher may form a significance test for each gene,
 computing a p-value for each test.  Since under the null hypothesis we
 have a 5\% chance of getting a ``significant'' p-value for any given
 gene, the probability of having at least one significant result out of
@@ -840,7 +904,10 @@ likely that one is substantially higher than the others, just due to an
 accident of sampling variation.  This is true in spite of the fact that
 they all are using the same sample; it may be that the ``winning''
 analyst' model may not be so good on another sample from the same
-population.
+population.  So, one some researcher sets a new record on a famous ML
+dataset, it may be that the research really has found a better
+prediction model --- or it may be that it merely looks better, due to
+p-hacking.
 
 \section{Extended Example}
 \label{prgengex}

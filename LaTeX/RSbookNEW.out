@@ -38,37 +38,41 @@
 \BOOKMARK [3][-]{subsubsection.3.3.5.1}{Polynomial Terms}{subsection.3.3.5}% 38
 \BOOKMARK [2][-]{subsection.3.3.6}{Categorical Variables \(Predictor, Response\)}{section.3.3}% 39
 \BOOKMARK [3][-]{subsubsection.3.3.6.1}{Dummy Variables as Predictors}{subsection.3.3.6}% 40
-\BOOKMARK [3][-]{subsubsection.3.3.6.2}{Dummy Variables as Response Variables}{subsection.3.3.6}% 41
-\BOOKMARK [2][-]{subsection.3.3.7}{R's predict\(\), a Generic Function}{section.3.3}% 42
-\BOOKMARK [2][-]{subsection.3.3.8}{More Than Two Levels in Categorical Response}{section.3.3}% 43
-\BOOKMARK [1][-]{section.3.4}{Bias, Variance, Overfitting and p-Hacking}{chapter.3}% 44
-\BOOKMARK [1][-]{section.3.5}{Extended Example}{chapter.3}% 45
-\BOOKMARK [0][-]{chapter.4}{Nearest-Neighbor Methods}{}% 46
-\BOOKMARK [0][-]{chapter.5}{Matrix Factorization Methods}{}% 47
-\BOOKMARK [0][-]{chapter.6}{Statistical Models}{}% 48
-\BOOKMARK [0][-]{chapter.7}{Use of Side Information}{}% 49
-\BOOKMARK [0][-]{chapter.8}{Bias, Variance and Overfitting}{}% 50
-\BOOKMARK [0][-]{appendix.A}{R Quick Start}{}% 51
-\BOOKMARK [1][-]{section.A.1}{Correspondences}{appendix.A}% 52
-\BOOKMARK [1][-]{section.A.2}{Starting R}{appendix.A}% 53
-\BOOKMARK [1][-]{section.A.3}{First Sample Programming Session}{appendix.A}% 54
-\BOOKMARK [1][-]{section.A.4}{Vectorization}{appendix.A}% 55
-\BOOKMARK [1][-]{section.A.5}{Second Sample Programming Session}{appendix.A}% 56
-\BOOKMARK [1][-]{section.A.6}{Recycling}{appendix.A}% 57
-\BOOKMARK [1][-]{section.A.7}{More on Vectorization}{appendix.A}% 58
-\BOOKMARK [1][-]{section.A.8}{Third Sample Programming Session}{appendix.A}% 59
-\BOOKMARK [1][-]{section.A.9}{Default Argument Values}{appendix.A}% 60
-\BOOKMARK [1][-]{section.A.10}{The R List Type}{appendix.A}% 61
-\BOOKMARK [2][-]{subsection.A.10.1}{The Basics}{section.A.10}% 62
-\BOOKMARK [2][-]{subsection.A.10.2}{The Reduce\(\) Function}{section.A.10}% 63
-\BOOKMARK [2][-]{subsection.A.10.3}{S3 Classes}{section.A.10}% 64
-\BOOKMARK [1][-]{section.A.11}{Some Workhorse Functions}{appendix.A}% 65
-\BOOKMARK [1][-]{section.A.12}{Handy Utilities}{appendix.A}% 66
-\BOOKMARK [1][-]{section.A.13}{Data Frames}{appendix.A}% 67
-\BOOKMARK [1][-]{section.A.14}{Graphics}{appendix.A}% 68
-\BOOKMARK [1][-]{section.A.15}{Packages}{appendix.A}% 69
-\BOOKMARK [1][-]{section.A.16}{Other Sources for Learning R}{appendix.A}% 70
-\BOOKMARK [1][-]{section.A.17}{Online Help}{appendix.A}% 71
-\BOOKMARK [1][-]{section.A.18}{Debugging in R}{appendix.A}% 72
-\BOOKMARK [1][-]{section.A.19}{Complex Numbers}{appendix.A}% 73
-\BOOKMARK [1][-]{section.A.20}{Further Reading}{appendix.A}% 74
+\BOOKMARK [3][-]{subsubsection.3.3.6.2}{Interaction Terms}{subsection.3.3.6}% 41
+\BOOKMARK [3][-]{subsubsection.3.3.6.3}{Dummy Variables as Response Variables}{subsection.3.3.6}% 42
+\BOOKMARK [2][-]{subsection.3.3.7}{R's predict\(\), a Generic Function}{section.3.3}% 43
+\BOOKMARK [2][-]{subsection.3.3.8}{More Than Two Levels in Categorical Response}{section.3.3}% 44
+\BOOKMARK [1][-]{section.3.4}{Bias, Variance, Overfitting and p-Hacking}{chapter.3}% 45
+\BOOKMARK [2][-]{subsection.3.4.1}{What Is Overfitting?}{section.3.4}% 46
+\BOOKMARK [2][-]{subsection.3.4.2}{Can Anything Be Done about It?}{section.3.4}% 47
+\BOOKMARK [2][-]{subsection.3.4.3}{The Problem of P-hacking}{section.3.4}% 48
+\BOOKMARK [1][-]{section.3.5}{Extended Example}{chapter.3}% 49
+\BOOKMARK [0][-]{chapter.4}{Nearest-Neighbor Methods}{}% 50
+\BOOKMARK [0][-]{chapter.5}{Matrix Factorization Methods}{}% 51
+\BOOKMARK [0][-]{chapter.6}{Statistical Models}{}% 52
+\BOOKMARK [0][-]{chapter.7}{Use of Side Information}{}% 53
+\BOOKMARK [0][-]{chapter.8}{Bias, Variance and Overfitting}{}% 54
+\BOOKMARK [0][-]{appendix.A}{R Quick Start}{}% 55
+\BOOKMARK [1][-]{section.A.1}{Correspondences}{appendix.A}% 56
+\BOOKMARK [1][-]{section.A.2}{Starting R}{appendix.A}% 57
+\BOOKMARK [1][-]{section.A.3}{First Sample Programming Session}{appendix.A}% 58
+\BOOKMARK [1][-]{section.A.4}{Vectorization}{appendix.A}% 59
+\BOOKMARK [1][-]{section.A.5}{Second Sample Programming Session}{appendix.A}% 60
+\BOOKMARK [1][-]{section.A.6}{Recycling}{appendix.A}% 61
+\BOOKMARK [1][-]{section.A.7}{More on Vectorization}{appendix.A}% 62
+\BOOKMARK [1][-]{section.A.8}{Third Sample Programming Session}{appendix.A}% 63
+\BOOKMARK [1][-]{section.A.9}{Default Argument Values}{appendix.A}% 64
+\BOOKMARK [1][-]{section.A.10}{The R List Type}{appendix.A}% 65
+\BOOKMARK [2][-]{subsection.A.10.1}{The Basics}{section.A.10}% 66
+\BOOKMARK [2][-]{subsection.A.10.2}{The Reduce\(\) Function}{section.A.10}% 67
+\BOOKMARK [2][-]{subsection.A.10.3}{S3 Classes}{section.A.10}% 68
+\BOOKMARK [1][-]{section.A.11}{Some Workhorse Functions}{appendix.A}% 69
+\BOOKMARK [1][-]{section.A.12}{Handy Utilities}{appendix.A}% 70
+\BOOKMARK [1][-]{section.A.13}{Data Frames}{appendix.A}% 71
+\BOOKMARK [1][-]{section.A.14}{Graphics}{appendix.A}% 72
+\BOOKMARK [1][-]{section.A.15}{Packages}{appendix.A}% 73
+\BOOKMARK [1][-]{section.A.16}{Other Sources for Learning R}{appendix.A}% 74
+\BOOKMARK [1][-]{section.A.17}{Online Help}{appendix.A}% 75
+\BOOKMARK [1][-]{section.A.18}{Debugging in R}{appendix.A}% 76
+\BOOKMARK [1][-]{section.A.19}{Complex Numbers}{appendix.A}% 77
+\BOOKMARK [1][-]{section.A.20}{Further Reading}{appendix.A}% 78
