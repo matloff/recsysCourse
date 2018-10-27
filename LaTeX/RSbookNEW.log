@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2018.8.5)  26 OCT 2018 23:26
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2018.10.12)  27 OCT 2018 13:14
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -438,42 +438,46 @@ LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <10.95> not available
 
 ]
 Chapter 3.
-[25]
-Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [26]
-Underfull \vbox (badness 2409) has occurred while \output is active []
+Underfull \vbox (badness 1024) has occurred while \output is active []
 
- [27]
-[28] [29]
+ [25]
+[26] [27] [28] [29]
 Underfull \vbox (badness 1048) has occurred while \output is active []
 
  [30]
 Overfull \vbox (0.57843pt too high) has occurred while \output is active []
 
 
-[31] [32] [33] [34] [35] [36] [37] [38] [39] [40] [41] [42]) (./kNN.tex
-[43] [44
+[31] [32] [33] [34] [35] [36] [37] [38] [39]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [40]
+[41]
+Underfull \vbox (badness 6592) has occurred while \output is active []
+
+ [42]
+[43] [44]) (./kNN.tex [45] [46
 
 ]
 Chapter 4.
-) (./SVD.tex [45] [46
+) (./SVD.tex [47] [48
 
 ]
 Chapter 5.
-) (./Mixed.tex [47] [48
+) (./Mixed.tex [49] [50
 
 ]
 Chapter 6.
-) (./Covars.tex [49] [50
+) (./Covars.tex [51] [52
 
 ]
 Chapter 7.
-) (./Overfitting.tex [51] [52
+) (./Overfitting.tex [53] [54
 
 ]
 Chapter 8.
-) (./R5MinIntro.tex [53] [54
+) (./R5MinIntro.tex [55] [56
 
 ]
 Appendix A.
@@ -485,8 +489,8 @@ Overfull \hbox (60.75967pt too wide) in paragraph at lines 15--34
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [55]
-[56]
+ [57]
+[58]
 Overfull \hbox (33.8354pt too wide) in paragraph at lines 93--94
 [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
 
@@ -505,7 +509,7 @@ Overfull \hbox (20.0384pt too wide) in paragraph at lines 116--117
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [57]
+ [59]
 Overfull \hbox (13.13991pt too wide) in paragraph at lines 142--143
 [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
  []
@@ -523,7 +527,7 @@ Overfull \hbox (33.8354pt too wide) in paragraph at lines 148--149
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [58]
+ [60]
 Overfull \hbox (20.0384pt too wide) in paragraph at lines 179--180
 [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
  []
@@ -538,7 +542,7 @@ Overfull \hbox (26.9369pt too wide) in paragraph at lines 206--207
 [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
-[59]
+[61]
 Overfull \hbox (20.0384pt too wide) in paragraph at lines 238--239
 [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
  []
@@ -546,22 +550,22 @@ Overfull \hbox (20.0384pt too wide) in paragraph at lines 238--239
 
 Underfull \vbox (badness 1831) has occurred while \output is active []
 
- [60]
+ [62]
 Overfull \hbox (20.0384pt too wide) in paragraph at lines 274--275
 [][][][][][][][][][][][][][][] 
  []
 
-[61] [62] [63]
+[63] [64] [65]
 Overfull \hbox (40.7339pt too wide) in paragraph at lines 415--416
 [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
-[64] [65]
+[66] [67]
 Overfull \hbox (47.6324pt too wide) in paragraph at lines 521--522
 [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
-[66]
+[68]
 Overfull \hbox (6.24141pt too wide) in paragraph at lines 559--560
 [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
  []
@@ -579,18 +583,18 @@ Overfull \hbox (109.71889pt too wide) in paragraph at lines 584--585
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [67]
+ [69]
 Overfull \hbox (13.13991pt too wide) in paragraph at lines 622--623
 [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
-[68]
+[70]
 Overfull \hbox (13.13991pt too wide) in paragraph at lines 645--646
 [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
 ][][][][][][][][][][][] 
  []
 
-[69]
+[71]
 Overfull \hbox (6.24141pt too wide) in paragraph at lines 716--717
 [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
  []
@@ -604,8 +608,8 @@ Overfull \hbox (33.8354pt too wide) in paragraph at lines 718--719
 
 Underfull \vbox (badness 5711) has occurred while \output is active []
 
- [70]
-[71]
+ [72]
+[73]
 Overfull \hbox (137.31288pt too wide) in paragraph at lines 811--812
 [][][][][][][][][][][][][][][][][][][][][] 
  []
@@ -619,16 +623,16 @@ Missing character: There is no ™ in font cmtt10!
 
 Underfull \vbox (badness 2790) has occurred while \output is active []
 
- [72]
+ [74]
 Overfull \hbox (20.84862pt too wide) in paragraph at lines 861--865
 \OT1/cmr/m/n/10.95 ited to Linux, Mac and other Unix-family sys-tems. See \OT1/
 cmr/m/it/10.95 http://heather.cs.ucdavis.edu/debugR.html\OT1/cmr/m/n/10.95 . 
  []
 
-[73])
+[75])
 No file RSbookNEW.bbl.
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 34.
-[74]
+[76]
 Package atveryend Info: Empty hook `AfterLastShipout' on input line 34.
  (./RSbookNEW.aux)
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 34.
@@ -638,10 +642,10 @@ Package rerunfilecheck Info: File `RSbookNEW.out' has not changed.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 34.
  ) 
 Here is how much of TeX's memory you used:
- 9517 strings out of 493029
- 134622 string characters out of 6136235
+ 9568 strings out of 493029
+ 135363 string characters out of 6136233
  301711 words of memory out of 5000000
- 11979 multiletter control sequences out of 15000+600000
+ 11984 multiletter control sequences out of 15000+600000
  13469 words of font info for 49 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  33i,11n,42p,262b,1682s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -652,24 +656,25 @@ ve/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/tex
 mf-dist/fonts/type1/public/amsfonts/cmextra/cmex9.pfb></usr/share/texlive/texmf
 -dist/fonts/type1/public/amsfonts/cm/cmitt10.pfb></usr/share/texlive/texmf-dist
 /fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts
-/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/
-public/amsfonts/cm/cmmi9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/
-amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfont
-s/cm/cmr17.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cm
-r6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb><
-/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/sha
-re/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsl10.pfb></usr/share/tex
-live/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/t
-exmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texlive/texmf-di
-st/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/share/texlive/texmf-dist/fon
-ts/type1/public/amsfonts/cm/cmti9.pfb></usr/share/texlive/texmf-dist/fonts/type
-1/public/amsfonts/cm/cmtt10.pfb></usr/share/texlive/texmf-dist/fonts/type1/publ
-ic/amsfonts/cm/cmtt8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsf
-onts/cm/cmtt9.pfb>
-Output written on RSbookNEW.pdf (78 pages, 887080 bytes).
+/type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texlive/texmf-dist/fonts/type1/
+public/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/
+amsfonts/cm/cmmi9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfont
+s/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cm
+r17.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb>
+</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/sh
+are/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/share/texl
+ive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsl10.pfb></usr/share/texlive/te
+xmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-di
+st/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/font
+s/type1/public/amsfonts/cm/cmti10.pfb></usr/share/texlive/texmf-dist/fonts/type
+1/public/amsfonts/cm/cmti9.pfb></usr/share/texlive/texmf-dist/fonts/type1/publi
+c/amsfonts/cm/cmtt10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsf
+onts/cm/cmtt8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm
+/cmtt9.pfb>
+Output written on RSbookNEW.pdf (80 pages, 902784 bytes).
 PDF statistics:
- 1894 PDF objects out of 2073 (max. 8388607)
- 1771 compressed objects within 18 object streams
- 955 named destinations out of 1000 (max. 500000)
+ 1962 PDF objects out of 2073 (max. 8388607)
+ 1835 compressed objects within 19 object streams
+ 1001 named destinations out of 1200 (max. 500000)
  640 words of extra memory for PDF output out of 10000 (max. 10000000)
 

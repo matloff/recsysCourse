@@ -44,35 +44,35 @@
 \contentsline {subsection}{\numberline {3.3.8}More Than Two Levels in Categorical Response}{38}{subsection.3.3.8}
 \contentsline {section}{\numberline {3.4}Bias, Variance, Overfitting and p-Hacking}{39}{section.3.4}
 \contentsline {subsection}{\numberline {3.4.1}What Is Overfitting?}{39}{subsection.3.4.1}
-\contentsline {subsection}{\numberline {3.4.2}Can Anything Be Done about It?}{40}{subsection.3.4.2}
-\contentsline {subsection}{\numberline {3.4.3}The Problem of P-hacking}{40}{subsection.3.4.3}
-\contentsline {section}{\numberline {3.5}Extended Example}{41}{section.3.5}
-\contentsline {chapter}{\numberline {4}Nearest-Neighbor Methods}{45}{chapter.4}
-\contentsline {chapter}{\numberline {5}Matrix Factorization Methods}{47}{chapter.5}
-\contentsline {chapter}{\numberline {6}Statistical Models}{49}{chapter.6}
-\contentsline {chapter}{\numberline {7}Use of Side Information}{51}{chapter.7}
-\contentsline {chapter}{\numberline {8}Bias, Variance and Overfitting}{53}{chapter.8}
-\contentsline {chapter}{\numberline {A}R Quick Start}{55}{appendix.A}
-\contentsline {section}{\numberline {A.1}Correspondences}{55}{section.A.1}
-\contentsline {section}{\numberline {A.2}Starting R}{56}{section.A.2}
-\contentsline {section}{\numberline {A.3}First Sample Programming Session}{56}{section.A.3}
-\contentsline {section}{\numberline {A.4}Vectorization}{59}{section.A.4}
-\contentsline {section}{\numberline {A.5}Second Sample Programming Session}{59}{section.A.5}
-\contentsline {section}{\numberline {A.6}Recycling}{60}{section.A.6}
-\contentsline {section}{\numberline {A.7}More on Vectorization}{61}{section.A.7}
-\contentsline {section}{\numberline {A.8}Third Sample Programming Session}{61}{section.A.8}
-\contentsline {section}{\numberline {A.9}Default Argument Values}{62}{section.A.9}
-\contentsline {section}{\numberline {A.10}The R List Type}{63}{section.A.10}
-\contentsline {subsection}{\numberline {A.10.1}The Basics}{63}{subsection.A.10.1}
-\contentsline {subsection}{\numberline {A.10.2}The Reduce() Function}{64}{subsection.A.10.2}
-\contentsline {subsection}{\numberline {A.10.3}S3 Classes}{65}{subsection.A.10.3}
-\contentsline {section}{\numberline {A.11}Some Workhorse Functions}{66}{section.A.11}
-\contentsline {section}{\numberline {A.12}Handy Utilities}{68}{section.A.12}
-\contentsline {section}{\numberline {A.13}Data Frames}{69}{section.A.13}
-\contentsline {section}{\numberline {A.14}Graphics}{71}{section.A.14}
-\contentsline {section}{\numberline {A.15}Packages}{71}{section.A.15}
-\contentsline {section}{\numberline {A.16}Other Sources for Learning R}{72}{section.A.16}
-\contentsline {section}{\numberline {A.17}Online Help}{73}{section.A.17}
-\contentsline {section}{\numberline {A.18}Debugging in R}{73}{section.A.18}
-\contentsline {section}{\numberline {A.19}Complex Numbers}{73}{section.A.19}
-\contentsline {section}{\numberline {A.20}Further Reading}{74}{section.A.20}
+\contentsline {subsection}{\numberline {3.4.2}Can Anything Be Done about It?}{41}{subsection.3.4.2}
+\contentsline {subsection}{\numberline {3.4.3}The Problem of P-hacking}{42}{subsection.3.4.3}
+\contentsline {section}{\numberline {3.5}Extended Example}{43}{section.3.5}
+\contentsline {chapter}{\numberline {4}Nearest-Neighbor Methods}{47}{chapter.4}
+\contentsline {chapter}{\numberline {5}Matrix Factorization Methods}{49}{chapter.5}
+\contentsline {chapter}{\numberline {6}Statistical Models}{51}{chapter.6}
+\contentsline {chapter}{\numberline {7}Use of Side Information}{53}{chapter.7}
+\contentsline {chapter}{\numberline {8}Bias, Variance and Overfitting}{55}{chapter.8}
+\contentsline {chapter}{\numberline {A}R Quick Start}{57}{appendix.A}
+\contentsline {section}{\numberline {A.1}Correspondences}{57}{section.A.1}
+\contentsline {section}{\numberline {A.2}Starting R}{58}{section.A.2}
+\contentsline {section}{\numberline {A.3}First Sample Programming Session}{58}{section.A.3}
+\contentsline {section}{\numberline {A.4}Vectorization}{61}{section.A.4}
+\contentsline {section}{\numberline {A.5}Second Sample Programming Session}{61}{section.A.5}
+\contentsline {section}{\numberline {A.6}Recycling}{62}{section.A.6}
+\contentsline {section}{\numberline {A.7}More on Vectorization}{63}{section.A.7}
+\contentsline {section}{\numberline {A.8}Third Sample Programming Session}{63}{section.A.8}
+\contentsline {section}{\numberline {A.9}Default Argument Values}{64}{section.A.9}
+\contentsline {section}{\numberline {A.10}The R List Type}{65}{section.A.10}
+\contentsline {subsection}{\numberline {A.10.1}The Basics}{65}{subsection.A.10.1}
+\contentsline {subsection}{\numberline {A.10.2}The Reduce() Function}{66}{subsection.A.10.2}
+\contentsline {subsection}{\numberline {A.10.3}S3 Classes}{67}{subsection.A.10.3}
+\contentsline {section}{\numberline {A.11}Some Workhorse Functions}{68}{section.A.11}
+\contentsline {section}{\numberline {A.12}Handy Utilities}{70}{section.A.12}
+\contentsline {section}{\numberline {A.13}Data Frames}{71}{section.A.13}
+\contentsline {section}{\numberline {A.14}Graphics}{73}{section.A.14}
+\contentsline {section}{\numberline {A.15}Packages}{73}{section.A.15}
+\contentsline {section}{\numberline {A.16}Other Sources for Learning R}{74}{section.A.16}
+\contentsline {section}{\numberline {A.17}Online Help}{75}{section.A.17}
+\contentsline {section}{\numberline {A.18}Debugging in R}{75}{section.A.18}
+\contentsline {section}{\numberline {A.19}Complex Numbers}{75}{section.A.19}
+\contentsline {section}{\numberline {A.20}Further Reading}{76}{section.A.20}

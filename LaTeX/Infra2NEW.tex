@@ -815,7 +815,7 @@ all $n$ points, a ``perfect'' fit.  For instance:
 
 \begin{lstlisting}
 > x <- rnorm(6) 
-> y <- x + rnorm(6) 
+> y <- rnorm(6) # unrelated to x!
 > df <- data.frame(x,y) 
 > df$x2 <- x^2 
 > df$x3 <- x^3 
@@ -823,12 +823,12 @@ all $n$ points, a ``perfect'' fit.  For instance:
 > df$x5 <- x^5 
 > df
            x          y         x2           x3
-1 -1.1855131 -2.0842520 1.40544120 -1.666168894
-2 -1.7838769 -1.6539682 3.18221664 -5.676682627
-3 -0.7124510 -0.1678258 0.50758640 -0.361630431
-4  0.1676111  0.4710778 0.02809348  0.004708779
-5  1.2462926  1.8717077 1.55324535  1.935798245
-6  0.3741604 -0.6656072 0.13999601  0.052380963
+1 -1.1855131  0.2881291 1.40544120 -1.666168894
+2 -1.7838769 -2.0741740 3.18221664 -5.676682627
+3 -0.7124510 -0.4253678 0.50758640 -0.361630431
+4  0.1676111 -0.1949265 0.02809348  0.004708779
+5  1.2462926 -0.7348481 1.55324535  1.935798245
+6  0.3741604  1.9521667 0.13999601  0.052380963
             x4            x5
 1 1.975265e+00  -2.341702414
 2 1.012650e+01 -18.064433938
@@ -844,20 +844,22 @@ lm(formula = y ~ ., data = df)
 
 Coefficients:
 (Intercept)            x           x2           x3  
-      1.070       -2.497       -6.727        1.109  
+    -1.3127       4.7632      11.4809       0.5781  
          x4           x5  
-      3.815        1.002  
+    -6.9685      -2.4938  
 > lmo$fitted.values 
          1          2          3          4          5 
--2.0842520 -1.6539682 -0.1678258  0.4710778  1.8717077 
+ 0.2881291 -2.0741740 -0.4253678 -0.1949265 -0.7348481 
          6 
--0.6656072 
+ 1.9521667 
 > y
-[1] -2.0842520 -1.6539682 -0.1678258  0.4710778  1.8717077
-[6] -0.6656072
+[1]  0.2881291 -2.0741740 -0.4253678 -0.1949265 -0.7348481
+[6]  1.9521667
 \end{lstlisting}
 
-Yet clearly that ``perfect fit'' is illusory, ``noise fitting.''  Our
+Yes, we ``predicted'' \textbf{y} perfectly, \textbf{even though there
+was no relation between the response and predictor variables).}
+Clearly that ``perfect fit'' is illusory, ``noise fitting.''  Our
 ability to predict future cases would not be good.  This is
 \textit{overfitting}.
 
