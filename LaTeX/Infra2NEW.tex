@@ -12,6 +12,12 @@ Matloff, \textit{From Algorithms to Z-Scores: Probability and
 Statistical Modeling in Computer Science},
 \url{http://heather.cs.ucdavis.edu/probstatbook}.}
 
+Note that while we will develop some statistical methods here, notably
+regression and classification models, we will not cover
+\textit{inferential} statistical methods such as confidence intervals
+and significance tests.  For readers familiar with such topics,
+occasional footnotes will be provided.
+
 Other than laying some groundwork, e.g. introducing the term
 \textit{dummy variables}, the primary goal of this chapter will be to
 discuss the issue of \textit{overfitting}.
@@ -591,7 +597,7 @@ women:
 = (\beta_0+\beta_2) + (\beta_1+\beta_3) ~ \textrm{age} 
 \end{equation}
 
-\textit{women:}
+\textit{women:}M
 
 \begin{equation}
 \textrm{mean rating} = \beta_0 + \beta_1 ~ \textrm{age} 
@@ -599,9 +605,18 @@ women:
 
 So the male and female lines have different slopes (and different
 intercepts), allowing for the differential age effect we surmise.
+Of course, once we compute the $\widehat{\beta}_i$ from the data, it
+may well turn out that our differential aging trends may not be
+confirmed.\footnote{One must take sampling variability into account, say
+by forming confidence intervals for the $\beta_i$.  As noted earlier, do
+not use significance testing for this.  At any rate, these aspects are
+beyond the scope of this book.}
 
 The term $\textrm{age} \times \textrm{male}$ is called an
-\textit{interaction term}.
+\textit{interaction term}.  Note that interaction terms can be formed
+from any predictor, not just dummy variables.  Also, one can form triple
+products for three-way interactions and so on, though this could greatly
+increase the complexity of the model and thus risk overfitting.
 
 
 \subsubsection{Dummy Variables as Response Variables}
@@ -739,14 +754,14 @@ There are two major approaches.  To explain, we'll use the following
 very simple example. Say there are dogs, cats and foxes on a field, and
 they sometimes step on a sensor, so we know their weights but do not see
 them.  Say we have data on 10000 data points, in which we do know the
-species.  Say our data frame, \textbf{df}, has 10000 rows and 4
-columns.  In the latter, say the names are 'Weight', 'Dog', 'Cat' and
-'Fox'.  Say we have 5000 dogs, 2000 cats and 3000 foxes.  Then for
-instance 2000 of the rows in \textbf{df} would be cats.
+species.  Our data frame, \textbf{df}, has 10000 rows and 4 columns.  In
+the columns, say the names are 'Weight', 'Dog', 'Cat' and 'Fox', with
+the last three being dummies.  Say we have 5000 dogs, 2000 cats and 3000
+foxes.  Then for instance 2000 of the rows in \textbf{df} would be cats.
 
 \textit{One-vs.All (OVA) Method}
 
-Here one would run run three logistic models:
+One would run run three logistic models:
 
 \begin{lstlisting}
 gdog <- glm(Dog ~ .,data=df[,1:2])  # dog vs. all else
@@ -756,7 +771,7 @@ gdog <- glm(Fox ~ .,data=df[,1:4])  # fox vs. all else
 
 Then for each new animal we encounter of unknown species, we call
 \textbf{predict()} three times, yielding three estimated conditional
-probabilities.  If the one for cat, say, is largest, we guess cat.
+probabilities.  If the one for cat, say, is largest, we guess Cat.
 
 \textit{All vs. All (AVA) Method}
 
@@ -794,28 +809,81 @@ of \textit{overfitting}.
 
 \subsection{What Is Overfitting?}
 
-Say we are in some RS context in which (\ref{mfinteraction}) is a good
-model for the setting described in that section, i.e.\ men becoming more
-liberal raters as they age but women becoming more conservative.
-If we omit the interaction term, than we will underpredict older
-men and overpredict older women.  This biases our ratings.
+Suppose we have just one predictor, and $n$ data points.  If we fit a
+polynomial model of degree $n-1$, the resulting curve will pass through
+all $n$ points, a ``perfect'' fit.  For instance:
+
+\begin{lstlisting}
+> x <- rnorm(6) 
+> y <- x + rnorm(6) 
+> df <- data.frame(x,y) 
+> df$x2 <- x^2 
+> df$x3 <- x^3 
+> df$x4 <- x^4 
+> df$x5 <- x^5 
+> df
+           x          y         x2           x3
+1 -1.1855131 -2.0842520 1.40544120 -1.666168894
+2 -1.7838769 -1.6539682 3.18221664 -5.676682627
+3 -0.7124510 -0.1678258 0.50758640 -0.361630431
+4  0.1676111  0.4710778 0.02809348  0.004708779
+5  1.2462926  1.8717077 1.55324535  1.935798245
+6  0.3741604 -0.6656072 0.13999601  0.052380963
+            x4            x5
+1 1.975265e+00  -2.341702414
+2 1.012650e+01 -18.064433938
+3 2.576440e-01  -0.183558689
+4 7.892437e-04   0.000132286
+5 2.412571e+00   3.006769615
+6 1.959888e-02   0.007333126
+> lmo <- lm(y ~ .,data=df) 
+> lmo
+
+Call:
+lm(formula = y ~ ., data = df)
+
+Coefficients:
+(Intercept)            x           x2           x3  
+      1.070       -2.497       -6.727        1.109  
+         x4           x5  
+      3.815        1.002  
+> lmo$fitted.values 
+         1          2          3          4          5 
+-2.0842520 -1.6539682 -0.1678258  0.4710778  1.8717077 
+         6 
+-0.6656072 
+> y
+[1] -2.0842520 -1.6539682 -0.1678258  0.4710778  1.8717077
+[6] -0.6656072
+\end{lstlisting}
+
+Yet clearly that ``perfect fit'' is illusory, ``noise fitting.''  Our
+ability to predict future cases would not be good.  This is
+\textit{overfitting}.
+
+Let's take a closer look, in an RS context.  Say we believe
+(\ref{mfinteraction}) is a good model for the setting described in that
+section, i.e.\ men becoming more liberal raters as they age but women
+becoming more conservative.  If we omit the interaction term, than we
+will underpredict older men and overpredict older women.  This biases
+our ratings.
 
 On the other hand, we need to worry about sampling variance.  Consider
 the case of opinion polls during an election campaign, in which the goal
 is to estimate $p$, the proportion of voters who will vote for Candidate
 Jones.  If we use too small a sample size, say 50, our results will
-probably be inaccurate.  This is due to instability:  Two pollsters,
-each randomly sampling 50 people, will sample different sets of people,
-thus each having different values of $\widehat{p}$, their sample
-estimates of $p$.  For a sample of size 50, it is likely that their two
-values of $\widehat{p}$ will be substantially different from each other,
-whereas if the sample size were 5000, the two estimates would likely be
-close to each other.  In other words, the \underline{variance} of
-$\widehat{p}$ is too high if the sample size is just 50.\footnote{The
-repeatable experiment here is randomly choosing 50 people.  Each time we
-perform this experiment, we get a different set of 50 people, thus a
-different value of $\widehat{p}$.  The latter is a random variable, and
-thus has a variance.}
+probably be inaccurate.  This is due to sampling instability:  Two
+pollsters, each randomly sampling 50 people, will sample different sets
+of people, thus each having different values of $\widehat{p}$, their
+sample estimates of $p$.  For a sample of size 50, it is likely that
+their two values of $\widehat{p}$ will be substantially different from
+each other, whereas if the sample size were 5000, the two estimates
+would likely be close to each other.  In other words, the
+\underline{variance} of $\widehat{p}$ is too high if the sample size is
+just 50.\footnote{The repeatable experiment here is randomly choosing 50
+people.  Each time we perform this experiment, we get a different set of
+50 people, thus a different value of $\widehat{p}$.  The latter is a
+random variable, and thus has a variance.}
 
 In a parametric regression setting, increasing the number of terms
 roughly means that the sampling variance of the $\widehat{\beta}_i$ will
@@ -825,7 +893,7 @@ So we have the famous \textit{bias/variance tradeoff}:  As we use more and
 more terms in our regression model (predictors, polynomials, interaction
 terms), the bias decreases but the variance increases.  This ``tug of
 war'' between these decreasing and increasing quantities typically
-implies a U-shaped curve:  As we increase the number of terms from 1,
+yields a U-shaped curve:  As we increase the number of terms from 1,
 mean absolute prediction error will at first decrease but eventually
 will increase.  Once we get to the point at which it increases, we are
 \textit{overfitting}.
@@ -838,8 +906,8 @@ dummy for each would almost certainly be overfitting.
 
 So, where is the ``happy medium,'' the model that is rich enough to
 capture most of the dynamics of the variables at hand, but simple enough
-to avoid variance issues?  Unfortunately, there is no good answer to
-this question.
+to avoid variance issues?  Unfortunately, \textbf{there is no good answer to
+this question.}
 
 One quick rule of thumb is that one should have $p < \sqrt{n}$, where
 $p$ is the number of predictors, including polynomial and interaction
@@ -847,8 +915,7 @@ terms (not to be confused with the quantity of the same name in our
 polling example above), and $n$ is the number of cases in our sample.
 But this is certainly not a firm rule by any means.  One may be able to
 get good prediction with a considerably larger value of $p$, especially
-if \textit{regularization} methods are used (Section \ref{chap:svd}),
-but even without it, as will be seen below.
+if \textit{regularization} methods are used (Chapter \ref{chap:svd}).
 
 The most common approach to dealing with the bias/variance tradeoff is
 \textit{cross validation}.  In the simplest version, one randomly splits
@@ -857,57 +924,75 @@ set}.\footnote{The latter is also called a \textit{holdout set} or a
 \textit{validation set}.}  We fit the model to the training set and
 then, pretending we don't know the ``Y'' (i.e. response) values in the
 test set, predict those values from our fitted model and the ``X''
-values in the test set.  We then ``unpretend,'' and check how well those
-predictions worked. 
+values (i.e.\ the predictors) in the test set.  We then ``unpretend,''
+and check how well those predictions worked. 
+
+The test set is ``fresh, new'' data, since we called \textbf{lm()} or
+whatever only on the training set.  Thus we are avoiding the ``noise
+fitting'' problem.  We can try several candidate models, then choose the
+one that best predicts the test data.
 
 (Note carefully that after fitting the model via cross-validation, we
 then use the full data for later prediction.  Splitting the data for
 cross-validation was just a temporary device for model selection.)
 
+Cross-validation is essentially the standard for model selection, and it
+works well if we only try a few models.  Problems can occur if we try
+many models, as seen in the next section.
+
 \subsection{The Problem of P-hacking}
 
 The (rather recent) term \textit{p-hacking} refers to the following
-abuse of statistics.  
+abuse of statistics.\footnote{The term \textit{abuse} here will not
+necessarily connote intent. It may occur out of ignorance of the
+problem.}
 
-Say we have 250 pennies, and We wish to determine whether any are
+Say we have 250 pennies, and we wish to determine whether any are
 unbalanced, i.e.\ have probability of heads different from 0.5.  We do
 so by tossing each coin 100 times.  If we get fewer than 40 heads or
 more than 60, we decide this coin is unbalanced.\footnote{For those who
-know statistics:  This gives us a Type I error rate of about 0.05.}  The
-problem is that, even if all the coins are perfectly balanced, we
-eventually will have one that has fewer than 40 or greater than 60
-heads, just by accident.  \textbf{We will then \underline{falsely}
-declare this coin to be unbalanced.}
+know statistics:  This gives us a Type I error rate of about 0.05, the
+standard used by most people.}  The problem is that, even if all the
+coins are perfectly balanced, we eventually will have one that has fewer
+than 40 or greater than 60 heads, just by accident.  \textbf{We will
+then \underline{falsely} declare this coin to be unbalanced.}
 
 Or, to give a somewhat frivolous example that still will make the point,
 say we are investigating whether there is any genetic component to a
-person's sense of humor.  Is there a Humor gene?
-
-There are many, many genes to consider.  Testing each one for relation
-to sense of humor is like checking each penny for being unbalanced: Even
-if there is no Humor gene, then eventually, just by accident, we'll
-stumble upon one that seems to be related to humor.\footnote{For those
-with background in statistics, the reason this is called ``p-hacking''
-is that the researcher may form a significance test for each gene,
-computing a p-value for each test.  Since under the null hypothesis we
-have a 5\% chance of getting a ``significant'' p-value for any given
-gene, the probability of having at least one significant result out of
-the thousands of tests is quite high, even if the null hypothesis is
-true in all cases.}
+person's sense of humor.  Is there a Humor gene?  There are many, many
+genes to consider.  Testing each one for relation to sense of humor is
+like checking each penny for being unbalanced: Even if there is no Humor
+gene, then eventually, just by accident, we'll stumble upon one that
+seems to be related to humor.\footnote{For those with background in
+statistics, the reason this is called ``p-hacking'' is that the
+researcher may form a significance test for each gene, computing a
+p-value for each test.  Since under the null hypothesis we have a 5\%
+chance of getting a ``significant'' p-value for any given gene, the
+probability of having at least one significant result out of the
+thousands of tests is quite high, even if the null hypothesis is true in
+all cases.  There are techniques called \textit{multiple inference} or
+\textit{multiple comparison} methods, to avoid p-hacking in performing
+statistical inference.  See for example \textit{Multiple Comparisons:
+Theory and Methods}, Jason Hsu, 1996, CRC.}
 
 Though the above is not about prediction, it has big implications for
-the prediction realm.  In ML there are a number of datasets on which
+the prediction realm.  In ML there are various datasets on which
 analysts engage in contests, vying for the honor of developing the model
-for the highest prediction accuracy, say for classification of images.
-Then even if all the analysts have models of equal accuracy, it is
-likely that one is substantially higher than the others, just due to an
+with the highest prediction accuracy, say for classification of images.
+If there is a large number of analysts competing for the prize, then
+even if all the analysts have models of equal accuracy, it is likely
+that one is substantially higher than the others, just due to an
 accident of sampling variation.  This is true in spite of the fact that
 they all are using the same sample; it may be that the ``winning''
-analyst' model may not be so good on another sample from the same
-population.  So, one some researcher sets a new record on a famous ML
-dataset, it may be that the research really has found a better
-prediction model --- or it may be that it merely looks better, due to
-p-hacking.
+analyst' model happens to do especially well in the given data, and may
+not be so good on another sample from the same population.  So, when some
+researcher sets a new record on a famous ML dataset, it may be that the
+research really has found a better prediction model --- or it may be
+that it merely looks better, due to p-hacking.
+
+The same is true for your own analyses.  If you try a large number of
+models, the ``winning'' one may actually not be better than all the
+others.
 
 \section{Extended Example}
 \label{prgengex}
