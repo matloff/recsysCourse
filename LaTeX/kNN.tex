@@ -1,7 +1,90 @@
 \chapter{Nearest-Neighbor Methods}  
 \label{chap:knn} 
 
-SHOW THE CODE FOR USING IT IN OUR 3 METHODS
+Recall our preview in Chapter \ref{chap:prologue}.
+\textit{Collaborative filtering} RS methods are based on known user-item
+ratings, as opposed to, e.g., methods based on textual user evaluations.
+All of the methods in that chapter fall into this category.  The most
+natural, and earliest, such method was \textit{user-based filtering},
+also known as \textit{memory-based filtering}.
 
-GIVE A SIMPLE MATH DERIVATION OF VALUE OF IT, E.G. FOR SMALL N-I
+\section{Notation}
+
+As before, let $A$ denote the ratings matrix.  The element $a_{ij}$ in
+row $i$, column $j$, is the rating that user $i$ has given/would give to
+item $j$. In the latter case, $a_{ij}$ is unknown, and its predicted value
+will be denoted by $\widehat{a}_{ij}$.  Following R notation, we will
+refer to the unknown values as NAs.
+
+Let's refer to a new case to be predicted as NC.
+
+\section{User-Based Filtering}
+
+In predicting how a given user would rate a given item, we first find
+all users that have rated the given item, then determine which of those
+users are most similar to the given user.  Our prediction is then the
+average of the ratings of the given item among such ``similar'' users.
+A corresponding approach based on items is used as well.  We focus on
+such methods in this chapter.
+
+In terms of the matrix $A$ above, we first look at column $j$.  We cull
+the rows having non-NA values in this column, and for each of those
+rows, find the distance of that row to the NC.  Take the $k$ closest
+rows, and finally, average the value of $a_{mj}$ to get
+$\widehat{a}_{ij}$ (with $m$ ranging over the row numbers of the
+selected rows).
+
+Here is code from \textbf{rectools} (somewhat simlified):
+
+\begin{lstlisting}
+
+\end{lstlisting}
+
+\section{Regression Analog}
+
+Recall the method of k-nearest neighbor (kNN) regression estimation from
+Chapter \ref{chap:infra2}, involving prediction of weight from height
+and age:
+
+\begin{quote}
+To estimate $E(W ~| H=70, A=28)$, we could find, say, the 25 people in our
+sample for whom $(H,A)$ is closest to (70,28), and average their weights
+to produce our estimate of $E(W ~| H=70, A=28)$.
+\end{quote}
+
+\section{Defining Distance}
+
+\section{Item-Based Filtering}
+
+\section{Choosing k}
+
+\section{Covariates}
+
+\section{Edge Bias}
+
+
+\iffalse
+
+idxs <- sample(1:nrow(ml),1000)
+ml <- ml[,1:3]
+mltrn <- ml[-idxs,]
+mltst <- ml[idxs,]
+library(rectools)
+ud <- formUserData(mltrn)
+
+k <- 5
+z <- apply(mltst[,-3],1,pn); mean(abs(z-mltst[,3]),na.rm=T)
+
+predname <- function(userData,oneInputRow,k)
+{
+   usr <- oneInputRow[1]
+   itm <- oneInputRow[2]
+   udElement <- userData[[as.character(usr)]]
+   predict(userData,udElement,itm,k)
+}
+
+pn <- function(oneInputRow) predname(ud,oneInputRow,k)
+
+
+\fi
 
