@@ -16,7 +16,7 @@ Note that while we will develop some statistical methods here, notably
 regression and classification models, we will not cover
 \textit{inferential} statistical methods such as confidence intervals
 and significance tests.  For readers familiar with such topics,
-occasional footnotes will be provided.
+occasional footnotes will be provided. 
 
 Other than laying some groundwork, e.g. introducing the term
 \textit{dummy variables}, the primary goal of this chapter will be to
@@ -808,6 +808,7 @@ By far the most vexing issue in statistics and machine learning is that
 of \textit{overfitting}.  
 
 \subsection{What Is Overfitting?}
+\label{norelation}
 
 Suppose we have just one predictor, and $n$ data points.  If we fit a
 polynomial model of degree $n-1$, the resulting curve will pass through
@@ -862,6 +863,7 @@ was no relation between the response and predictor variables).}
 Clearly that ``perfect fit'' is illusory, ``noise fitting.''  Our
 ability to predict future cases would not be good.  This is
 \textit{overfitting}.
+
 
 Let's take a closer look, in an RS context.  Say we believe
 (\ref{mfinteraction}) is a good model for the setting described in that
@@ -919,15 +921,24 @@ But this is certainly not a firm rule by any means.  One may be able to
 get good prediction with a considerably larger value of $p$, especially
 if \textit{regularization} methods are used (Chapter \ref{chap:svd}).
 
-The most common approach to dealing with the bias/variance tradeoff is
-\textit{cross validation}.  In the simplest version, one randomly splits
-the data into a \textit{training set} and a \textit{test
-set}.\footnote{The latter is also called a \textit{holdout set} or a
-\textit{validation set}.}  We fit the model to the training set and
-then, pretending we don't know the ``Y'' (i.e. response) values in the
-test set, predict those values from our fitted model and the ``X''
-values (i.e.\ the predictors) in the test set.  We then ``unpretend,''
-and check how well those predictions worked. 
+From the polynomial-ftting example in Section \ref{norelation}, we see
+the following key point:
+
+\begin{quote}
+An assessment of predictive ability, based on predicting the same data
+on which our model is fit, tends to be overly optimistic and may be
+meaningless or close to it.
+\end{quote}
+
+This motivates the most common approach to dealing with the
+bias/variance tradeoff, \textit{cross validation}.  In the simplest
+version, one randomly splits the data into a \textit{training set} and a
+\textit{test set}.\footnote{The latter is also called a \textit{holdout
+set} or a \textit{validation set}.}  We fit the model to the training
+set and then, pretending we don't know the ``Y'' (i.e. response) values
+in the test set, predict those values from our fitted model and the
+``X'' values (i.e.\ the predictors) in the test set.  We then
+``unpretend,'' and check how well those predictions worked. 
 
 The test set is ``fresh, new'' data, since we called \textbf{lm()} or
 whatever only on the training set.  Thus we are avoiding the ``noise
