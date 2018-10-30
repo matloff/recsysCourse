@@ -765,8 +765,8 @@ One would run run three logistic models:
 
 \begin{lstlisting}
 gdog <- glm(Dog ~ .,data=df[,1:2])  # dog vs. all else
-gcat <- glm(Cat ~ .,data=df[,1:3])  # cat vs. all else
-gdog <- glm(Fox ~ .,data=df[,1:4])  # fox vs. all else
+gcat <- glm(Cat ~ .,data=df[,c(1,3)])  # cat vs. all else
+gfox <- glm(Fox ~ .,data=df[,c(1,4])  # fox vs. all else
 \end{lstlisting}
 
 Then for each new animal we encounter of unknown species, we call
