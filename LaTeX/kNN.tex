@@ -16,6 +16,15 @@ item $j$. In the latter case, $a_{ij}$ is unknown, and its predicted value
 will be denoted by $\widehat{a}_{ij}$.  Following R notation, we will
 refer to the unknown values as NAs.
 
+Note that for large applications, the matrix $A$ is far too large to
+store in memory.  One could resort to storage schemes for
+\textit{sparse} matrices, e.g.\ \textit{Compresed Row Storage}, but here
+we will simply use $A$ to help explain concepts.  In the
+\textbf{rectools} package, the input data is run through
+\textbf{formUserData()} and algorithms use that instead of $A$.  This
+function orgamizes the data into an R list, one element per user.  Each
+such element records the ratings made by that user. 
+
 Let's refer to a new case to be predicted as NC.
 
 \section{User-Based Filtering}
@@ -44,9 +53,7 @@ arguments are:
 \begin{itemize}
 
 \item \textbf{origData:}  The original dataset, after having been run through
-\textbf{formUserData()}; the latter orgamizes the data into an R list,
-one element per user.  Each such element records the ratings made by
-that user. 
+\textbf{formUserData()}. 
 
 \item \textbf{newData:}  The element of \textbf{origData} for NC.\footnote{If
 NC is new, not in the database (called \textit{cold start}), we
@@ -65,18 +72,20 @@ predict.usrData <- function(origData,newData,newItem,k)
    # we first need to narrow origData down to the users who 
    # have rated newItem
 
-   # here oneUsr is one user record in origData; the function will look for a j 
-   # such that element j in the items list for this user matches the item 
+   # here oneUsr is one user record in origData; the function will look for a 
+   # j such that element j in the items list for this user matches the item 
    # of interest, newItem; (j,rating) will be returned
 
    checkNewItem <- function(oneUsr) {
       whichOne <- which(oneUsr$itms == newItem)
-      return(c(whichOne,oneUsr$ratings[whichOne]))
+      if (length(whichOne) == 0) {
+         return(c(NA,NA))
+      } else return(c(whichOne,oneUsr$ratings[whichOne]))
    }
 
    found <- as.matrix(sapply(origData,checkNewItem))
    # description of 'found':
-   # found is of dimensions 2 x number of users in training set
+   # found is of dimensions 2 by number of users in training set
    # found[1,i] = j means origData[[i]]$itms[j] = newItem;
    # found[1,i] = NA means newItem wasn't rated by user i
    # found[2,i] = rating in the non-NA case
@@ -110,6 +119,11 @@ predict.usrData <- function(origData,newData,newItem,k)
 }
 \end{lstlisting}
 
+Note that the distances were computed by the function
+\textbf{cosDist()}, which computes a ``cosine'' similarity (not really a
+distance).  It could be replaced by a function of the analyst's choice.
+More on this below.
+
 \section{Regression Analog}
 
 Recall the method of k-nearest neighbor (kNN) regression estimation from
@@ -122,11 +136,32 @@ sample for whom $(H,A)$ is closest to (70,28), and average their weights
 to produce our estimate of $E(W ~| H=70, A=28)$.
 \end{quote}
 
+So kNN RS is really the same as kNN regression
+
+\section{Choosing k}
+
+As we have already seen with RS, regression and machine learning methods, 
+the typical way to choose a model is to use cross-validation.  This is
+true for kNN RS as well; we can choose the value of $k$ via
+cross-validation.  However, a curious property may streamline the
+process, as follows.
+
+Note this line in \textbf{predict.usrData()}:
+
+\begin{lstlisting}
+ki <- min(ki, length(cosines))
+\end{lstlisting}
+
+What is happeing here?  Say for a particular situation, there are 52
+rows in $A$ having ratings for the item specified in NC.  Then of course
+as we increase our number of nearest neighbors beyond 52, we will get
+identical results.  Such a situation will occur if the $A$ matrix is not
+too \textit{dense}, i.e.\ does not have a high proportion of non-NA
+values.  
+
 \section{Defining Distance}
 
 \section{Item-Based Filtering}
-
-\section{Choosing k}
 
 \section{Covariates}
 
