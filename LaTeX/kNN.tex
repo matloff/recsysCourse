@@ -27,6 +27,8 @@ average of the ratings of the given item among such ``similar'' users.
 A corresponding approach based on items is used as well.  We focus on
 such methods in this chapter.
 
+\subsection{Matrix View}
+
 In terms of the matrix $A$ above, we first look at column $j$.  We cull
 the rows having non-NA values in this column, and for each of those
 rows, find the distance of that row to the NC.  Take the $k$ closest
@@ -34,10 +36,78 @@ rows, and finally, average the value of $a_{mj}$ to get
 $\widehat{a}_{ij}$ (with $m$ ranging over the row numbers of the
 selected rows).
 
-Here is code from \textbf{rectools} (somewhat simlified):
+\subsection{(One) Implementation}
 
-\begin{lstlisting}
+Below is code from \textbf{rectools} (somewhat simplified).  The
+arguments are:
 
+\begin{itemize}
+
+\item \textbf{origData:}  The original dataset, after having been run through
+\textbf{formUserData()}; the latter orgamizes the data into an R list,
+one element per user.  Each such element records the ratings made by
+that user. 
+
+\item \textbf{newData:}  The element of \textbf{origData} for NC.\footnote{If
+NC is new, not in the database (called \textit{cold start}), we
+synthesize a list element for it, assuming NC has rated at least one
+item.}
+
+\item \textbf{newItem:}  ID number of the item to be predicted for NC.
+
+\item k:  The number(s) of nearest neighbors.  Can be a vector.
+
+\end{itemize} 
+
+\begin{lstlisting}[numbers=left]
+predict.usrData <- function(origData,newData,newItem,k)
+{
+   # we first need to narrow origData down to the users who 
+   # have rated newItem
+
+   # here oneUsr is one user record in origData; the function will look for a j 
+   # such that element j in the items list for this user matches the item 
+   # of interest, newItem; (j,rating) will be returned
+
+   checkNewItem <- function(oneUsr) {
+      whichOne <- which(oneUsr$itms == newItem)
+      return(c(whichOne,oneUsr$ratings[whichOne]))
+   }
+
+   found <- as.matrix(sapply(origData,checkNewItem))
+   # description of 'found':
+   # found is of dimensions 2 x number of users in training set
+   # found[1,i] = j means origData[[i]]$itms[j] = newItem;
+   # found[1,i] = NA means newItem wasn't rated by user i
+   # found[2,i] = rating in the non-NA case
+
+   # we need to get rid of the users who didn't rate newItem
+   whoHasIt <- which(!is.na(found[1,]))
+   origDataRatedNI <- origData[whoHasIt]
+   # now origDataRatedNI only has the relevant users, the ones who 
+   # have rated newItem, so select only those columns of the found matrix
+   found <- found[,whoHasIt,drop=FALSE]
+
+   # find the distance from newData to one user y of origData; defined for
+   # use in sapply() below
+   onecos <- function(y) cosDist(newData,y,wtcovs,wtcats)
+   cosines <- sapply(origDataRatedNI,onecos)
+   # the vector cosines contains the distances from newData to all the
+   # original data points who rated newItem
+
+   # action of findKnghbourRtng(): find the mean rating of newItem in
+   # origDataRatedNI, for ki (= k[i]) neighbors
+   #
+   # if ki > neighbours present in the dataset, then the 
+   # number of neighbours is used
+   findKnghbourRtng <- function(ki){
+     ki <- min(ki, length(cosines))
+     # nearby is a vector containing the indices of the ki closest neighbours
+     nearby <- order(cosines,decreasing=FALSE)[1:ki]
+     mean(as.numeric(found[2, nearby]))
+   }
+   sapply(k, findKnghbourRtng)
+}
 \end{lstlisting}
 
 \section{Regression Analog}
