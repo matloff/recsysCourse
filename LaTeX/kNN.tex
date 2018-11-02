@@ -12,17 +12,17 @@ also known as \textit{memory-based filtering}.
 
 As before, let $A$ denote the ratings matrix.  The element $a_{ij}$ in
 row $i$, column $j$, is the rating that user $i$ has given/would give to
-item $j$. In the latter case, $a_{ij}$ is unknown, and its predicted value
-will be denoted by $\widehat{a}_{ij}$.  Following R notation, we will
-refer to the unknown values as NAs.
+item $j$. In the latter case, $a_{ij}$ is unknown, and its predicted
+value, to be determined, will be denoted by $\widehat{a}_{ij}$.
+Following R notation, we will refer to the unknown values as NAs.
 
 Note that for large applications, the matrix $A$ is far too large to
 store in memory.  One could resort to storage schemes for
 \textit{sparse} matrices, e.g.\ \textit{Compresed Row Storage}, but here
 we will simply use $A$ to help explain concepts.  In the
 \textbf{rectools} package, the input data is run through
-\textbf{formUserData()} and algorithms use that instead of $A$.  This
-function orgamizes the data into an R list, one element per user.  Each
+\textbf{formUserData()}, and algorithms use that instead of $A$.  This
+function organizes the data into an R list, one element per user.  Each
 such element records the ratings made by that user. 
 
 Let's refer to a new case to be predicted as NC.
@@ -37,6 +37,7 @@ A corresponding approach based on items is used as well.  We focus on
 such methods in this chapter.
 
 \subsection{Matrix View}
+\label{matrixview}
 
 In terms of the matrix $A$ above, we first look at column $j$.  We cull
 the rows having non-NA values in this column, and for each of those
@@ -47,7 +48,9 @@ selected rows).
 
 \subsection{(One) Implementation}
 
-Below is code from \textbf{rectools} (somewhat simplified).  The
+Below is code from \textbf{rectools} (somewhat
+simplified).\footnote{Code written mainly by Vishal Chakraborti.}
+The
 arguments are:
 
 \begin{itemize}
@@ -58,11 +61,12 @@ arguments are:
 \item \textbf{newData:}  The element of \textbf{origData} for NC.\footnote{If
 NC is new, not in the database (called \textit{cold start}), we
 synthesize a list element for it, assuming NC has rated at least one
-item.}
+item.  We set the user ID for NC to ''.}
 
 \item \textbf{newItem:}  ID number of the item to be predicted for NC.
 
-\item k:  The number(s) of nearest neighbors.  Can be a vector.
+\item k:  The number(s) of nearest neighbors.  Can be a vector, i.e.\ we
+can request several predictions to be made at once.
 
 \end{itemize} 
 
@@ -72,9 +76,10 @@ predict.usrData <- function(origData,newData,newItem,k)
    # we first need to narrow origData down to the users who 
    # have rated newItem
 
-   # here oneUsr is one user record in origData; the function will look for a 
-   # j such that element j in the items list for this user matches the item 
-   # of interest, newItem; (j,rating) will be returned
+   # here oneUsr is one user record in origData; the function will 
+   # look for a j such that element j in the items list for 
+   # this user matches the item of interest, newItem; (j,rating) 
+   # will be returned
 
    checkNewItem <- function(oneUsr) {
       whichOne <- which(oneUsr$itms == newItem)
@@ -94,11 +99,12 @@ predict.usrData <- function(origData,newData,newItem,k)
    whoHasIt <- which(!is.na(found[1,]))
    origDataRatedNI <- origData[whoHasIt]
    # now origDataRatedNI only has the relevant users, the ones who 
-   # have rated newItem, so select only those columns of the found matrix
+   # have rated newItem, so select only those columns of the found 
+   # matrix
    found <- found[,whoHasIt,drop=FALSE]
 
-   # find the distance from newData to one user y of origData; defined for
-   # use in sapply() below
+   # find the distance from newData to one user y of origData; 
+   # defined for use in sapply() below
    onecos <- function(y) cosDist(newData,y,wtcovs,wtcats)
    cosines <- sapply(origDataRatedNI,onecos)
    # the vector cosines contains the distances from newData to all the
@@ -111,7 +117,8 @@ predict.usrData <- function(origData,newData,newItem,k)
    # number of neighbours is used
    findKnghbourRtng <- function(ki){
      ki <- min(ki, length(cosines))
-     # nearby is a vector containing the indices of the ki closest neighbours
+     # nearby is a vector containing the indices of the ki closest 
+     # neighbours
      nearby <- order(cosines,decreasing=FALSE)[1:ki]
      mean(as.numeric(found[2, nearby]))
    }
@@ -122,7 +129,18 @@ predict.usrData <- function(origData,newData,newItem,k)
 Note that the distances were computed by the function
 \textbf{cosDist()}, which computes a ``cosine'' similarity (not really a
 distance).  It could be replaced by a function of the analyst's choice.
-More on this below.
+More on this below.\footnote{An R note: \textbf{sapply()} is called
+several times.  Since that function needs another function, say
+\textbf{f()}, as an argument, there is a question as to where to define
+that function --- inside \textbf{predict.usrData()} or outside it.
+
+If \textbf{()} is short, it arguably is clearer to define it
+``inline,'' i.e.\ just before the call to \textbf{sapply()}.  In
+addition, we may need fewer arguments to \textbf{f()}.  In the above
+code for instance, consider the function \textbf{findKnghbourRtng()}.
+It makes use of \textbf{cosines}, which was computed a few lines earlier
+with \textbf{predict.usrData()}.  That variable, while local to the
+latter function, is global to \textbf{findKnghbourRtng()}.}
 
 \section{Regression Analog}
 
@@ -136,7 +154,7 @@ sample for whom $(H,A)$ is closest to (70,28), and average their weights
 to produce our estimate of $E(W ~| H=70, A=28)$.
 \end{quote}
 
-So kNN RS is really the same as kNN regression
+So kNN RS is really the same as kNN regression.
 
 \section{Choosing k}
 
@@ -159,9 +177,145 @@ identical results.  Such a situation will occur if the $A$ matrix is not
 too \textit{dense}, i.e.\ does not have a high proportion of non-NA
 values.  
 
+Indeed, it often turns out that the best value of $k$, i.e.\ the one
+that predicts the holdout set the best, is the largest possible value as
+above.  In choosing $k$, then, we might start our search as
+\textbf{length(cosines}, then try a few values slghtly smaller than
+that.  If the latter give slightly less accuracy, we might choose our
+$k$ at that right endpoint.
+
 \section{Defining Distance}
 
+As mentioned, we could use any distance function instead of
+\textbf{cosDist()} above to measure the similarity of NC and rows in
+$A$.  Many distance measures have been proposed, but typically some kind
+of ``cosine'' method is chosen.  What does this mean?
+
+\subsection{The Basic Cosine}
+
+In 2- or 3-dimensional space, we are familiar with the cosine of the
+angle between vectors $x$ and $y$:
+
+\begin{equation}
+\cos(x,y) = \frac{(x,y)}{||x|| ~ ||y||}
+\end{equation}
+
+where the numerator is the familiar ``dot product.''  But even in higher
+dimensions --- something like the number of columns of $A$, which could
+be quite large --- the above makes sense.  It is bounded by -1 and 1 in
+general, and since the elements of $A$ are nonnegative, the cosine is
+bounded between 0 and 1, no matter what dimension we are in.
+As such, it would seem to be a good similarity measure.\footnote{It is
+not actually a distance, as it does not satisfy the Triangle Inequality,
+$\textrm{dist}(x,z) \leq \textrm{dist}(x,y) + \textrm{dist}(y,z)$.}
+
+Here is (a slightly simplified version of) \textbf{cosDist()}:
+
+\begin{lstlisting}
+cosDist <- function(x,y)
+{
+   # rated items in common
+   commItms <- intersect(x$itms,y$itms)
+   if (length(commItms)==0) return(NaN)
+   # where are those common items in x and y?
+   xwhere <- which(!is.na(match(x$itms,commItms)))
+   ywhere <- which(!is.na(match(y$itms,commItms)))
+   xvec <- x$ratings[xwhere]
+   yvec <- y$ratings[ywhere]
+
+   xvec %*% yvec / (l2a(xvec) * l2a(yvec))
+}
+
+l2a <- function(x) sqrt(x %*% x)
+
+\end{lstlisting}
+
+\subsection{Refinements of Cosine}
+
+Cosine is used in many areas of machine learning, notably text
+classification.  The analog there of our $A$ matrix is the
+\textit{document term matrix}.  One develops a list of words that are
+found to predict text category well, e.g. sports, business, politics and
+so on.  The matrix $A$ would then be of size $w \times d$, where $w$ is
+the number of words in our list and $d$ is the number of documents.  Yhr
+$(i,j)$ element is, e.g., 1 or 0, depending on whether that word appears
+in that document.  Similarity of two documents is measured by the
+consine between the $w$-word vectors for the two documents.
+\subsubsection{Correlation}
+
+In our RS context, though, pure cosine might be a less appropriate
+measure of similarity.  Say for instance we have users U and V, the
+first of whom is rather liberal in her ratings while V is more cautious.
+It's still possible that the two are similar, in the predictive sense,
+if they are highly correlated:  Whenever U rates gives an item a rating
+above U's average, typically V rates the item more highly than V's
+average.  In that case, we should use correlation as our measure of
+similarity:
+
+\begin{equation}
+\textrm{corr}(x,y) =
+\frac{(x-\overline{x},y-\overline{y})}
+{||x-\overline{x}|| ~ ||y-\overline{y}||}
+\end{equation}
+
+Here $\overline{x}$ is the vector having all of its elements equal to
+the average value in $x$, with $\overline{y}$ defined similarly.
+
+\subsubsection{Jaccuard Similarity}
+
+Here again, let $x$ and $y$ be two rows in $A$.  Define
+$\widetilde{x}$ to be the indices, i.e.\ column numbers of the known
+elements of $x$; it's simply a list of the IDs of the items rated by
+this user.  Define $\widetilde{y}$ analogously.  Finally, for any set
+$B$, let $|B|$ denote the \textit{cardinality} of the set, meaning the
+number of elements.  Then the Jaccuard similarity between $x$ and $y$ is
+defined to be
+
+\begin{equation}
+\frac{|\widetilde{x} \cap \widetilde{y}|}
+{|\widetilde{x} \cup \widetilde{y}|}
+\end{equation}
+
+For the MovieLens data, for example, this is measuring whether these two
+users are rating the same movies (with the denominator being a scaling
+factor that makes the measure in [0,1]).  We are not considering the
+actual ratings of the movies, just the degree to which they have the
+same tastes.
+
+By the way, this brings up a very important point about RS in general.
+Typically someone will watch (and rate) a movie with the expectation
+that they'll like it.  In this sense, the ratings may be biased, and our
+guess for the rating the user would give to a movie he does not plan to
+watch may be shaky. 
+
+\subsubsection{Forming Neighborhoods Using Matrix Factorization}
+
+An obvious drawback to cosine methods is that they are based on small
+sample sizes.  The number of users who have rated the requested item may
+be too small to obtain good accuracy.  An alternative using matrix
+factorization (MF) is as follows.
+
+Recall that MF methods calculate matrices $W$ and $H$ such that $A
+\approx WH$.  As will be shown in Chapter \ref{chap:svd}, the rows of
+$H$ can be thought of as a set of ``representative'' synthetic users,
+approximately spanning the space of all users.  Row $i$ of $W$ is the
+set of coefficients of user $i$ with respect to this basis.  Note that
+$\widehat{a}_{ij}$ is the dot product of row $i$ in $W$ and column $j$
+in $H$.  
+
+Now consider what will happen with NC.  Assume for now that NC is a user
+already in the database, row $r$.  We can now form a neighborhood of NC
+by finding the $k$ most similar rows of $W$ to row $r$.  In particular,
+let the item of interest to NC be item $s$.  Then for each of these rows
+$m$, find $\widehat{a}_{ms}$, then average those values to obtain our
+prediction for NC. 
+
 \section{Item-Based Filtering}
+
+Here we modify the description in Section \ref{matrixview}.  Given a
+query about item $s$ from NC, user $r$, we find the $k$ closest columns
+to column $s$, among those containing a rating by $s$.  We then average
+those ratings.
 
 \section{Covariates}
 
