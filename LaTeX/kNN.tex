@@ -300,15 +300,24 @@ Recall that MF methods calculate matrices $W$ and $H$ such that $A
 $H$ can be thought of as a set of ``representative'' synthetic users,
 approximately spanning the space of all users.  Row $i$ of $W$ is the
 set of coefficients of user $i$ with respect to this basis.  Note that
-$\widehat{a}_{ij}$ is the dot product of row $i$ in $W$ and column $j$
-in $H$.  
+the MF estimate of $a_{ij}$, $\widehat{a}_{ij}$, is the dot product of
+row $i$ in $W$ and column $j$ in $H$.  And thus the product of row $i$
+of $W$ with all of $H$ is the set of all MF  predictions for user $i$,
+across all items.
 
 Now consider what will happen with NC.  Assume for now that NC is a user
-already in the database, row $r$.  We can now form a neighborhood of NC
-by finding the $k$ most similar rows of $W$ to row $r$.  In particular,
-let the item of interest to NC be item $s$.  Then for each of these rows
-$m$, find $\widehat{a}_{ms}$, then average those values to obtain our
-prediction for NC. 
+already in the database, row $r$,  and let the item of interest to NC be
+item $s$.  We can now form a neighborhood of NC by finding the $k$ most
+similar rows of $W$ to row $r$.  Then for each of these rows $m$, find
+$\widehat{a}_{ms}$, then average those values to obtain our hybrid
+MF-kNN prediction for NC. 
+
+\textit{Top-N Recommendations}
+
+Taking that idea one step further, say we multiply those $m$ rows times
+$H$, and then average the resulting rows.  This gives us hybrid MF-kNN
+predictions for user $r$ for all the item.  In some RS applications, we
+want the top-N of these, which are easy to obtain here.
 
 \section{Item-Based Filtering}
 
