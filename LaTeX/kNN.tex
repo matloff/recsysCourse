@@ -241,6 +241,7 @@ the number of words in our list and $d$ is the number of documents.  Yhr
 $(i,j)$ element is, e.g., 1 or 0, depending on whether that word appears
 in that document.  Similarity of two documents is measured by the
 consine between the $w$-word vectors for the two documents.
+
 \subsubsection{Correlation}
 
 In our RS context, though, pure cosine might be a less appropriate
@@ -261,14 +262,20 @@ similarity:
 Here $\overline{x}$ is the vector having all of its elements equal to
 the average value in $x$, with $\overline{y}$ defined similarly.
 
-\subsubsection{Jaccuard Similarity}
+\subsubsection{Jaccard Similarity}
+
+Suppose User A's ratings are always gives exactly double those of User
+B.  Then most cosine-based ratings (there are others besides the
+above) will say that A and B are exactly similar.  Yet if we predict the
+rating for some item for User B from A's rating, it will be twice as
+high as a it should be.  An alternative is Jaccard similarity.
 
 Here again, let $x$ and $y$ be two rows in $A$.  Define
 $\widetilde{x}$ to be the indices, i.e.\ column numbers of the known
 elements of $x$; it's simply a list of the IDs of the items rated by
 this user.  Define $\widetilde{y}$ analogously.  Finally, for any set
 $B$, let $|B|$ denote the \textit{cardinality} of the set, meaning the
-number of elements.  Then the Jaccuard similarity between $x$ and $y$ is
+number of elements.  Then the Jaccard similarity between $x$ and $y$ is
 defined to be
 
 \begin{equation}
