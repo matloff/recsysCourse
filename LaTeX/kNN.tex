@@ -156,6 +156,11 @@ to produce our estimate of $E(W ~| H=70, A=28)$.
 
 So kNN RS is really the same as kNN regression.
 
+Note that kNN is an example of \textit{smoothing}.  In an image
+processing tool, one can ``smooth out'' blemishes in a photograph by
+replacing the value of each pixel by the average value of neighboring
+pixels.  With kNN, we are averaging the ratings if a neighborhood of NC.
+
 \section{Choosing k}
 
 As we have already seen with RS, regression and machine learning methods, 
@@ -173,14 +178,13 @@ ki <- min(ki, length(cosines))
 What is happeing here?  Say for a particular situation, there are 52
 rows in $A$ having ratings for the item specified in NC.  Then of course
 as we increase our number of nearest neighbors beyond 52, we will get
-identical results.  Such a situation will occur if the $A$ matrix is not
-too \textit{dense}, i.e.\ does not have a high proportion of non-NA
-values.  
+identical results.  Such a situation will occur if the $A$ does not have
+a high proportion of non-NA values.  
 
 Indeed, it often turns out that the best value of $k$, i.e.\ the one
 that predicts the holdout set the best, is the largest possible value as
 above.  In choosing $k$, then, we might start our search as
-\textbf{length(cosines}, then try a few values slghtly smaller than
+\textbf{length(cosines}), then try a few values slghtly smaller than
 that.  If the latter give slightly less accuracy, we might choose our
 $k$ at that right endpoint.
 
@@ -189,7 +193,10 @@ $k$ at that right endpoint.
 As mentioned, we could use any distance function instead of
 \textbf{cosDist()} above to measure the similarity of NC and rows in
 $A$.  Many distance measures have been proposed, but typically some kind
-of ``cosine'' method is chosen.  What does this mean?
+of ``cosine'' method is chosen.\footnote{One could use ordinary
+Euclidean distance as in kNN regression, but the cosine methods are
+preferred because they take values in [0,1], regardless of the lengths
+of the ratings records being compared.} What does this mean?
 
 \subsection{The Basic Cosine}
 
@@ -202,9 +209,9 @@ angle between vectors $x$ and $y$:
 
 where the numerator is the familiar ``dot product.''  But even in higher
 dimensions --- something like the number of columns of $A$, which could
-be quite large --- the above makes sense.  It is bounded by -1 and 1 in
-general, and since the elements of $A$ are nonnegative, the cosine is
-bounded between 0 and 1, no matter what dimension we are in.
+be quite large --- the above expression makes sense.  It is bounded by
+-1 and 1 in general, and since the elements of $A$ are nonnegative, the
+cosine is bounded between 0 and 1, no matter what dimension we are in.
 As such, it would seem to be a good similarity measure.\footnote{It is
 not actually a distance, as it does not satisfy the Triangle Inequality,
 $\textrm{dist}(x,z) \leq \textrm{dist}(x,y) + \textrm{dist}(y,z)$.}
@@ -235,12 +242,16 @@ l2a <- function(x) sqrt(x %*% x)
 Cosine is used in many areas of machine learning, notably text
 classification.  The analog there of our $A$ matrix is the
 \textit{document term matrix}.  One develops a list of words that are
-found to predict text category well, e.g. sports, business, politics and
+found to predict text category well, e.g.\ sports, business, politics and
 so on.  The matrix $A$ would then be of size $w \times d$, where $w$ is
-the number of words in our list and $d$ is the number of documents.  Yhr
+the number of words in our list and $d$ is the number of documents.  The
 $(i,j)$ element is, e.g., 1 or 0, depending on whether that word appears
 in that document.  Similarity of two documents is measured by the
-consine between the $w$-word vectors for the two documents.
+cosine between the $w$-word vectors for the two documents.  When a new
+document comes in of unknown category, we find the $k$ documents in our
+training data that are most similar to the new one, and determine which
+category is most frequent among these $k$ known documents.  That
+category is then our guess for the new case.
 
 \subsubsection{Correlation}
 
@@ -248,7 +259,7 @@ In our RS context, though, pure cosine might be a less appropriate
 measure of similarity.  Say for instance we have users U and V, the
 first of whom is rather liberal in her ratings while V is more cautious.
 It's still possible that the two are similar, in the predictive sense,
-if they are highly correlated:  Whenever U rates gives an item a rating
+if they are highly correlated:  Whenever U gives an item a rating
 above U's average, typically V rates the item more highly than V's
 average.  In that case, we should use correlation as our measure of
 similarity:
@@ -285,9 +296,9 @@ defined to be
 
 For the MovieLens data, for example, this is measuring whether these two
 users are rating the same movies (with the denominator being a scaling
-factor that makes the measure in [0,1]).  We are not considering the
-actual ratings of the movies, just the degree to which they have the
-same tastes.
+factor that places the measure in [0,1]).  We are not considering the
+actual ratings of the movies, just the degree to which the two users
+have the same tastes.
 
 By the way, this brings up a very important point about RS in general.
 Typically someone will watch (and rate) a movie with the expectation
@@ -309,7 +320,7 @@ approximately spanning the space of all users.  Row $i$ of $W$ is the
 set of coefficients of user $i$ with respect to this basis.  Note that
 the MF estimate of $a_{ij}$, $\widehat{a}_{ij}$, is the dot product of
 row $i$ in $W$ and column $j$ in $H$.  And thus the product of row $i$
-of $W$ with all of $H$ is the set of all MF  predictions for user $i$,
+of $W$ with all of $H$ is the vector of all MF  predictions for user $i$,
 across all items.
 
 Now consider what will happen with NC.  Assume for now that NC is a user
@@ -319,23 +330,75 @@ similar rows of $W$ to row $r$.  Then for each of these rows $m$, find
 $\widehat{a}_{ms}$, then average those values to obtain our hybrid
 MF-kNN prediction for NC. 
 
+Note that MF is a form of smoothing, as is kNN, so this hybrid amounts
+to double-smoothing.  
+
 \textit{Top-N Recommendations}
 
-Taking that idea one step further, say we multiply those $m$ rows times
-$H$, and then average the resulting rows.  This gives us hybrid MF-kNN
-predictions for user $r$ for all the item.  In some RS applications, we
-want the top-N of these, which are easy to obtain here.
+Taking that hybrid idea one step further, say we multiply those $m$ rows
+times $H$, and then average the resulting rows.  This gives us hybrid
+MF-kNN predictions for user $r$ for all the items.  In some RS
+applications, we want the top-N of these, which are easy to obtain here.
 
 \section{Item-Based Filtering}
 
 Here we modify the description in Section \ref{matrixview}.  Given a
 query about item $s$ from NC, user $r$, we find the $k$ closest columns
-to column $s$, among those containing a rating by $s$.  We then average
-those ratings.
+to column $s$, among those containing a rating by the given user.  We
+then average those ratings.
 
 \section{Covariates}
 
-\section{Edge Bias}
+In gauging the similarity between two users, we may wish to make use of
+related variables, known variously as \textit{covariates}, \textit{side
+information} or \textit{attributes}.  This is easily implemented in kNN
+RS.  In computing the similarity between users A and B, instead of
+merely comparing their ratings vectors, we extend those vectors with the
+covariates information, and compute similarity between the extended
+versions.
+
+Let's see how this is done in \textbf{rectools}.  The call form for
+\textbf{formUserData()} is
+
+\begin{lstlisting}
+formUserData(ratingsIn, usrCovs = NULL, itmCats = NULL)
+\end{lstlisting}
+
+Here the first argument is as before, and both the second and third
+arguments are for covariates.  The argument \textbf{usrCovs} is intended
+for things like user age, gender and so on.  The argument
+\textbf{itmCats} is for content categories, a vector of
+proportions.\footnote{The two arguments could have been replaced by one,
+but it was desired to give the analyst the ability to assign different
+weights to them, as seen below.}  In the MovieLens data, category $r$
+would be the proportion of this user's ratings that are for movies in
+genre $r.$\footnote{Recall that these may sum to more than 1.0.} Here
+the second and third arguments are data frames, one row per
+user.  The argument \textbf{usrCovs} becomes the \textbf{cvrs} component
+for that user in the return value of this function, with
+\textbf{itmCats} becoming the component \textbf{itms}.
+
+The full call form for prediction is then
+
+\begin{lstlisting}
+predict.usrData(origData,newData,newItem,k,wtcovs=NULL,wtcats=NULL)
+\end{lstlisting}
+
+The final two arguments are weights to be placed on the two.  These
+control how much weight they should carry in the similarity computation,
+relative to the ratings.
+
+Here is some more of the code in the function \textbf{cosDist()}:
+
+\begin{lstlisting}
+if (!is.null(wtcovs)) {
+    xvec <- c(xvec, wtcovs * x$cvrs)
+    yvec <- c(yvec, wtcovs * y$cvrs)
+}
+\end{lstlisting}
+
+The reader can see the vectors being extended by the covariates, the
+latter first being multiplied by the weights.
 
 
 \iffalse
