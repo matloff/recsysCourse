@@ -597,7 +597,7 @@ women:
 = (\beta_0+\beta_2) + (\beta_1+\beta_3) ~ \textrm{age} 
 \end{equation}
 
-\textit{women:}M
+\textit{women:}
 
 \begin{equation}
 \textrm{mean rating} = \beta_0 + \beta_1 ~ \textrm{age} 
@@ -783,7 +783,7 @@ gdogcat <-
 gdogfox <- 
    glm(Dog ~ .,data=df[df$dog+df$fox==1,1:2])  # dog vs. fox
 gcatfox <- 
-   glm(Cat ~ .,data=df[df$cat+df$fox==1,1:3])  # cat vs. fox
+   glm(Cat ~ .,data=df[df$cat+df$fox==1,c(1,3)])  # cat vs. fox
 \end{lstlisting}
 
 Then for each new animal we encounter of unknown species, we call
@@ -910,8 +910,8 @@ dummy for each would almost certainly be overfitting.
 
 So, where is the ``happy medium,'' the model that is rich enough to
 capture most of the dynamics of the variables at hand, but simple enough
-to avoid variance issues?  Unfortunately, \textbf{there is no good answer to
-this question.}
+to avoid variance issues?  Unfortunately, \textbf{there is no good
+answer to this question.}
 
 One quick rule of thumb is that one should have $p < \sqrt{n}$, where
 $p$ is the number of predictors, including polynomial and interaction
@@ -920,6 +920,8 @@ polling example above), and $n$ is the number of cases in our sample.
 But this is certainly not a firm rule by any means.  One may be able to
 get good prediction with a considerably larger value of $p$, especially
 if \textit{regularization} methods are used (Chapter \ref{chap:svd}).
+
+\subsubsection{Cross-Validation}
 
 From the polynomial-ftting example in Section \ref{norelation}, we see
 the following key point:
@@ -942,8 +944,14 @@ in the test set, predict those values from our fitted model and the
 
 The test set is ``fresh, new'' data, since we called \textbf{lm()} or
 whatever only on the training set.  Thus we are avoiding the ``noise
-fitting'' problem.  We can try several candidate models, then choose the
-one that best predicts the test data.
+fitting'' problem.  We can try several candidate models --- e.g.
+different sets of predictor variables or different numbers of nearest
+neighbors --- then choose the one that best predicts the test data.
+
+Since the trainimg set/test set partitioning is random, we should
+perform the partitioning several times, thus assessing the performance
+of each of our candidate models several times to see if a clear pattern
+emerges.
 
 (Note carefully that after fitting the model via cross-validation, we
 then use the full data for later prediction.  Splitting the data for
