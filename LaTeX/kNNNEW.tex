@@ -184,7 +184,7 @@ a high proportion of non-NA values.
 Indeed, it often turns out that the best value of $k$, i.e.\ the one
 that predicts the holdout set the best, is the largest possible value as
 above.  In choosing $k$, then, we might start our search as
-\textbf{length(cosines}), then try a few values slghtly smaller than
+\textbf{length(cosines}}, then try a few values slghtly smaller than
 that.  If the latter give slightly less accuracy, we might choose our
 $k$ at that right endpoint.
 
@@ -194,9 +194,11 @@ As mentioned, we could use any distance function instead of
 \textbf{cosDist()} above to measure the similarity of NC and rows in
 $A$.  Many distance measures have been proposed, but typically some kind
 of ``cosine'' method is chosen.\footnote{One could use ordinary
-Euclidean distance as in kNN regression, but the cosine methods are
-preferred because they take values in [0,1], regardless of the lengths
-of the ratings records being compared.} What does this mean?
+Euclidean distance as in kNN regression,\footnote{This distance, say
+from the vector $u$ to the vector $v$, is $||u - v||$, the ordinary
+vector norm from linear algebra.} but the cosine methods are preferred
+because they take values in [0,1], regardless of the lengths of the
+ratings records being compared.} What does this mean?
 
 \subsection{The Basic Cosine}
 

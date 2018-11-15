@@ -1,8 +1,7 @@
 \chapter{Matrix Factorization Methods}  
 \label{chap:svd} 
 
-
-\section{The Goal}
+% \section{The Goal}
 
 Recall the brief introduction in Chapter \ref{chap:prologue}:  Let $A$
 denote the ratings matrix, with the element in row $i$, column $j$
@@ -15,29 +14,32 @@ $A$ is $u \times v$ matrix $A$.  We wish to find rank-$k$ matrices $W$
 A \approx W H
 \end{equation}
 
-We typically hope that a good approximation can be achieved with
+This is a form of dimension reduction, and typically we hope that a good
+approximation can be achieved with
 
 \begin{equation}
 k \ll \textrm{ rank}(A)
 \end{equation}
 
-Most importantly, most of the elements of $A$ are unknown.  But because
+Most of the elements of $A$ are unknown.  But because
 it is typically the case that similar users have similar ratings
 patterns, we hope to obtain good estimates of all of $A$ even though
 only a small part of it is known.
 
+There are two main approaches to matrix factorization in recommender
+systems and general machine learning:
 
+\begin{itemize}
 
+\item Singular Value Decomposition (SVD):  As will be seen below, this
+is a ``cousin'' of PCA.
 
+\item Nonnegative Matrix Factorization (NMF): Here the matrix $A$ has
+nonnegative elements, and one desires the same property for $W$ and $H$.
+This may lead to sparsity in the latter two matrices, and in some cases
+a nice intepretability.
 
-
-
-
-
-
-The benefits range from compression ($W$ and $H$ are much smaller than
-$A$, which in some applications can be huge) to avoidance of
-``overfitting'' in a prediction context.
+\end{itemize} 
 
 \section{Notation}
 
@@ -53,90 +55,74 @@ We'll use the following notation for a matrix $Q$
 
 \end{itemize}
 
-Note the key relation
+\section{Synthetic, Representative RS Users}
+
+Note the key relation, which we showed in Section \ref{partmat}:
 
 \begin{equation}
-(WH)_{.j} = \sum_{i=1}^k H_{ij} W_{.i}
+(WH)_{i \cdot} = \sum_{m=1}^k W_{im} H_{m \cdot}
 \end{equation}
 
 In other words, in (\ref{awh}), we have that:
 
 \begin{itemize}
 
-\item Column $j$ of $A$ is approximately a linear combination of the
-columns of $W$, with the coefficients in that linear combination being
-the elements of column $j$ of $H$.  
+\item [(a)] The entire vector of predicted ratings by user $i$ can be
+expressed as a linear combination of the rows of $H$.
 
-\item Thus the columns $W_1,...,W_k$ then (approximately) form a basis
-for the vector space spanned by the columns of $A$.\footnote{Or, at
-least for the nonnegative {\it orthant} in that space, meaning all the
-vectors in that space with nonnegative components.}  Since the relation
-is only approximate, let's use the term {\it pseudo-basis}.
+\item [(b)] The rows of $H$ can be thought of as an ``approximate basis'' for
+the rows of $A$.
 
-\item Similarly, we could view everything in terms of rows of $A$ and $H$:
-Row $i$ of $WH$ is a linear combination of the rows of $H$, with the
-coefficients being row $i$ of $W$.  The rows of $H$ would then be a
-pseudo-basis for the rows of $A$.
+\item [(c)] The rows of $H$ can thus be thought of as synthetic
+``users'' who are representative of users in general.  $H_{rs}$ is the
+rating that synthetic user $r$ gives item $s$.
 
-\item If (\ref{awh}) is a good approximation, then most of the
-information carried by $A$ is contained in $W$ and $H$.  We can think of
-the columns of $W$ as ``typifying'' those of $A$, with a similar
-statement holding for the rows of $H$ and $A$.  Here ``information''
-could mean the appearance of an image, the predictive content of data to
-be used for machine text classification, and so on.
+\end{itemize} 
 
-\end{itemize}
+In linear algebra terms, the coefficients in (a) above are the
+(approximate) \textit{coordinates} of $A_{i \cdot}$ with respect to the
+rows of $H$.
 
-\section{Applications}
+In this manner, we can predict for any user that is already in $A$.  but
+what about an entirely new user?  What we need is the coordinates of
+this new user with respect to the rows of $H$.  We'll see how to get
+these later in the chapter.\footnote{After accumlating enough new users,
+of course, we should update $A$, and thus $W$ and $H$.}
+
+Of course, interchanging the roles of rows and columns above, we have
+that the columns of $W$ serve as an approximate basis for the columns of
+$A$.  In other words, the latter become synthetic, representative items.
+
+\section{The Case of Entirely Known A}
 
 This notion of {\it nonnegative matrix factorization} has become widely
-used in a variety of applications, such as:
+used in a variety of ML applications in which the matrix $A$ entirely
+known. 
 
-\begin{itemize}
+\subsection{Image Classification}
 
-\item Image recognition:
-
-Say we have $n$ image files, each of which has brightness data for
-$r$ rows and $c$ columns of pixels.  We also know the class, i.e.\ 
-the subject, of each image, say car, building, person and so on.
-From this data, we wish to predict the classses of new images. Denote
-the class of image $j$ in our original data by $C_j$.
+Say we have $n$ image files, each of which has brightness data for $r$
+rows and $c$ columns of pixels.  We also know the class, i.e.\ the
+subject, of each image, say car, building, person and so on.  From this
+data, we wish to predict the classses of new images. Denote the class of
+image $j$ in our original data by $C_j$.
 
 We form a matrix $A$ with $rc$ rows and $n$ columns, where the $i^{th}$
-column, $A_{\cdot i}$, stores the data for the $i^{th}$ image, say in
-column-major order.  
+column, $A_{\cdot j}$, stores the data for the $j^{th}$ image, say in
+column-major order:  This column of $A$ would first store column 1 of
+the image, then store column 2 of the image, and so on.\footnote{For
+simplicity here we will assume greyscale.  For color, each column of $A$
+will consist of three pixel vectors, one for each primary color.}
 
-In the sense stated above, the columns of $W$ typify images.  What about
-$H$?  This is a little more complex, though probably more important:
+In the sense stated above, the columns of $W$ typify images, serving as
+synthetic, representative images.  Column $j$ of $A$ is then
+approximately a linear combination of the columns of $W$, with the
+coefficients being the elements of column $j$ of $H$.
 
-Each image contains information about $rc$ pixels.  The $m^{th}$ of
-these, say, varies from image to image, and thus can be thought of as a
-random variable in the statistical sense.  Row $m$ in $A$ can be thought
-of as a random sample from the population distribution of that random
-variable.  
+So, in predicting the class of a new image, we need to find the
+coordinates of that image with respect to the columns of $W$.
 
-So, the $k$ rows of $H$ typify these $rc$ random variables, and since
-$k$ is hopefully much smaller than $rc$, we have received what is called
-{\it dimension reduction} among those variables.  It should be
-intuitively clear that this is possible, because there should be a high
-correlation between neighboring pixels, thus a lot of ``redundant''
-information.
-
-This is very important with respect to the {\it overfitting} problem in
-statistics/machine learning.  This is beyond the scope of this tutorial,
-but the essence of fhe concept is that having too complex a model can
-lead to ``noise fitting,'' and actually harm our goal of predicting the
-class of future images.  By having only $k$ rows in $H$, we are reducing
-the dimensionality of the problem from $rc$ to $k$, thus reducing the
-chance of overfitting.
-
-Our prediction of new images works as follows.  Given the $rc$-element
-vector $q$ of the new image of unknown class, we find its representation
-$q_p$ in the pseudo-basis for the rows of $A$, and then find
-$g$ such $G_{g \cdot}$ best matches $q_p$.  Our predicted class is then
-$C_g$.
-
-\item Text classification:
+\subsection{Text classification}
 
 Here $A$ consists of, say, word counts. We have a list of $d$ key words,
 and $m$ documents of known classes (politics, finance, sports etc.).
@@ -148,21 +134,9 @@ find the NMF, and then given a new document to classify, with word
 counts $q$, we find its coordinates $q_p$, and then predict class by
 matching to the rows of $W$.
 
-\item Recommender systems:
+\section{NMF}
 
-Here most of $A$ is unknown.  For instance, we have users, who have
-rated movies they've seen, with $A_{ij}$ being the rating of movie $j$
-by user $i$.  Our goal is to fill in estimates of the unknown entries.
-
-One approach is to initially insert 0s for those entries, then perform
-NMF, producing $W$ and $H$.\footnote{A popular alternative uses {\it
-stochastic gradient} methods to find the best fit directly, without
-creating the matrix $A$.} We then compute $WH$ as our estimate of $A$,
-and now have estimates for the missing entries.
-
-\end{itemize}
-
-\section{The R Package NMF}
+\subsection{The R Package NMF}
 
 The R package {\bf NMF} is quite extensive, with many, many options.  In
 its simplest form, though, it is quite easy to use.  For a matrix {\bf
@@ -226,7 +200,7 @@ storage savings.  Not important for one small picture, but possibly
 worthwhile if we have many. The approximation is not bad in that light,
 and may be good enough for image recognition or other applications.
 
-\section{Algorithms}
+\subsection{Algorithms}
 
 How are the NMF solutions found?  What is {\bf nmf()} doing internally?
 
@@ -235,7 +209,7 @@ that of the Alternating Least Squares algorithm.  By the way, this is
 not the default for {\bf nmf()}; to select it, set {\bf method =
 'snmf/r'}.
 
-\subsection{Objective Function}
+\subsubsection{Objective Function}
 
 We need an {\it objective function}, a criterion to optimize, in this
 case a criterion for goodness of approximation. Here we will take that
@@ -265,7 +239,7 @@ So our criterion for error of approximation will be
 This measure is specified in {\bf nmf()} by setting {\bf objective =
 'euclidean'}.
 
-\subsection{Alternating Least Squares}
+\subsubsection{Alternating Least Squares}
 
 So, how does it work?  It's actually quite simple.  Suppose just for a
 moment that we know the exact value of $W$, with $H$ unknown.  Then for
@@ -316,7 +290,7 @@ and so on.
 During the above process, we may generate some negative values.  If so,
 we simply truncate to 0.
 
-\subsection{Multiplicative Update}
+\subsubsection{Multiplicative Update}
 
 Alternating Least Squares is appealing in several senses.  At each
 iteration, it is minimizing a {\it convex} function, meaning in essence
@@ -347,7 +321,7 @@ where $Q \circ R$ and $\frac{Q}{R}$ represent \underline{elementwise}
 multiplication and division with conformable matrices $Q$ and $R$, and
 the juxtaposition $QR$ means ordinary matrix multiplication.
 
-\section{Predicting New Cases}
+\subsection{Predicting New Cases}
 
 Once we have settled on $W$ and $H$, what can we do with them?  In the
 recommender system application mentioned earlier, we simply multiply
@@ -368,7 +342,7 @@ least-squares above.
 > qp <- lm(q ~ h - 1)
 \end{lstlisting}
 
-\section{Convergence and Uniqueness Issues}
+\subsection{Convergence and Uniqueness Issues}
 
 There are no panaceas for applications considered here.  Every solution
 has potential problems.
@@ -386,7 +360,7 @@ The Alternating Least Squares method used here is considered by some to
 have better convergence properties, since the solution at each iteration
 is unique.  
 
-\section{How Do We Choose the Rank?}
+\subsection{How Do We Choose the Rank?}
 
 This is not an easy question.  One approach is to first decompose our
 matrix $A$ via {\it singular value decomposition}.  Roughly speaking,
@@ -410,7 +384,7 @@ on.  The seventh is already down into the single-digit range.  So we
 might take $k$ to be, say, 10.  The columns of $A$ lie in a subspace of
 $R^{194}$ of dimension of about 10.
 
-\section{Why Nonnegative?}
+\subsection{Why Nonnegative?}
 
 In the applications we've mentioned here, we always have $A \geq 0$.
 However, that doesn't necesarily mean that we need $W$ and $H$ to be
