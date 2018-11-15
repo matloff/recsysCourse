@@ -117,22 +117,35 @@ will consist of three pixel vectors, one for each primary color.}
 In the sense stated above, the columns of $W$ typify images, serving as
 synthetic, representative images.  Column $j$ of $A$ is then
 approximately a linear combination of the columns of $W$, with the
-coefficients being the elements of column $j$ of $H$.
+coordinates being the elements of column $j$ of $H$.
 
-So, in predicting the class of a new image, we need to find the
-coordinates of that image with respect to the columns of $W$.
+So, in predicting the class of a new image, we first need to find the
+coordinate vector $h$ of that image with respect to the columns of $W$.  
+We then find the closest $H_{\cdot s}$ to $h$, and guess the class of
+the new image to be that of image $s$.\footnote{There are lots of
+variants of this.}
 
 \subsection{Text classification}
 
-Here $A$ consists of, say, word counts. We have a list of $d$ key words,
-and $m$ documents of known classes (politics, finance, sports etc.).
+Here $A$ consists of, say, word counts. We have a list of $k$ key words,
+and $d$ documents of known classes (politics, finance, sports etc.).
 $A_{ij}$ is the count of the number of times word $i$ appears in
 document $j$.
 
-Otherwise, the situation is the same as for image recognition above.  We
-find the NMF, and then given a new document to classify, with word
-counts $q$, we find its coordinates $q_p$, and then predict class by
-matching to the rows of $W$.
+Otherwise, the situation is the same as for image recognition above.
+Each column is now one document rather than one image, and each row is
+now one word, rather than one pixel position.
+
+\subsection{Relation to Recommender Systems}
+
+Many RS methods are text-based or even image-based.  Say there is a new
+movie, not user ratings yet at all.  One might compare the movie
+studio's synopsis of the film with those of flims for which we have
+ratings data, and try to predict how well each user would like this
+film.
+
+A more ambiitious approach would be to the same for images in the film's
+ad trailer.
 
 \section{NMF}
 
@@ -415,4 +428,8 @@ the factors becoming ``too large,'' and it turns out that this also can
 lead to sparse solutions.  We can try this under {\bf nmf()}  by setting
 {\bf method = 'pe-nmf'}.
 
+\section{Dealing with the Missing Values in A}
 
+\section{Dealing with Entirely New Cases}
+
+\section{Regularizaiton}
