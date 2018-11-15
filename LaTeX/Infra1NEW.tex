@@ -461,14 +461,14 @@ C' = C
 
 where $'$ denotes matrix transpose.  
 
-Recall that for any square matrix $L$, if there is a scalar $\lambda$
+Recall that for any square matrix $M$, if there is a scalar $\lambda$
 and a nonzero vector $x$ such that 
 
 \begin{equation}
-Lx = \lambda x
+Mx = \lambda x
 \end{equation}
 
-then we say that $x$ is an \textit{eigenvector} of $L$, with
+then we say that $x$ is an \textit{eigenvector} of $M$, with
 \textit{eigenvalue} $\lambda$.  (Note that the above implies that $x$ is
 a column vector, $p \times 1$, a convention we will use throughout the
 book.)
@@ -478,10 +478,28 @@ eigenvalues, and that the corresponding eigenvectors $U_1,...,U_p$
 are orthogonal,
 
 \begin{equation}
+\label{uorthog}
 U_i' U_j = 0, ~ i \neq j
 \end{equation}
 
-We always take the $U_i$ to have length 1.
+We always take the $U_i$ to have length 1.  
+
+Then the matrix $U = (U_1',...,U_p')$ is termed \textit{orthogonal}, and
+we say that it \textit{diagonalizes} $M$:
+
+\begin{equation}
+\label{diag}
+U'MU = D = \textrm{diag}(\lambda_1,...,\lambda_p)
+\end{equation}
+
+To see this, use Section \ref{partmat} to write
+
+\begin{equation}
+MU = (\lambda_1 U_1,...,\lambda_p U_p)
+\end{equation}
+
+and note that $U'MU$ works out to
+$\textrm{diag}(\lambda_1,...,\lambda_p)$ because of (\ref{uorthog}).
 
 \subsection{PCA}
 
