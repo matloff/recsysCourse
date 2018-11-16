@@ -41,6 +41,9 @@ a nice intepretability.
 
 \end{itemize} 
 
+Since most of the issues are the same for both methods, we'll just stick
+to one, NMF.
+
 \section{Notation}
 
 We'll use the following notation for a matrix $Q$
@@ -149,6 +152,8 @@ ad trailer.
 
 \section{NMF}
 
+For now, we'll assume the matrix $A$ is entirely known.
+
 \subsection{The R Package NMF}
 
 The R package {\bf NMF} is quite extensive, with many, many options.  In
@@ -161,7 +166,7 @@ a} and desired rank {\bf k}, we simply run
 
 Here the returned value {\bf nout} is an object of class {\bf "NMF"}
 defined in the package.  It uses R's S4 class structure, with
-\lstinline{@} as the delimiter denoting class members.  
+\lstinline{@} as the delimiter denoting class membership.  
 
 As is the case in many R packages, {\bf "NMF"} objects contain classes
 within classes.  The computed factors are in {\bf nout@fit@W} and {\bf
@@ -205,13 +210,14 @@ Here is the result:
 
 \includegraphics[width=3.6in]{Images/MtRush50.png}
 
-This is somewhat blurry.  The original matrix has dimension $194
-\times 259$, and thus presumably has rank 194.\footnote{This is
-confirmed by running the function {\bf rankMatrix()} in the {\bf Matrix}
-package.} We've approximated the matrix by one of rank only 50, a
-storage savings.  Not important for one small picture, but possibly
-worthwhile if we have many. The approximation is not bad in that light,
-and may be good enough for image recognition or other applications.
+This is somewhat blurry.  The original matrix has dimension $194 \times
+259$, and thus presumably has rank 194.\footnote{One could check this by
+finding the number of nonzero eigenvalues of $A'A$, say by running
+\textbf{prcomp()}.} We've approximated the matrix by one of rank only
+50, a storage savings.  Not important for one small picture, but
+possibly worthwhile if we have many. The approximation is not bad in
+that light, and may be good enough for image recognition or other
+applications.
 
 \subsection{Algorithms}
 
@@ -226,8 +232,8 @@ not the default for {\bf nmf()}; to select it, set {\bf method =
 
 We need an {\it objective function}, a criterion to optimize, in this
 case a criterion for goodness of approximation. Here we will take that
-to be the {\it Frobenius} norm, which is just the Euclidean ($L_2$)
-norm with the matrix treated as a vector:\footnote{The $L_p$ norm of a
+to be the {\it Frobenius} norm, which is just the Euclidean ($l_2$)
+norm with the matrix treated as a vector:\footnote{The $l_p$ norm of a
 vector $v = (v_1,...,v_r)$ is defined to be
 
 $$
@@ -236,6 +242,7 @@ $$
 }
 
 \begin{equation}
+\label{froben}
 \|Q\|_2 = 
 \sqrt{
 \sum_{i,j} Q_{ij}^2
@@ -263,19 +270,27 @@ each $j$ we could minimize
 \|A_{\cdot j} - W H_{\cdot j}\|_2
 \end{equation}
 
-We are seeking to find $H_{\cdot j}$ that minimizes (\ref{errajwhj}),
-with $A_{\cdot j}$ and $W$ known.  But since the Frobenius norm is just
-a sum of squares, that minimization is just a least-squares problem,
-i.e.\ {\it linear regression}; we are ``predicting'' $A_{\cdot j}$ from
-$W$.  The solution is well-known to be\footnote{If you have background
-in regression analysis, you might notice there is no constant term,
-$\beta_0$, here.}
+We are seeking to find $H_{\cdot j}$ that minimizes (\ref{froben}), with
+$A_{\cdot j}$ and $W$ known.  But since the Frobenius norm is just a sum
+of squares, that minimization is just a least-squares problem, i.e.\
+linear regression!.  We are ``predicting'' $A_{\cdot j}$ from $W$.  
+In the notation of Section \ref{lmdetails}:
 
-\begin{equation}
-H_{\cdot j} = (W'W)^{-1} W' A_{\cdot j}
-\end{equation}
+\begin{itemize}
 
-R's {\bf lm()} function does this for us
+\item The matrix $A$ there is our $W$ here, known.
+
+\item The vector $D$ there is our $A_{\cdot j}$ here, known.
+
+\item The vector $b$ there is our $H_{\cdot j}$ here, unknown and to be
+solved for.
+
+\end{itemize} 
+
+There is one difference, though.  Recall that $A$ in Section
+\ref{lmdetails} included a column of 1s, to accommodate the $\beta_0$
+term in the model.  We don't have that here, so we need to tell
+\textbf{lm()} to omit it.  We compute 
 
 \begin{lstlisting}
 > h[,j] <- lm(a[,j] ~ w - 1)
@@ -428,8 +443,10 @@ the factors becoming ``too large,'' and it turns out that this also can
 lead to sparse solutions.  We can try this under {\bf nmf()}  by setting
 {\bf method = 'pe-nmf'}.
 
-\section{Dealing with the Missing Values in A}
+\subsubsection{Dealing with the Missing Values in A}
 
-\section{Dealing with Entirely New Cases}
+\subsubsection{Dealing with Entirely New Cases}
 
-\section{Regularizaiton}
+\subsubsection{Regularizaiton}
+
+
