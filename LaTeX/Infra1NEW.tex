@@ -393,11 +393,11 @@ Y_2 = X_1 - X_2
 have 0 correlation.  Then we have a good case for using only $Y_1$ in
 our data analysis, instead of using $X_1$ and $X_2$.  
 
-But why not use just $X_1$?  As usual in statistics/ML, things get more
-complicated in higher dimensions.  In choosing variables to retain in
-our analysis, it makes sense to require that they be uncorrelated, as
-$Y_1$ and $Y_2$ are above; if not, intuitively there is some redundancy
-among them, which of course is what we are hoping to avoid.  
+% But why not use just $X_1$?  As usual in statistics/ML, things get more
+% complicated in higher dimensions.  In choosing variables to retain in
+% our analysis, it makes sense to require that they be uncorrelated, as
+% $Y_1$ and $Y_2$ are above; if not, intuitively there is some redundancy
+% among them, which of course is what we are hoping to avoid.  
 
 With that in mind, now suppose we have $p$ variables, $X_1,
 X_2,...,X_p$, not just two.  We can no longer visualize in higher
@@ -420,16 +420,18 @@ Var(Y_1) > Var(Y_2) > ... > Var(Y_p)
 
 Now we have a promising solution to our dimension reduction problem.
 In [(b)] above, we can choose to use just the first few of the $Y_i$,
-omitting the ones with small variance.  And again, since the $Y_i$ will
+omitting the ones with small variance; since the latter are nearly
+constant, they don't carry much information.  And since the $Y_i$ will
 be uncorrelated, we are eliminating a source of possible redundancy
 among them.
 
 PCA won't be a perfect solution --- there is no such thing --- as might
 be the case if the relations between variables is nonmonotonic.  A
 common example is age, with mean income given age tending to be a
-quadratic (or higher degree) polynomial relation.  But PCA is a very
-common ``go to'' method for dimension reduction, and may work well even
-in (mildly) nonmonotonic settings.
+quadratic relation.  (People's wages tend to rise until about age 40,
+then see a gradual drop.) But PCA is a very common ``go to'' method for
+dimension reduction, and may work well even in (mildly) nonmonotonic
+settings.
 
 Now, how do we find these $Y_i$?
 
@@ -584,7 +586,7 @@ So, a new variable might be, say, 1.9 age + 0.3 height + 1.2 weight.
 Recall that the new variables have the $\lambda_i$ for variances and are
 uncorrelated.  Here's why:
 
-It is common to \textit{center} and \textbf{scale} one's data, meaning
+It is common to \textit{center} and \textit{scale} one's data, meaning
 to subtract from each variable its mean, and divide by its standard
 deviation.  The new mean and standard deviation are 0 and 1.  In that
 case, (\ref{corrdef}) becomes
@@ -595,8 +597,8 @@ case, (\ref{corrdef}) becomes
 \end{equation}
 
 The reader should verify that with the matrices $Q$ and $R$ above (old
-and new data), their correlation matrices are $Q'Q$ and $R'R$.  Let's
-see how that works out:
+and new data), their correlation (sample) matrices are $Q'Q$ and $R'R$.
+Let's see how that works out:
 
 \begin{eqnarray}
 \label{rrqq}
@@ -616,7 +618,7 @@ Q'Q U^{(s)} = (\lambda_1 U_1,...,\lambda_s U_s)
 \end{equation}
 
 Finally, recall that the $U_i$ are orthogonal with length 1.
-Substituting (\ref{qqu}) in $rrqq$, we then get
+Substituting (\ref{qqu}) in (\ref{rrqq}), we then get
 
 \begin{equation}
 R'R = \textrm{diag}(\lambda_1,...,\lambda_s)
