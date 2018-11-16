@@ -6,7 +6,7 @@
 Recall the brief introduction in Chapter \ref{chap:prologue}:  Let $A$
 denote the ratings matrix, with the element in row $i$, column $j$
 storing the rating of item $j$ given by user $i$.  Say the dimension of
-$A$ is $u \times v$ matrix $A$.  We wish to find rank-$k$ matrices $W$
+$A$ is $u \times v$.  We wish to find rank-$k$ matrices $W$
 ($u \times k$) and $H$ ($k \times v$) such that
 
 \begin{equation}
@@ -31,15 +31,14 @@ systems and general machine learning:
 
 \begin{itemize}
 
-\item Singular Value Decomposition (SVD):  As will be seen below, this
-is a ``cousin'' of PCA, kind of a ``square root'' of the latter.  There
-is a function in base R for this, \textbf{svd()}.
+\item Singular Value Decomposition (SVD):  This is a ``cousin'' of PCA,
+kind of a ``square root'' of the latter.  There is a function in base R
+for this, \textbf{svd()}.
 
 \item Nonnegative Matrix Factorization (NMF): Here the matrix $A$ has
 nonnegative elements, and one desires the same property for $W$ and $H$.
-This may lead to sparsity in the latter two matrices, and in some cases
-a nice intepretability.  There are several R packages for this; see
-below.
+This may lead to sparsity in $WH$, and in some cases a helpful
+intepretability.  There are several R packages for this; see below.
 
 \end{itemize} 
 
@@ -75,8 +74,8 @@ In other words, in (\ref{awh}), we have that:
 \item [(a)] The entire vector of predicted ratings by user $i$ can be
 expressed as a linear combination of the rows of $H$.
 
-\item [(b)] The rows of $H$ can be thought of as an ``approximate basis'' for
-the rows of $A$.
+\item [(b)] Thus the rows of $H$ can be thought of as an ``approximate
+basis'' for the rows of $A$.
 
 \item [(c)] The rows of $H$ can thus be thought of as synthetic
 ``users'' who are representative of users in general.  $H_{rs}$ is the
@@ -113,7 +112,7 @@ data, we wish to predict the classses of new images. Denote the class of
 image $j$ in our original data by $C_j$.
 
 We form a matrix $A$ with $rc$ rows and $n$ columns, where the $i^{th}$
-column, $A_{\cdot j}$, stores the data for the $j^{th}$ image, say in
+column, $A_{\cdot j}$ stores the data for the $j^{th}$ image, say in
 column-major order:  This column of $A$ would first store column 1 of
 the image, then store column 2 of the image, and so on.\footnote{For
 simplicity here we will assume greyscale.  For color, each column of $A$
@@ -133,9 +132,10 @@ variants of this.}
 \subsection{Text classification}
 
 Here $A$ consists of, say, word counts. We have a list of $k$ key words,
-and $d$ documents of known classes (politics, finance, sports etc.).
-$A_{ij}$ is the count of the number of times word $i$ appears in
-document $j$.
+and $d$ documents of known classes (politics, finance, sports etc.), so
+$A$ is $k \times d$.  $A_{ij}$ is the count of the number of times word
+$i$ appears in document $j$ (or maybe just a binary variable indicating
+presence or absence of the word).
 
 Otherwise, the situation is the same as for image recognition above.
 Each column is now one document rather than one image, and each row is
@@ -149,7 +149,7 @@ studio's synopsis of the film with those of flims for which we have
 ratings data, and try to predict how well each user would like this
 film.
 
-A more ambiitious approach would be to the same for images in the film's
+A more ambiitious approach would be to do the same for images in the film's
 ad trailer.
 
 \section{NMF}
@@ -242,7 +242,7 @@ norm with the matrix treated as a vector:\footnote{The $l_p$ norm of a
 vector $v = (v_1,...,v_r)$ is defined to be
 
 $$
-\left (\sum_i |v_i|^p \right )^{1/p}
+||v||_p = \left (\sum_i |v_i|^p \right )^{1/p}
 $$
 }
 
@@ -266,11 +266,9 @@ This measure is specified in {\bf nmf()} by setting {\bf objective =
 
 \subsubsection{Alternating Least Squares}
 
-So, how is NMF computed?  We'll present one of the major methods here,
-\textit{alternating least squares}.  
-
-Suppose just for a moment that we know the exact value of $W$, with $H$
-unknown.  Then for each $j$ we could minimize
+So, how does Alternating Least Squares work?  Suppose just for a moment
+that we know the exact value of $W$, with $H$ unknown.  Then for each
+$j$ we could minimize
 
 \begin{equation}
 \label{errajwhj}
@@ -280,7 +278,8 @@ unknown.  Then for each $j$ we could minimize
 We are seeking to find $H_{\cdot j}$ that minimizes (\ref{froben}), with
 $A_{\cdot j}$ and $W$ known.  But since the Frobenius norm is just a sum
 of squares, that minimization is just a least-squares problem, i.e.\
-linear regression!.  We are ``predicting'' $A_{\cdot j}$ from $W$.  
+linear regression!  We are ``predicting'' $A_{\cdot j}$ from $W$,
+
 In the notation of Section \ref{lmdetails}:
 
 \begin{itemize}
@@ -413,7 +412,7 @@ prediction higher than that.}
 
 There are a couple of reasons NMF may be preferable.  First, truncation
 may be questionable if we have a lot of negative values.  But the second
-reason is rather philosophical, as follows:
+reason is that NMF may be more useful, as follows:
 
 In a facial image recognition case, say, there is hope that the vectors
 $W_{\cdot j}$ will be {\it sparse}, i.e.\ mostly 0s. Then we might have,
@@ -443,7 +442,7 @@ Here \textbf{ratingsIn} is the usual three-column (userID,itemID,rating)
 return value from \textbf{trainReco()}; and \textbf{testSet} is the test
 set, in the same format as \textbf{ratingsIn}, minus the ratings column.
 
-The Return value from \textbf{trainReco()} is an R S3 object of class
+The return value from \textbf{trainReco()} is an R S3 object of class
 'RecoS3', with components $P$ and $Q$, corresponding to $W$ and $H'$ in
 our notation.  In the case of covariates (see below), some R
 \textbf{attributes} are also included.
@@ -499,7 +498,7 @@ $H_{\cdot j}$, the estimated regression function value for the given
 case is added back in.
 
 The role of \textbf{minResid} is this:  If we are using NMF, fitting to the
-residuals, which are both positive and negative makes no sense.  So, we
+residuals, which are both positive and negative, makes no sense.  So, we
 subtract the (algebraically) smallest residual, resulting in only
 nonnegative values.  Again, this is added back in later on.
 
@@ -551,3 +550,4 @@ $H$ to minimize (\ref{errawh}), we minimize
 ||A - WH||_2 + \gamma ||W||_2 + \gamma ||H||_2
 \end{equation}
 
+(typically the squared norms are used rather than the norms themselves).
