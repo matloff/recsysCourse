@@ -400,41 +400,154 @@ This is not an easy question.  One approach would be to use
 eigenvalues, then take our rank to be the number of ``large''
 eigenvalues, as discussed in Chapter \ref{chap:linalg}.  
 
+Of course, the typical way rank is chosen is cross validation.
+
 \subsection{Why Nonnegative?}
 
-In the applications we've mentioned here, we always have $A \geq 0$.
+In the applications we've mentioned here, we always have $A_{ij} \geq 0$.
 However, that doesn't necesarily mean that we need $W$ and $H$ to be
-nonnegative, since we could always truncate.  Indeed, we could consider
-using SVD instead.
+nonnegative, since we could always truncate to 0 in the product
+$WH$.\footnote{Indeed, we probably want to truncate at the high end too.
+If say the maximum possible rating is 5, we would truncate any
+prediction higher than that.}
 
 There are a couple of reasons NMF may be preferable.  First, truncation
-may be difficult if we have a lot of negative values.  But the second
+may be questionable if we have a lot of negative values.  But the second
 reason is rather philosophical, as follows:
 
-In the image recognition case, there is hope that the vectors $W_{\cdot
-j}$ will be {\it sparse}, i.e.\ mostly 0s. Then we might have, say, the
-nonzero elements of $W_{\cdot 1}$ correspond to eyes, $W_{\cdot 2}$
-correspond to nose and so on with other parts of the face.  We are then
-``summing'' to form a complete face.  This may enable effective {\it
-parts-based recognition}.
+In a facial image recognition case, say, there is hope that the vectors
+$W_{\cdot j}$ will be {\it sparse}, i.e.\ mostly 0s. Then we might have,
+say, the nonzero elements of $W_{\cdot 1}$ correspond to eyes, $W_{\cdot
+2}$ correspond to nose and so on with other parts of the face.  We are
+then ``summing'' to form a complete face.  This may enable effective
+{\it parts-based recognition}, with helpful interpretations.
 
-Sparsity (and uniqueness) might be achieved by using {\it
-regularization} methods, in which we minimize something like
+In our RS setting, this parts-based effect, NMF would give us crisper
+distinction among the various synthetic users.  This may reveal clusters
+of user behavior, which could be quite helpful to the analyst.
+
+\section{Functions in rectools}
+
+The \textbf{rectools} package implements NMF via the \textbf{recoSystem}
+by Chih-Jen Li \textit{et al}, providing wrappers to \textbf{recoSystem}
+functions.  Basic call forms are:
+
+\begin{lstlisting}
+trainReco(ratingsIn,rnk=10,nmf=FALSE)
+predict.RecoS3(recoObj,testSet)
+\end{lstlisting}
+
+Here \textbf{ratingsIn} is the usual three-column (userID,itemID,rating)
+(plus covariates, if any) data frame; \textbf{rnk} is the desired rank;
+\textbf{nmf} is false for SVD, true for NMF; \textbf{recoObj} is the 
+return value from \textbf{trainReco()}; and \textbf{testSet} is the test
+set, in the same format as \textbf{ratingsIn}, minus the ratings column.
+
+The Return value from \textbf{trainReco()} is an R S3 object of class
+'RecoS3', with components $P$ and $Q$, corresponding to $W$ and $H'$ in
+our notation.  In the case of covariates (see below), some R
+\textbf{attributes} are also included.
+
+\section{Dealing with Covariates}
+
+The easiest approach to handling covariates is to simply ``subtract them
+out'' for the data via linear regression, then run NMF/SVD on the resulting
+\textit{residuals}, and finally, at the prediction stage, add the
+regression values back in.
+
+Here are relevant code excerpts:
+
+\textbf{trainReco()}:
+
+\begin{lstlisting}
+hasCovs <- (ncol(ratingsIn) > 3)
+if (hasCovs) {
+    covs <- as.matrix(ratingsIn[, -(1:3)])
+    lmout <- lm(ratingsIn[, 3] ~ covs)
+    minResid <- min(lmout$residuals)
+    ratingsIn[, 3] <- lmout$residuals - minResid
+}
+...
+r$train(train_set, opts = list(dim = rnk, nmf = nmf))
+result <- r$output(out_memory(), out_memory())
+attr(result, "hasCovs") <- hasCovs
+if (hasCovs) {
+    attr(result, "covCoefs") <- coef(lmout)
+    attr(result, "minResid") <- minResid
+}
+class(result) <- "RecoS3"
+result
+\end{lstlisting}
+
+\textbf{predict.RecoS3()}:
+
+\begin{lstlisting}
+if (hasCovs) {
+     tmp <- c(1, testCovs[i, ]) %*% covCoefs + minResid
+}
+pred[i] <- p[j, ] %*% q[k, ] + tmp
+\end{lstlisting}
+
+The return value from \textbf{lm()} includes a \textbf{residuals}
+component, equal to the difference between the actual ``Y'' value and
+the fitted estimated regression function.  In the covariates case, 
+\textbf{trainReco()} replaces the ratings by the residuals, so the
+product $WH$ approximates them rather than the original $A$.
+
+Then in \textbf{predict.RecoS3()}, after multiplying $W_{i \cdot}$ and
+$H_{\cdot j}$, the estimated regression function value for the given
+case is added back in.
+
+The role of \textbf{minResid} is this:  If we are using NMF, fitting to the
+residuals, which are both positive and negative makes no sense.  So, we
+subtract the (algebraically) smallest residual, resulting in only
+nonnegative values.  Again, this is added back in later on.
+
+\section{Regularization}
+
+In recent years, there has been much interest in \textit{regularizing}
+statistical estimates of various kinds.  In regression analysis, for
+instance, the idea is to shrink the $\widehat{\beta}$ vector somewhat.
+There is some theoretical foundation for this, and it is viewed by many
+as especially useful for dimension reduction.
+
+In the notation of Chapter \ref{chap:infra2}, instead of choosing $b$ to
+minimize
 
 \begin{equation}
-\|A - WH\| + \lambda (\|W\|_1 + \|H\|_1)
+||D - Ab|||_2
 \end{equation}
 
-where the subscript 1 (``$L_1$ norm'') means the norm involves sums of
-absolute values rather than sums of squares.  This guards against one of
-the factors becoming ``too large,'' and it turns out that this also can
-lead to sparse solutions.  We can try this under {\bf nmf()}  by setting
-{\bf method = 'pe-nmf'}.
+we minimize
 
-\subsubsection{Dealing with the Missing Values in A}
+\begin{equation}
+\label{ridge}
+||D - Ab||_2 + \gamma ||b||_2
+\end{equation}
 
-\subsubsection{Dealing with Entirely New Cases}
+or
 
-\subsubsection{Regularizaiton}
+\begin{equation}
+\label{lasso}
+||D - Ab||_2 + \gamma ||b||_1
+\end{equation}
 
+Here $\gamma$ is a hyperparameter, as usual chosen via cross validation.
+This parameter acts as a ``governmor,'' preventing the minimizing $b$
+from becoming too large.  The methods based on (\ref{ridge}) and
+(\ref{lasso}) are called \textit{ridge regression} and the
+\textit{LASSO}, respectively.
+
+The LASSO is especially popular because it can be used as a variable
+selection procedure.  Typically the minimizing $b$ will have many or
+most of its components equal to 0, essentially eliminating the
+corresponding predictors.
+
+For NMF (or SVD), we probably don't want to force some predicted ratings
+to 0, so ridge is the better choice.  Thus, instead of choosing $W$ and
+$H$ to minimize (\ref{errawh}), we minimize
+
+\begin{equation}
+||A - WH||_2 + \gamma ||W||_2 + \gamma ||H||_2
+\end{equation}
 
