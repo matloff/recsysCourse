@@ -1056,7 +1056,7 @@ Well, then, let's see how well we can predict wage income. First, split
 the data:
 
 \begin{lstlisting}
-> set.seed(9999)
+> set.seed(88888)
 > testidxs <- sample(1:nrow(pe1),1000)
 > testset <- pe1[testidxs,]
 > trainset <- pe1[-testidxs,]
@@ -1065,25 +1065,25 @@ the data:
 Then fit the model and predict:
 
 \begin{lstlisting}
-> lmout <- lm(wageinc ~ .,data=pe1)  # predict wage from all others
+> lmout <- lm(wageinc ~ .,data=trainset)  # predict wage from all others
 > predvals <- predict(lmout,testset[,-11])
 > mean(abs(predvals - testset[,11]))
-[1] 26494.62
+[1] 25456.98
 \end{lstlisting}
 
-An average, our prediction is off by more than \$26,000, not so good,
+An average, our prediction is off by more than \$25,000, not so good,
 but not the main point here.
 
 Let's try a quadratic model.  Again, we could form the squared terms
 ourselves, but \textbf{polyreg} makes it convenient.
 
 \begin{lstlisting}
-> pfout <- polyFit(pe1,deg=2)
+> pfout <- polyFit(trainset,deg=2)
 > mean(abs(predict(pfout,testset[,-11]) - testset[,11]))
-[1] 25885.43
+[1] 24249.83
 \end{lstlisting}
 
-Ah, some improvement, with a second-degree model.  Note that this
+Ah, considerable improvement with a second-degree model.  Note that this
 includes the squares of all predictors, and their products, e.g.\ age
 times weeks worked.  Altogether there are now $p = 46$ predictors, up
 from our original 10:
@@ -1096,50 +1096,56 @@ from our original 10:
 How about a cubic model? 
 
 \begin{lstlisting}
-> pfout <- polyFit(pe1,deg=3)
+> pfout <- polyFit(trainset,deg=3)
 > mean(abs(predict(pfout,testset[,-11]) - testset[,11]))
-[1] 25410.9
+[1] 23951.69
 \end{lstlisting}
 
-Even better, though it may be largely a difference due to sampling
-variation.  We are now up to $p = 118$.
+Even better.  We are now up to $p = 118$.
 
 \begin{lstlisting}
-> pfout <- polyFit(pe1,deg=4)
+> pfout <- polyFit(trainset,deg=4)
 getPoly time:  1.12 0.056 1.177 0 0 
 lm() time:  0.88 0.024 0.906 0 0 
 > mean(abs(predict(pfout,testset[,-11]) - testset[,11]))
-[1] 25380.65
+[1] 23974.76
 Warning message:
 In predict.lm(object$fit, plm.newdata) :
   prediction from a rank-deficient fit may be misleading
 \end{lstlisting}
 
-About the same, but with an ominous warning.  R found that the matrix
-$A'A$ in (\ref{famouslm}) was close to nonfull-rank, thus nearly
-singular (noninvertible).  Now $p = 226$.
+About the same.  We may now be in the range in which sampling variation
+dominates small differences in predictive power.  Keep in mind that we
+have sampling variation here both in terms of the random training/test
+sets splitting, and the fact that the full dataset should be considered
+a sample from a population.
 
-Remarkably, this improvement continued:
+Note the ominous warning.  R found that the matrix $A'A$ in
+(\ref{famouslm}) was close to nonfull-rank, thus nearly singular
+(noninvertible).  Now $p = 226$.
+
+This improvement continued until degree 7, when things got dramatically
+worse:
 
 \bigskip
 
-\begin{tabular}{|r|r|}
+\begin{tabular}{|r|r|r|}
 \hline
-deg & MAPE \\
+deg & MAPE & num. terms\\
 \hline
-6 & 25245.83 \\
+5 & 24340.85 & 371 \\
 \hline
-10 & 24679.86 \\
+6 & 24554.34 & 551 \\
 \hline
-15 & 24123.59 \\
+7 & 36463.61 & 767\\
+\hline
+8 & 74296.09 & 1019 \\
 \hline
 \end{tabular}
 
-And at degree 15, $p$ was a whopping 3791.  By the way, in that last
-computation, it took more than 2 minutes to simply generate the
-polynomials --- those 3791 columns --- and almost 20 minutes to process
-the call to \textbf{lm()}.
+Under the ``$\sqrt{n}$ Rule of Thumb,'', things would begin to
+deteriorate when the number of terms got passed about 140, but we were
+able to go considerably further.
 
-Yet, even with this large model, we have not yet reached the point of
-overfitting.  Eventually, though, MAPE will begin to rise.
+At degree 7, though, the perils of overfitting really caught up with us.
 
