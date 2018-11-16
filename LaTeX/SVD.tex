@@ -32,16 +32,18 @@ systems and general machine learning:
 \begin{itemize}
 
 \item Singular Value Decomposition (SVD):  As will be seen below, this
-is a ``cousin'' of PCA.
+is a ``cousin'' of PCA, kind of a ``square root'' of the latter.  There
+is a function in base R for this, \textbf{svd()}.
 
 \item Nonnegative Matrix Factorization (NMF): Here the matrix $A$ has
 nonnegative elements, and one desires the same property for $W$ and $H$.
 This may lead to sparsity in the latter two matrices, and in some cases
-a nice intepretability.
+a nice intepretability.  There are several R packages for this; see
+below.
 
 \end{itemize} 
 
-Since most of the issues are the same for both methods, we'll just stick
+Since most of the issues are the same for both methods, we'll mainly stick
 to one, NMF.
 
 \section{Notation}
@@ -219,14 +221,17 @@ possibly worthwhile if we have many. The approximation is not bad in
 that light, and may be good enough for image recognition or other
 applications.
 
-\subsection{Algorithms}
+\subsection{Computation}
 
 How are the NMF solutions found?  What is {\bf nmf()} doing internally?
 
 Needless to say, the methods are all iterative, with one approach being
-that of the Alternating Least Squares algorithm.  By the way, this is
-not the default for {\bf nmf()}; to select it, set {\bf method =
-'snmf/r'}.
+that of the Alternating Least Squares algorithm.  It's quite intuitive,
+builds on our previous material, is easily adapted to the RS setting,
+and provides insight into NMF itself.
+
+By the way, this is not the default for {\bf nmf()}.  To select it, set
+{\bf method = 'snmf/r'}.
 
 \subsubsection{Objective Function}
 
@@ -261,9 +266,11 @@ This measure is specified in {\bf nmf()} by setting {\bf objective =
 
 \subsubsection{Alternating Least Squares}
 
-So, how does it work?  It's actually quite simple.  Suppose just for a
-moment that we know the exact value of $W$, with $H$ unknown.  Then for
-each $j$ we could minimize
+So, how is NMF computed?  We'll present one of the major methods here,
+\textit{alternating least squares}.  
+
+Suppose just for a moment that we know the exact value of $W$, with $H$
+unknown.  Then for each $j$ we could minimize
 
 \begin{equation}
 \label{errajwhj}
@@ -318,99 +325,80 @@ and so on.
 During the above process, we may generate some negative values.  If so,
 we simply truncate to 0.
 
-\subsubsection{Multiplicative Update}
+\subsubsection{Dealing with the Missing Values}
 
-Alternating Least Squares is appealing in several senses.  At each
-iteration, it is minimizing a {\it convex} function, meaning in essence
-that there is a unique local and global minimum; it is easy to
-implement, since there are many least-squares routines publicly
-available, such as {\bf lm()} here; and above all, it has a nice
-interpretation, predicting columns of $A$.
+In our RS setting, of course, most of $A$ is missing.  But we can easily
+adapt to that.  In (\ref{errajwhj}), simply replace $A_{\cdot j}$ by the
+known elements of that vector, and replace $W$ by the corresponding
+rows.  Then proceed as before.
 
-Another popular algorithm is {\it multiplicative update}, due to Lee and
-Seung.  Here are the update formulas for $W$ given $H$ and {\it vice
-versa}:
+% \subsubsection{Multiplicative Update}
+% 
+% Alternating Least Squares is appealing in several senses.  At each
+% iteration, it is minimizing a {\it convex} function, meaning in essence
+% that there is a unique local and global minimum; it is easy to
+% implement, since there are many least-squares routines publicly
+% available, such as {\bf lm()} here; and above all, it has a nice
+% interpretation, predicting columns of $A$.
+% 
+% Another popular algorithm is {\it multiplicative update}, due to Lee and
+% Seung.  Here are the update formulas for $W$ given $H$ and {\it vice
+% versa}:
+% 
+% \begin{equation}
+% W \leftarrow W \circ 
+% \frac
+% {AH'}
+% {WHH'}
+% \end{equation}
+% 
+% \begin{equation}
+% H \leftarrow H \circ 
+% \frac
+% {W'A}
+% {W'WH}
+% \end{equation}
+% 
+% where $Q \circ R$ and $\frac{Q}{R}$ represent \underline{elementwise}
+% multiplication and division with conformable matrices $Q$ and $R$, and
+% the juxtaposition $QR$ means ordinary matrix multiplication.
 
-\begin{equation}
-W \leftarrow W \circ 
-\frac
-{AH'}
-{WHH'}
-\end{equation}
-
-\begin{equation}
-H \leftarrow H \circ 
-\frac
-{W'A}
-{W'WH}
-\end{equation}
-
-where $Q \circ R$ and $\frac{Q}{R}$ represent \underline{elementwise}
-multiplication and division with conformable matrices $Q$ and $R$, and
-the juxtaposition $QR$ means ordinary matrix multiplication.
-
-\subsection{Predicting New Cases}
-
-Once we have settled on $W$ and $H$, what can we do with them?  In the
-recommender system application mentioned earlier, we simply multiply
-them, and then retrieve the predicted values at the matrix positions at
-which we did not have user ratings.  But recall the description given
-above for the image and text processing examples: 
-
-\begin{quote}
-Given the $rc$-element vector $q$ of the new image, we find
-its representation $q_p$ in the pseudo-basis, and then find $g$ such
-$W_{g \cdot}$ best matches $q_p$.  Our predicted class is then $C_g$.
-\end{quote}
-
-How do we find $q_p$?  The answer is that again we can use the
-least-squares above.
-
-\begin{lstlisting}
-> qp <- lm(q ~ h - 1)
-\end{lstlisting}
-
-\subsection{Convergence and Uniqueness Issues}
+\subsubsection{Convergence and Uniqueness Issues}
 
 There are no panaceas for applications considered here.  Every solution
 has potential problems.
 
-With NMF, an issue may be uniqueness --- there might not be a unique
-pair $(W,H)$ that minimizes (\ref{errawh}).\footnote{See Donoho and
+With NMF, one issue is uniqueness --- there might not be a unique pair
+$(W,H)$ that minimizes (\ref{errawh}).\footnote{See Donoho and
 Stodden,￼{\it When Does Non-Negative Matrix Factorization Give a Correct
 Decomposition into Parts?},
-\url{https://web.stanford.edu/~vcs/papers/NMFCDP.pdf}.  } In turn, this
-may result in convergence problems. The NMF documentation recommends
-running {\bf nmf()} multiple times; it will use a different seed for the
-random initial values each time.
+\url{https://web.stanford.edu/~vcs/papers/NMFCDP.pdf}.}  In fact, one
+can see this immediately:  Doubling $W$ while having $H$ leaves the
+product $WH$ unchanged.  Of course, the product is all that really
+counts, but in turn, this may result in convergence problems. The NMF
+documentation recommends running {\bf nmf()} multiple times; it will use
+a different seed for the random initial values each time.
 
 The Alternating Least Squares method used here is considered by some to
 have better convergence properties, since the solution at each iteration
-is unique.  
+is unique.  This may come at the expense of slower convergence.
+
+\subsection{Predicting New Cases}
+
+How do we find $q$, the coordinates of a new user, using her ratings
+record $u$?  The answer is that again we can use the least-squares idea
+above.
+
+\begin{lstlisting}
+> q <- lm(u ~ h - 1)
+\end{lstlisting}
 
 \subsection{How Do We Choose the Rank?}
 
-This is not an easy question.  One approach is to first decompose our
-matrix $A$ via {\it singular value decomposition}.  Roughly speaking,
-SVD finds an orthonormal basis for A, but then treats the vectors in
-that basis as random variables.  The ones with relatively small variance
-may be considered unimportant.
-
-\begin{lstlisting}
-> asvd <- svd(a)
-> asvd$d
-  [1] 1.188935e+02 2.337674e+01 1.685734e+01 1.353372e+01 1.292724e+01
-  [6] 1.039371e+01 9.517687e+00 9.154770e+00 8.551464e+00 7.776239e+00
- [11] 6.984436e+00 6.505657e+00 5.987315e+00 5.059873e+00 5.032140e+00
- [16] 4.826665e+00 4.576616e+00 4.558703e+00 4.107498e+00 3.983899e+00
- [21] 3.923439e+00 3.606591e+00 3.415380e+00 3.279176e+00 3.093363e+00
- [26] 3.019918e+00 2.892923e+00 2.814265e+00 2.721734e+00 2.593321e+00
-\end{lstlisting}
-
-So, the first standard deviation is about 119, the next about 23 and so
-on.  The seventh is already down into the single-digit range.  So we
-might take $k$ to be, say, 10.  The columns of $A$ lie in a subspace of
-$R^{194}$ of dimension of about 10.
+This is not an easy question.  One approach would be to use
+\textbf{prcomp}, or for that matter \textbf{svd()}, to find the
+eigenvalues, then take our rank to be the number of ``large''
+eigenvalues, as discussed in Chapter \ref{chap:linalg}.  
 
 \subsection{Why Nonnegative?}
 
