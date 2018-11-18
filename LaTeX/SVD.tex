@@ -129,6 +129,10 @@ We then find the closest $H_{\cdot s}$ to $h$, and guess the class of
 the new image to be that of image $s$.\footnote{There are lots of
 variants of this.}
 
+If the original image was $r \times c$ pixels, this can be a huge
+dimension reduction, going from $rc$ variables to $rk +kc$ of them,
+where $k$ is the chosen rank.
+
 \subsection{Text classification}
 
 Here $A$ consists of, say, word counts. We have a list of $k$ key words,
@@ -560,7 +564,7 @@ tend to be rated more highly than others.  One way of dealing with
 that is to adjust our ratings matrix $A$ accordingly:  For each user
 $i$, let $R_i$ denote the average of all known ratings from that user.
 Also, for each item $j$ let $S_j$ denote the average of all known ratings
-for that item.  Then do the replacement
+for that item.  These are termed \textit{biases}. Then do the replacement
 
 \begin{equation}
 A_{uv} \leftarrow A_{uv} - R_u - S_v
