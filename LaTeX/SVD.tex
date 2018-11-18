@@ -551,3 +551,24 @@ $H$ to minimize (\ref{errawh}), we minimize
 \end{equation}
 
 (typically the squared norms are used rather than the norms themselves).
+
+\section{``Bias'' Removal}
+
+As noted in Chapter \ref{cahp:knn}, some users tend to give more liberal
+ratings, while others tend to be more cautious.  Similarly, some items
+tend to be rated more highly than others.  One way of dealing with
+that is to adjust our ratings matrix $A$ accordingly:  For each user
+$i$, let $R_i$ denote the average of all known ratings from that user.
+Also, for each item $j$ let $S_j$ denote the average of all known ratings
+for that item.  Then do the replacement
+
+\begin{equation}
+A_{uv} \leftarrow A_{uv} - R_u - S_v
+\end{equation}
+
+and then form the matrix factorization as usual.  In the end, restore
+the subtracted quantities:
+
+\begin{equation}
+A_{uv} \leftarrow A_{uv} + R_u + S_v
+\end{equation}
