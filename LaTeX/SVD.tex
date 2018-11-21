@@ -551,7 +551,7 @@ to 0, so ridge is the better choice.  Thus, instead of choosing $W$ and
 $H$ to minimize (\ref{errawh}), we minimize
 
 \begin{equation}
-||A - WH||_2 + \gamma ||W||_2 + \gamma ||H||_2
+||A - WH||_2 + \gamma_1 ||W||_2^2 + \gamma_2 ||H||_2^2
 \end{equation}
 
 (typically the squared norms are used rather than the norms themselves).
