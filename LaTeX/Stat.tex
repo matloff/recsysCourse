@@ -132,18 +132,74 @@ that maximizes
 \end{equation}
 
 You are asking, ``What value of $r$ would have made our data ($K = 5$)
-mostlikely?''  Trying $r = 1,2,...,5$, one finds that $r = 4$ maximizes
+most likely?''  Trying $r = 1,2,...,5$, one finds that $r = 4$ maximizes
 (\ref{negbin7}), so we would take that as our guess.
 
 Now back to the RS estimation.  It is assumed that the $\alpha_i$ and
 $\beta_j$ are independent, normally distributed random variables.
 The joint likelihood of all the observed $Y_{ij}$ is then quite complex,
 but it can be maximized, which is what \textbf{lme4} does for
-\textbf{rectools}.  The functions to use are \textbf{trainMLE()} and
-\textbf{predict.ydotsMLE()}.\footnote{For the Method of Moments in the
-linear case, use \textbf{trainMM()} and predict.ydotsMM().}
+\textbf{rectools}.  
 
 \subsection{Incorporation of Covariate Data}
+
+Instead of the old model, 
+
+\begin{equation}
+Y = \mu + \alpha + \beta + \epsilon
+\end{equation}
+
+we now have
+
+\begin{equation}
+Y = X' \gamma + \alpha + \beta + \epsilon
+\end{equation}
+
+where $X$ is the vector of covariates and $\gamma$ is the vector of
+linear regression coefficients.  Note that the old $\mu$ term is now
+absent, at least explicitly.  It now has become $\gamma_0$, and $X$ has
+a 1 component.
+
+\subsection{Example:  InstEval Data}
+
+\begin{lstlisting}
+> getInstEval()
+> mmout <- trainMM(ivl)
+\end{lstlisting}
+
+Let's browse:
+
+\begin{lstlisting}
+> names(mmout)
+[1] "alphai" "betaj"  "lmout"  "Ni."    "N.j" 
+> mmout$alphai[4]
+     1000 
+-1.095866 
+> mmout$alphai[5]
+    1001 
+0.892603 
+\end{lstlisting}
+
+So user 1000 seems to give harsher ratings than average, while user 1001
+is more liberal in her ratings.\footnote{The reader may wonder why user
+1000 would show up fourth in this vector of $\widehat{\alpha}_i$.  The
+reason is that the code indexes users by the character form of their
+IDs.}
+
+The above used the covariates.  Here is the no-covariates version:
+
+\begin{lstlisting}
+mmout.nocov <- trainMM(ivl[,1:3])
+\end{lstlisting}
+
+Let's predict the rating user 8 would give instructor 72:\footnote{As an
+exercise, the reader should check that our observed data does not
+contain this rating, but that instructor 72 is in the data.}
+
+\begin{lstlisting}
+> predict(mmout.nocov,matrix(c(8,72),nrow=1))
+[1] 2.912437
+\end{lstlisting}
 
 \section{Full Regression Models}
 
