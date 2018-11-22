@@ -56,6 +56,11 @@ P(Y_{ij} = 1 ~|~ i,j) =
 
 \subsection{Estimating the Latent Factors}
 
+To predict the unobserved $Y_{ij}$, we will need to estimate $\mu$ and
+the $\alpha_i$ and $\beta_j$.  Let's see how.
+
+\subsubsection{Linear Case}
+
 Intuitively, estimators in the linear case are simply sample analogs of
 the corresponding population quantities:
 
@@ -64,6 +69,7 @@ the corresponding population quantities:
 \end{equation}
 
 \begin{equation}
+\label{hat.mualphabeta}
 \widehat{\mu} + \widehat{\alpha}_i = \frac{1}{N_{i.}}
 \sum_{j, \textrm{ obs.}}^{N_{i.}} Y_{ij}
 \end{equation}
@@ -81,3 +87,66 @@ observed values, i.e.\ not the missing ones.  So for example
 \sum_{j, \textrm{ obs.}}^{N_{i.}} Y_{ij}
 - \frac{1}{N} \sum_{i,j \textrm{ obs.}} Y_{ij}
 \end{equation}
+
+
+\subsubsection{Logistic Case}
+
+The approach of the last section, a special case of a technique called
+the \textit{Method of Moments}, would not work as well in the logistic
+case.  For example, consider (\ref{hat.mualphabeta}), which would now be
+
+\begin{equation}
+\label{nonlin1}
+\widehat{\mu} + \widehat{\alpha}_i = 
+\frac{1}{N_{i.}} \sum_{j=1}^{N_{i.}}
+\frac{1}{1 + \exp[-(\widehat{\mu} + \widehat{\alpha_i} + \widehat{\beta_j})]}
+\end{equation}
+
+Now we'd have a set of nonlinear equations to solve.
+
+Instead, what people use is the \textit{Method of Maximum Likelihood}.
+To be sure, we still have a set of nonlinear equations to solve, but MLE
+has certain optimal statistical properties, and the \textbf{lme4}
+package (included in \textbf{rectools}) uses MLE, so we'll go that
+route.\footnote{The \textbf{mle} package is for a general class of
+methods known as \textit{mixed models}, not specifically for RS.}
+
+To see how MLE works, consider the following game.  I toss a coin until
+I accumulate $r$ heads.  I don't tell you what value I've chosen for
+$r$, but I do tell you $K$, the number of tosses I needed.  You then
+must guess the value of $r$.  Well, elementary probability calculations 
+show that\footnote{This is a family of distributions known as
+\textit{negative binomial.}}
+
+\begin{equation}
+\label{negbin}
+P(K = u) = \binom{u-1}{r-1} 0.5^u,~ u = r, r+1, ...
+\end{equation}
+
+Say I tell you $K = 7$.  Then what you might do is find the value of $r$
+that maximizes 
+
+\begin{equation}
+\label{negbin7}
+\binom{6}{r-1} 0.5^5
+\end{equation}
+
+You are asking, ``What value of $r$ would have made our data ($K = 5$)
+mostlikely?''  Trying $r = 1,2,...,5$, one finds that $r = 4$ maximizes
+(\ref{negbin7}), so we would take that as our guess.
+
+Now back to the RS estimation.  It is assumed that the $\alpha_i$ and
+$\beta_j$ are independent, normally distributed random variables.
+The joint likelihood of all the observed $Y_{ij}$ is then quite complex,
+but it can be maximized, which is what \textbf{lme4} does for
+\textbf{rectools}.  The functions to use are \textbf{trainMLE()} and
+\textbf{predict.ydotsMLE()}.\footnote{For the Method of Moments in the
+linear case, use \textbf{trainMM()} and predict.ydotsMM().}
+
+\subsection{Incorporation of Covariate Data}
+
+\section{Full Regression Models}
+
+\subsection{Linear, Logistic}
+
+\subsection{Machine Learning}
