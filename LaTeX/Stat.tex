@@ -7,4 +7,77 @@ That latter point suggests regression modeling, which we will do in this
 chapter.  We'll use both the classical linear and logistic models, as
 well as machine learning methods.
 
+\section{Latent Factor Models}
 
+The most basic model here is
+
+\begin{equation}
+Y_{ij} = \mu + \alpha_i + \beta_j + \epsilon_{ij},~ i = 1,...,m;~ j =
+1,...,N_{i.}
+\end{equation}
+
+where $m$ is the number of users and $N_{i.}$ is the number of ratings
+we have for user $i$.  (Define $N_{.j}$ to be the number of users rating
+item $j$.) Other than $\mu$, all terms have expected value 0.  The terms
+are interpreted as follows:
+
+\begin{itemize}
+
+\item $\mu$:  overall mean rating of all items, past, present and future
+
+\item $\mu + \alpha_i$: overall mean rating of all items, past, present
+and future, by user $i$; $\alpha_i$ then reflects a tendency for user
+$i$ to give more liberal ratings ($\alpha_i >0$) or harsher ratings
+($\alpha_i < 0$)
+
+\item $\mu + \beta_j$: overall mean rating of item $j$ by all users,
+past, present and future; $\beta_j$ then reflects a tendency for item
+$j$ to receive more liberal ratings ($\beta_j >0$) or harsher ratings
+($\beta_j < 0$)
+
+\item $\epsilon_{ij}$ is a ``miscellaneous'' term that account for
+all factors not accounted for in the model
+
+\end{itemize} 
+
+The $\alpha_i$ and $\beta_j$ terms are called \textit{latent} factors, a
+term meaning ``hidden.''  We can't observe user, say, 29's tendency to give
+high or low ratings; it's just a model for some kind of driving force in
+that user's behavior.  The ``synthetic, representative'' users in
+Chapter \ref{chap:svd} are also called \textit{latent} in the RS
+literature.
+
+The analogous model for logistic regression, i.e.\ binary $Y$, is
+
+\begin{equation}
+P(Y_{ij} = 1 ~|~ i,j) = 
+\frac{1}{1 + \exp[-(\mu + \alpha_i + \beta_j)]}
+\end{equation}
+
+\subsection{Estimating the Latent Factors}
+
+Intuitively, estimators in the linear case are simply sample analogs of
+the corresponding population quantities:
+
+\begin{equation}
+\widehat{\mu} = \frac{1}{N} \sum_{i,j \textrm{ obs.}} Y_{ij}
+\end{equation}
+
+\begin{equation}
+\widehat{\mu} + \widehat{\alpha}_i = \frac{1}{N_{i.}}
+\sum_{j, \textrm{ obs.}}^{N_{i.}} Y_{ij}
+\end{equation}
+
+\begin{equation}
+\widehat{\mu} + \widehat{\beta}_j = \frac{1}{N_{.j}}
+\sum_{i, \textrm{ obs.}}^{N_{.j}} Y_{ij}
+\end{equation}
+
+where $N = \sum_{i} N_{i.}$ and ``obs.'' means summation over all
+observed values, i.e.\ not the missing ones.  So for example 
+
+\begin{equation}
+\widehat{\alpha}_i = \frac{1}{N_{i.}} 
+\sum_{j, \textrm{ obs.}}^{N_{i.}} Y_{ij}
+- \frac{1}{N} \sum_{i,j \textrm{ obs.}} Y_{ij}
+\end{equation}
