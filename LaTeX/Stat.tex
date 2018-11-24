@@ -65,47 +65,51 @@ Intuitively, estimators in the linear case are simply sample analogs of
 the corresponding population quantities:
 
 \begin{equation}
-\widehat{\mu} = \frac{1}{N} \sum_{i,j \textrm{ obs.}} Y_{ij}
+Y_{..} = \widehat{\mu} = \frac{1}{N} \sum_{i,j \textrm{ obs.}} Y_{ij}
 \end{equation}
 
 \begin{equation}
 \label{yi.}
-\widehat{\mu} + \widehat{\alpha}_i = \frac{1}{N_{i.}}
-\sum_{j, \textrm{ obs.}}^{N_{i.}} Y_{ij}
+Y_{i.} = \widehat{\mu} + \widehat{\alpha}_i = \frac{1}{N_{i.}}
+\sum_{j, \textrm{ obs.}} Y_{ij}
 \end{equation}
 
 \begin{equation}
 \label{y.j}
-\widehat{\mu} + \widehat{\beta}_j = \frac{1}{N_{.j}}
-\sum_{i, \textrm{ obs.}}^{N_{.j}} Y_{ij}
+Y_{.j} = \widehat{\mu} + \widehat{\beta}_j = \frac{1}{N_{.j}}
+\sum_{i, \textrm{ obs.}} Y_{ij}
 \end{equation}
 
 where $N = \sum_{i} N_{i.}$ and ``obs.'' means summation over all
-observed values, i.e.\ not the missing ones.  So for example 
+observed values, i.e.\ not the missing ones.  So 
 
 \begin{equation}
-\widehat{\alpha}_i = \frac{1}{N_{i.}} 
-\sum_{j, \textrm{ obs.}}^{N_{i.}} Y_{ij}
-- \frac{1}{N} \sum_{i,j \textrm{ obs.}} Y_{ij}
+\widehat{\alpha}_i = Y_{i.}-Y_{..},~ 
+\widehat{\beta}_j = Y_{.j}-Y_{..}
+% \frac{1}{N_{i.}} 
+% \sum_{j, \textrm{ obs.}}^{N_{i.}} Y_{ij}
+% - \frac{1}{N} \sum_{i,j \textrm{ obs.}} Y_{ij}
 \end{equation}
 
 The reader may recognize the latter two quantities as the biases from
-the preceding chapter.
+the preceding chapter (without $Y_{..}$).
 
 \subsubsection{Logistic Case}
 
 The approach of the last section, a special case of a technique called
 the \textit{Method of Moments}, would not work as well in the logistic
-case.  For example, consider (\ref{yi.}), which would now be
+case.  For example, consider (\ref{yi.}), which would now be, for each
+$i$,
 
 \begin{equation}
 \label{nonlin1}
 \widehat{\mu} + \widehat{\alpha}_i = 
-\frac{1}{N_{i.}} \sum_{j=1}^{N_{i.}}
+\frac{1}{N_{i.}} \sum_{j=1, \textrm{ obs.}}
 \frac{1}{1 + \exp[-(\widehat{\mu} + \widehat{\alpha_i} + \widehat{\beta_j})]}
 \end{equation}
 
-Now we'd have a set of nonlinear equations to solve.
+We have a similar set of equations (as $j$ varies) corresponding to
+items.  We'd now have a set of nonlinear equations to solve.
 
 Instead, what people use is the \textit{Method of Maximum Likelihood}.
 To be sure, we still have a set of nonlinear equations to solve, but MLE
@@ -134,14 +138,23 @@ that maximizes
 \binom{6}{r-1} 0.5^5
 \end{equation}
 
-You are asking, ``What value of $r$ would have made our data ($K = 5$)
+You are asking, ``What value of $r$ would have made our data ($K = 7$)
 most likely?''  Trying $r = 1,2,...,5$, one finds that $r = 4$ maximizes
-(\ref{negbin7}), so we would take that as our guess.
+(\ref{negbin7}), so we would take that as our guess.\footnote{By the
+way, here is how the Method of Moments approach would work here. For the
+negative binomial distribution it is known that $E(K) = r/p$, where $p$
+is the probability of ``success,'' in this setting meaning heads.  So
+$E(K) = 2r$.  Under MM, we would set $\overline{K} = 2 \widehat{r}$,
+where the left-hand side is the average of all values of $K$ in our
+data.  We only did the ``experiment'' once, so $\overline{K} = 6$ and we
+guess $r$ to be 3.5.  Of course, $r$ must be an integer, so we'd guess 3
+o 4.}
 
 Now back to the RS estimation.  It is assumed that the $\alpha_i$ and
-$\beta_j$ are independent, normally distributed random variables.
-The joint likelihood of all the observed $Y_{ij}$ is then quite complex,
-but it can be maximized, which is what \textbf{lme4} does for
+$\beta_j$ are independent, normally distributed random variables.  The
+joint likelihood of all the observed $Y_{ij}$ (now incorporating both
+probabilities and probability density function values) is then quite
+complex, but it can be maximized, which is what \textbf{lme4} does for
 \textbf{rectools}.  
 
 \subsection{Incorporation of Covariate Data}
@@ -162,7 +175,7 @@ Y = X' \gamma + \alpha + \beta + \epsilon
 where $X$ is the vector of covariates and $\gamma$ is the vector of
 linear regression coefficients.  Note that the old $\mu$ term is now
 absent, at least explicitly.  It now has become $\gamma_0$, and $X$ has
-a 1 component.
+a 1 component.  So for instance $X$ may be (1,age,gender).
 
 \subsection{Estimation Approach}
 
@@ -175,7 +188,7 @@ Y_{ij} = X_{ij}' \widehat{\gamma} +
 \end{equation}
 
 Now, holding $i$ fixed, average both sides over $j$.  The left side will
-be (\ref{yi.}).  Since $E\beta = E\epsilon = 0$ and using independence,
+be $Y_{i.}$.  Since $E\beta = E\epsilon = 0$ and we assume independence,
 the average of the last two terms will be about 0.  So, the average of
 the right side will be approximately
 
@@ -184,22 +197,23 @@ the right side will be approximately
 \widehat{\alpha}_{i} 
 \end{equation}
 
-where the vector $\overline{X}_{i.}$ is the average value of $X_{ij}$.
+where the vector $\overline{X}_{i.}$ is the average value of the vectors
+$X_{ij}$ over $j$.
 
 Setting this to (\ref{yi.}), we have
 
 \begin{equation}
-\widehat{\alpha}_i = \frac{1}{N_{i.}}
-\sum_{j, \textrm{ obs.}}^{N_{i.}} Y_{ij} -
+\widehat{\alpha}_i = 
+Y_{i.} -
 \overline{X}_{i.}' \widehat{\gamma} 
 \end{equation}
 
 Similarly,
 
 \begin{equation}
-\widehat{\beta}_j = \frac{1}{N_{.j}}
-\sum_{i, \textrm{ obs.}}^{N_{.j}} Y_{ij} -
-\overline{X}_{.j}' \widehat{\gamma} 
+\widehat{\beta}_j = 
+Y_{.j} -
+\overline{X}_{i.}' \widehat{\gamma} 
 \end{equation}
 
 \subsection{Example:  InstEval Data}
@@ -338,13 +352,40 @@ while (\ref{y.j}) is
 We could then replace row 51 by
 
 \begin{lstlisting}
-   s    d   y 
-51 3.14 3.8 5       
+   s    d    y 
+51 3.8  3.14 5       
 \end{lstlisting}
 
 We then call \textbf{lm()} on the new data.
 
-The \textbf{rectools} functions \textbf{getUINN()} and
-\textbf{convertX()} perform this transformation.
+The \textbf{rectools} function \textbf{RStoReg()} performs this
+transformation, including covariates, if any.
 
 \subsection{Machine Learning}
+
+\section{Example: InstEval}
+
+Let's try these method on the InstEval data, and compare them to matrix
+factorization:
+
+\begin{lstlisting}
+getInstEval()
+set.seed(9999)
+idxs <- sample(1:nrow(ivl),5000)
+trn <- ivl[-idxs,]
+tst <- ivl[idxs,]
+# matrix factorization
+mfout <- trainReco(trn)
+preds.mf <- predict(mfout,tst[,1:2])
+mean(abs(preds.mf - tst[,3]),na.rm=T)  
+# Method of Moments
+mmout <- trainMM(trn)
+preds.mm <- predict(mmout,tst[,-3])  # 1.03
+mean(abs(preds.mm - tst[,3]),na.rm=T)
+# predict from alpha_i, beta_j, linear model
+udconv <- RStoReg(ivl)
+udconvout1 <- lm(y ~ .,data=udconv[-idxs,])
+preds.conv1 <- predict(udconvout1,udconv[idxs,])
+mean(abs(preds.conv1 - tst[,3]),na.rm=T)  
+# predict from alpha_i, beta_j, linear model
+\end{lstlisting}
