@@ -69,12 +69,13 @@ the corresponding population quantities:
 \end{equation}
 
 \begin{equation}
-\label{hat.mualphabeta}
+\label{yi.}
 \widehat{\mu} + \widehat{\alpha}_i = \frac{1}{N_{i.}}
 \sum_{j, \textrm{ obs.}}^{N_{i.}} Y_{ij}
 \end{equation}
 
 \begin{equation}
+\label{y.j}
 \widehat{\mu} + \widehat{\beta}_j = \frac{1}{N_{.j}}
 \sum_{i, \textrm{ obs.}}^{N_{.j}} Y_{ij}
 \end{equation}
@@ -95,7 +96,7 @@ the preceding chapter.
 
 The approach of the last section, a special case of a technique called
 the \textit{Method of Moments}, would not work as well in the logistic
-case.  For example, consider (\ref{hat.mualphabeta}), which would now be
+case.  For example, consider (\ref{yi.}), which would now be
 
 \begin{equation}
 \label{nonlin1}
@@ -154,6 +155,7 @@ Y = \mu + \alpha + \beta + \epsilon
 we now have
 
 \begin{equation}
+\label{modelwithcovs}
 Y = X' \gamma + \alpha + \beta + \epsilon
 \end{equation}
 
@@ -161,6 +163,44 @@ where $X$ is the vector of covariates and $\gamma$ is the vector of
 linear regression coefficients.  Note that the old $\mu$ term is now
 absent, at least explicitly.  It now has become $\gamma_0$, and $X$ has
 a 1 component.
+
+\subsection{Estimation Approach}
+
+Write the data version of the model (\ref{modelwithcovs}), with
+estimates rather than population values, as 
+
+\begin{equation}
+Y_{ij} = X_{ij}' \widehat{\gamma} +
+\widehat{\alpha}_i + \widehat{\beta_j} + \widehat{\epsilon}_{ij}
+\end{equation}
+
+Now, holding $i$ fixed, average both sides over $j$.  The left side will
+be (\ref{yi.}).  Since $E\beta = E\epsilon = 0$ and using independence,
+the average of the last two terms will be about 0.  So, the average of
+the right side will be approximately
+
+\begin{equation}
+\overline{X}_{i.}' \widehat{\gamma} +
+\widehat{\alpha}_{i} 
+\end{equation}
+
+where the vector $\overline{X}_{i.}$ is the average value of $X_{ij}$.
+
+Setting this to (\ref{yi.}), we have
+
+\begin{equation}
+\widehat{\alpha}_i = \frac{1}{N_{i.}}
+\sum_{j, \textrm{ obs.}}^{N_{i.}} Y_{ij} -
+\overline{X}_{i.}' \widehat{\gamma} 
+\end{equation}
+
+Similarly,
+
+\begin{equation}
+\widehat{\beta}_j = \frac{1}{N_{.j}}
+\sum_{i, \textrm{ obs.}}^{N_{.j}} Y_{ij} -
+\overline{X}_{.j}' \widehat{\gamma} 
+\end{equation}
 
 \subsection{Example:  InstEval Data}
 
@@ -203,8 +243,108 @@ contain this rating, but that instructor 72 is in the data.}
 [1] 2.912437
 \end{lstlisting}
 
+\subsection{Implementation}
+
+Below are excerpts of the code from \textbf{trainMM()}.  First, we find
+(\ref{yi.}) and (\ref{y.j}):
+
+\begin{lstlisting}
+haveCovs <- ncol(ratingsIn) > 3
+n <- nrow(ratingsIn)
+userRowGrps <- split(1:n, users)
+itemRowGrps <- split(1:n, items)
+uimean <- function(uirowgrp) mean(ratings[uirowgrp])
+Yi. <- sapply(userRowGrps, uimean)
+Y.j <- sapply(itemRowGrps, uimean)
+\end{lstlisting}
+
+Now for the covariates case:
+
+\begin{lstlisting}
+cmd <- paste("lmout <- lm(", nms[3], " ~ .,data=ratingsIn[,-(1:2)])",
+    sep = "")
+eval(parse(text = cmd))
+xmeans <- function(uirowgrp) colMeans(ratingsIn[uirowgrp,
+    -(1:3), drop = FALSE])
+Xi. <- t(sapply(userRowGrps, xmeans))
+X.j <- t(sapply(itemRowGrps, xmeans))
+predsa <- predict(lmout, as.data.frame(Xi.))
+predsb <- predict(lmout, as.data.frame(X.j))
+...
+alphai <- Yi. - predsa
+betaj <- Y.j - predsb
+\end{lstlisting}
+
+Since we want to make use of the original variable names, we built up
+the \textbf{lm()} call as a character string, then execute that string.
+
 \section{Full Regression Models}
 
+As will be seen shortly, it is natural to consider regression models for
+the $Y_{ij}$.  To illustrate this, let's again consider the InstEval
+data.
+
 \subsection{Linear, Logistic}
+
+In the original form of the InstEval data, i.e.\ not the one returned
+from the \textbf{rectools} function \textbf{getInstEval()}, the first
+two columns, which are the user and item IDs, are R factors.  Assuming
+for now that we are not using covariates, we could
+then make a call like
+
+\begin{lstlisting}
+lm(y ~ s + d, data=InstEval[,c(1,2,7]) 
+\end{lstlisting}
+
+Recall that R automatically converts factor predictors to dummy
+variables, in this case 2972 of them for user IDs and 1128 for item IDs.
+We could then use the return value in \textbf{predict()} calls.
+The case of binary $Y$ and a logistic model would be handled similarly.
+If we do use covariates, simply specify \textbf{data=InstEval} above.
+
+This will lead to long run times, since we will have so many predictors,
+in this case 2972+1128 = 4100 of them.  Indeed, that is why \textbf{lme4}
+has a long run time.
+
+However, the use of dummies in the linear case is essentially the same
+as our Method of Moments approach earlier in this chapter.  This
+suggests a better way:  Take our $Yi.$ and $Y.j$
+as our new data.
+
+For instance, here is row 51 of InstEval (for compactness,
+without covariates):
+
+\begin{lstlisting}
+   s    d y 
+51 8 1884 5       
+\end{lstlisting}
+
+The value of (\ref{yi.}) for user 8 is
+
+\begin{lstlisting}
+> tapply(InstEval$y,InstEval$s,mean)['8']
+  8 
+3.8 
+\end{lstlisting}
+
+while (\ref{y.j}) is
+
+\begin{lstlisting}
+> tapply(InstEval$y,InstEval$d,mean)['1884']
+    1884 
+3.141176 
+\end{lstlisting}
+
+We could then replace row 51 by
+
+\begin{lstlisting}
+   s    d   y 
+51 3.14 3.8 5       
+\end{lstlisting}
+
+We then call \textbf{lm()} on the new data.
+
+The \textbf{rectools} functions \textbf{getUINN()} and
+\textbf{convertX()} perform this transformation.
 
 \subsection{Machine Learning}
