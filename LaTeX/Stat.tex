@@ -299,6 +299,7 @@ the $Y_{ij}$.  To illustrate this, let's again consider the InstEval
 data.
 
 \subsection{Linear, Logistic}
+\label{linlog}
 
 In the original form of the InstEval data, i.e.\ not the one returned
 from the \textbf{rectools} function \textbf{getInstEval()}, the first
@@ -363,6 +364,61 @@ transformation, including covariates, if any.
 
 \subsection{Machine Learning}
 
+\subsection{Creating New Covariates}
+
+In the InstEval data, suppose some instructors do especially well in
+service courses.  How might we take this into account?
+
+In the parametric case, say \textbf{lm()} or \textbf{glm()},
+the naive way would be to include interaction terms corresponding to
+combinations of the \textbf{d} and \textbf{servie} columns in the data
+frame.  This would mean products of the dummy variables for item ID and
+the dummy for service course.  But as noted in Section \ref{linlog}, we
+are already at risk of overfitting, and probably can ill afford adding
+many terms of this type.
+
+An alternative would be as follows.  In our transformed data (output of
+\textbf{RStoReg()}), in addition to the columns corresponding to
+estimated $\alpha$ and $\beta$, we could have a column for mean rating
+in service courses.  Again consider row 51 in the data, originally
+
+\begin{lstlisting}
+   s    d y 
+51 8 1884 5       
+\end{lstlisting}
+
+and transformed to
+
+\begin{lstlisting}
+   s    d    y 
+51 3.8  3.14 5       
+\end{lstlisting}
+
+Now suppose instructor 1884 has an average of 4.8 in service courses.
+Our new row 51 would be
+
+\begin{lstlisting}
+   s    d    v   y 
+51 3.8  3.14 4.8 5       
+\end{lstlisting}
+
+If we then perform an analysis using \textbf{lm()} we are adding only
+one element to the ``$\beta$'' vector -- much better than adding 1128
+parameters, one for each of the products of the dummies for the
+instructors and the service dummy.
+
+Of course, various other applications of this trick would be possible.
+For example, often there are students who do very well in one department
+but less well in others.
+
+One problem, though, say in the service course example, would be that
+some instructors never teach service courses, and thus there would be no
+value for them in the \textbf{v} column above.  One solution would be to
+do subsetting:  We would divide our raw data into two sets, one for
+instructors who teach service courses and the other for the rest.  We
+could fit the richer model on the first subset, while not including this
+aspect in the second.
+
 \section{Example: InstEval}
 
 Let's try these method on the InstEval data, and compare them to matrix
@@ -376,7 +432,7 @@ trn <- ivl[-idxs,]
 tst <- ivl[idxs,]
 # matrix factorization
 mfout <- trainReco(trn)
-preds.mf <- predict(mfout,tst[,1:2])
+preds.mf <- predict(mfout,tst[,-3])
 mean(abs(preds.mf - tst[,3]),na.rm=T)  
 # Method of Moments
 mmout <- trainMM(trn)
@@ -389,3 +445,18 @@ preds.conv1 <- predict(udconvout1,udconv[idxs,])
 mean(abs(preds.conv1 - tst[,3]),na.rm=T)  
 # predict from alpha_i, beta_j, linear model
 \end{lstlisting}
+
+\begin{table}
+\begin{center}
+\vskip 0.5in
+\begin{tabular}{|r|r|}
+\hline
+method & MAPE \\ \hline 
+\hline
+1 & 2 \\ \hline 
+
+\end{tabular}
+\end{center}
+\caption{}
+\label{}
+\end{table}
