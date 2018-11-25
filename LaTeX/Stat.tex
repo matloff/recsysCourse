@@ -357,7 +357,8 @@ We could then replace row 51 by
 51 3.8  3.14 5       
 \end{lstlisting}
 
-We then call \textbf{lm()} on the new data.
+We then call \textbf{lm()} on the new data.  Let's call this the
+``$\alpha,\beta$ Method.''
 
 The \textbf{rectools} function \textbf{RStoReg()} performs this
 transformation, including covariates, if any.
@@ -436,14 +437,20 @@ preds.mf <- predict(mfout,tst[,-3])
 mean(abs(preds.mf - tst[,3]),na.rm=T)  
 # Method of Moments
 mmout <- trainMM(trn)
-preds.mm <- predict(mmout,tst[,-3])  # 1.03
+preds.mm <- predict(mmout,tst[,-3])  
 mean(abs(preds.mm - tst[,3]),na.rm=T)
 # predict from alpha_i, beta_j, linear model
 udconv <- RStoReg(ivl)
 udconvout1 <- lm(y ~ .,data=udconv[-idxs,])
 preds.conv1 <- predict(udconvout1,udconv[idxs,])
 mean(abs(preds.conv1 - tst[,3]),na.rm=T)  
-# predict from alpha_i, beta_j, linear model
+# predict from alpha_i, beta_j, NN
+hdn <- c(8)
+nnout <-
+   nn.train(as.matrix(udconv[-idxs,-3]),udconv[-idxs,3],
+   hidden=hdn,output='linear')
+preds.dn <- nn.predict(nnout,as.matrix(udconv[idxs,-3]))
+mean(abs(preds.dn - tst[,3]),na.rm=T)  
 \end{lstlisting}
 
 \begin{table}
@@ -453,10 +460,28 @@ mean(abs(preds.conv1 - tst[,3]),na.rm=T)
 \hline
 method & MAPE \\ \hline 
 \hline
-1 & 2 \\ \hline 
-
+MF & 1.038 \\ \hline 
+MM & 1.012 \\ \hline 
+$\alpha, \beta ~ \textrm{lin.}$ & 0.956 \\ \hline 
+$\alpha, \beta ~ \textrm{NN}$ & 1.118 \\ \hline 
 \end{tabular}
 \end{center}
 \caption{}
 \label{}
 \end{table}
+
+Of course, the usual caveats:
+
+\begin{itemize}
+
+\item What works well on the InstEval data may not be so good on some
+other data set.
+
+\item We should do several runs of each experiment, averaging their
+results or taking their median, to remove the sampling variation caused
+by the random split.
+
+\item We only tried the default rank in MF, and presented only an
+NN configuration (one hidden layer, 20 neurons) we found to work well.
+
+\end{itemize} 
