@@ -470,13 +470,26 @@ polynomials.
 In other words:
 
 \begin{quote}
-NNs are really just polynomial regression.
+\textbf{Key point:}  NNs are really just polynomial regression.
 \end{quote}
 
 But you can see this can cause series problems of overfitting.  We saw
 in the example in Section \ref{prgengex} that things really got out of
-hand, even with degree 7.  In other words, one needs huge data sets in
-order to effectively use NNs with many layers or many units.
+hand, even with degree 7.  
+
+In other words:
+
+\begin{quote}
+\textbf{Key point:}  NNs are highly [prone to overfitting.
+\end{quote}
+
+So, how do NN advocates deal with this?  The answer is that they have an
+array of techniques to ameliorate overfitting.  One method is
+\textit{dropout}, in which some units are randomly culled from the
+network, thus achieving dimension reduction.
+
+Another method involves \textit{regularization}, which as we have seen
+earlier consists of shrinking the weights.
 
 As usual, the typical tool for hyperparameter selection is
 cross-validation, but with so many hyperparameters, we do need to worry
@@ -484,48 +497,12 @@ about p-hacking.
 
 \subsubsection{R Packages}
 
-At present, the most sophisticated R package for NNs is \textbf{Keras},
-an R implementation of a popular general algorithm of the same name.  The
-\textbf{kerasformula} package, acting as a wrapper to \textbf{keras},
-gives the latter a more ``R-like'' interface.
+There are many R packages available for NNs.  At present, the most
+sophisticated is \textbf{Keras}, an R implementation of a popular
+general algorithm of the same name.  The \textbf{kerasformula} package,
+acting as a wrapper to \textbf{keras}, gives the user a more ``R-like''
+interface.
 
-However, for our purposes here, we'll use \textbf{deepnet}, which is
-simple and fast.  Let's try it out on that example in Section
-\ref{prgengex}:
-
-\begin{lstlisting}
-library(regtools) 
-getPE()  # produces data frame pe 
-pe1 <- pe[,c(1,2,4,6,7,12:16,3)] 
-set.seed(88888) 
-testidxs <- sample(1:nrow(pe1),1000) 
-testset <- pe1[testidxs,] 
-trainset <- pe1[-testidxs,] 
-
-xtrn <- scale(trainset[,-11])
-trnc <- attr(xtrn,'scaled:center')
-trns <- attr(xtrn,'scaled:scale')
-xtst <- scale(as.matrix(testset[,-11]),center=trnc,scale=trns)
-
-hdn <- 4
-nnout <-
-   nn.train(as.matrix(udconv[-idxs,-3]),udconv[-idxs,3],
-   hidden=hdn,output='linear')
-preds.dn <- nn.predict(nnout,as.matrix(udconv[idxs,-3]))
-mean(abs(preds.dn - tst[,3]),na.rm=T)  
-\end{lstlisting}
-
-We first had to \textit{center and scale} the predictors, meaning to
-subtract their means and divide by their standard deviations to make
-them all mean 0, standard deviations 1.  This is common in NN;
-otherwise, the iterations may not converge, or may lead to the ``broken
-clock problem,'' in which all the predicted values are identical!
-
-The result was not very good, a MAPE value of 28020.14, considerably
-larger than what we got with \textbf{lm()}.  This was with one hidden
-layer consisting of 4 units.  (E.g.\ setting \textbf{hdn} to c(5,2)
-would mean two layers, of 5 and 2 units.)  NNs typically require
-extensive tuning.
 
 \subsection{Creating New Covariates}
 
@@ -607,12 +584,12 @@ udconvout1 <- lm(y ~ .,data=udconv[-idxs,])
 preds.conv1 <- predict(udconvout1,udconv[idxs,])
 mean(abs(preds.conv1 - tst[,3]),na.rm=T)  
 # predict from alpha_i, beta_j, NN
-hdn <- c(8)
-nnout <-
-   nn.train(as.matrix(udconv[-idxs,-3]),udconv[-idxs,3],
-   hidden=hdn,output='linear')
-preds.dn <- nn.predict(nnout,as.matrix(udconv[idxs,-3]))
-mean(abs(preds.dn - tst[,3]))  
+units <- c(5,2,NA)
+layers <- list(units=units,activation=c('relu','relu','linear')) 
+kfout <- kms(y ~ .,data=udconv[-idxs,],layers=layers) 
+prd <- predict(kfout,udconv[idxs,-19]) 
+preds <- 1 + 4 * prd$fit
+mean(abs(preds - udconv[idxs,19]))
 \end{lstlisting}
 
 \begin{table}
@@ -625,7 +602,7 @@ method & MAPE \\ \hline
 MF & 1.038 \\ \hline 
 MM & 1.012 \\ \hline 
 $\alpha, \beta ~ \textrm{lin.}$ & 0.956 \\ \hline 
-$\alpha, \beta ~ \textrm{NN}$ & 1.118 \\ \hline 
+$\alpha, \beta ~ \textrm{NN}$ & 0.959 \\ \hline 
 \end{tabular}
 \end{center}
 \caption{}
