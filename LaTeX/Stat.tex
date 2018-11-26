@@ -13,14 +13,21 @@ well as machine learning methods.
 The most basic model here is
 
 \begin{equation}
+\label{yij}
 Y_{ij} = \mu + \alpha_i + \beta_j + \epsilon_{ij},~ i = 1,...,m;~ j =
 1,...,N_{i.}
 \end{equation}
 
 where $m$ is the number of users and $N_{i.}$ is the number of ratings
 we have for user $i$.  (Define $N_{.j}$ to be the number of users rating
-item $j$.) Other than $\mu$, all terms have expected value 0.  The terms
-are interpreted as follows:
+item $j$.) Other than $\mu$, all terms have expected value 0.  Note that
+the above equation can be written
+
+\begin{equation}
+E(Y_{ij} ~| i,j) = \mu + \alpha_i + \beta_j
+\end{equation}
+
+The terms are interpreted as follows:
 
 \begin{itemize}
 
@@ -66,19 +73,19 @@ Intuitively, estimators in the linear case are simply sample analogs of
 the corresponding population quantities:
 
 \begin{equation}
-Y_{..} = \widehat{\mu} = \frac{1}{N} \sum_{i,j \textrm{ obs.}} Y_{ij}
+\widehat{\mu} = \frac{1}{N} \sum_{i,j \textrm{ obs.}} Y_{ij} = Y_{..}
 \end{equation}
 
 \begin{equation}
 \label{yi.}
-Y_{i.} = \widehat{\mu} + \widehat{\alpha}_i = \frac{1}{N_{i.}}
-\sum_{j, \textrm{ obs.}} Y_{ij}
+\widehat{\mu} + \widehat{\alpha}_i = \frac{1}{N_{i.}}
+\sum_{j, \textrm{ obs.}} Y_{ij} = Y_{i.}
 \end{equation}
 
 \begin{equation}
 \label{y.j}
-Y_{.j} = \widehat{\mu} + \widehat{\beta}_j = \frac{1}{N_{.j}}
-\sum_{i, \textrm{ obs.}} Y_{ij}
+\widehat{\mu} + \widehat{\beta}_j = \frac{1}{N_{.j}}
+\sum_{i, \textrm{ obs.}} Y_{ij} = Y_{.j}
 \end{equation}
 
 where $N = \sum_{i} N_{i.}$ and ``obs.'' means summation over all
@@ -86,10 +93,7 @@ observed values, i.e.\ not the missing ones.  So
 
 \begin{equation}
 \widehat{\alpha}_i = Y_{i.}-Y_{..},~ 
-\widehat{\beta}_j = Y_{.j}-Y_{..}
-% \frac{1}{N_{i.}} 
-% \sum_{j, \textrm{ obs.}}^{N_{i.}} Y_{ij}
-% - \frac{1}{N} \sum_{i,j \textrm{ obs.}} Y_{ij}
+\widehat{\beta}_j = Y_{.j}-Y_{..} 
 \end{equation}
 
 The reader may recognize the latter two quantities as the biases from
@@ -148,8 +152,7 @@ is the probability of ``success,'' in this setting meaning heads.  So
 $E(K) = 2r$.  Under MM, we would set $\overline{K} = 2 \widehat{r}$,
 where the left-hand side is the average of all values of $K$ in our
 data.  We only did the ``experiment'' once, so $\overline{K} = 6$ and we
-guess $r$ to be 3.5.  Of course, $r$ must be an integer, so we'd guess 3
-o 4.}
+guess $r$ to be 3.}
 
 Now back to the RS estimation.  It is assumed that the $\alpha_i$ and
 $\beta_j$ are independent, normally distributed random variables.  The
@@ -214,7 +217,7 @@ Similarly,
 \begin{equation}
 \widehat{\beta}_j = 
 Y_{.j} -
-\overline{X}_{i.}' \widehat{\gamma} 
+\overline{X}_{.j}' \widehat{\gamma} 
 \end{equation}
 
 \subsection{Example:  InstEval Data}
@@ -241,7 +244,8 @@ So user 1000 seems to give harsher ratings than average, while user 1001
 is more liberal in her ratings.\footnote{The reader may wonder why user
 1000 would show up fourth in this vector of $\widehat{\alpha}_i$.  The
 reason is that the code indexes users by the character form of their
-IDs.}
+IDs.  Since the vector element order is in terms of the sorted versions
+of these character IDs, 1000 comes quite early.}
 
 The above used the covariates.  Here is the no-covariates version:
 
@@ -291,7 +295,7 @@ betaj <- Y.j - predsb
 \end{lstlisting}
 
 Since we want to make use of the original variable names, we built up
-the \textbf{lm()} call as a character string, then execute that string.
+the \textbf{lm()} call as a character string, then executed that string.
 
 \section{Full Regression Models}
 
@@ -324,7 +328,7 @@ has a long run time.
 
 However, the use of dummies in the linear case is essentially the same
 as our Method of Moments approach earlier in this chapter.  This
-suggests a better way:  Take our $Yi.$ and $Y.j$
+suggests a better way:  Take $Y_{i.}$ and $Y_{j.}$
 as our new data.
 
 For instance, here is row 51 of InstEval (for compactness,
