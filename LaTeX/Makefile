@@ -11,5 +11,6 @@ RSbook.pdf:  RSbook.tex \
 
 RSbookNEW.pdf:  RSbookNEW.tex \
 		   Cover.tex Includes/Includes.tex \
-		   Prologue.tex Infra1NEW.tex Infra2NEW.tex kNNNEW.tex
+		   Prologue.tex Infra1NEW.tex Infra2NEW.tex kNNNEW.tex \
+		   StatNEW.tex 
 	pdflatex RSbookNEW.tex
